@@ -237,45 +237,86 @@ class CimaNow : MainAPI() {
     ): Boolean = coroutineScope {
         val serverLogTag = "CimaNowDecode"
 
+        val hideMyHtmlRegex = Regex("hide_my_HTML_\\s*=\\s*\"([^\"]+)\"")
+        val quoteExtractRegex = Regex("'([^']*)'|\"([^\"]*)\"")
         val serverRegex = Regex("<li[^>]+data-index=\"(\\d+)\"[^>]+data-id=\"(\\d+)\"[^>]*>([^<]+)</li>")
         val iframeSrcRegex = Regex("<iframe[^>]+src=\"([^\"]+)\"")
 
-        val watchUrl = data // No /watching/ appended!
+        // 1. Fetch details/episode page first to get the redirect/watching link
+        var redirectUrl = try {
+            val doc = app.get(data, headers = HEADERS).document
+            val shineUrl = doc.select("a.shine").attr("abs:href")
+            if (shineUrl.isNotEmpty()) shineUrl else null
+        } catch (e: Exception) {
+            Log.e(serverLogTag, "Failed to load details page to extract redirect URL", e)
+            null
+        }
+
+        // Fallback to simple watch URL if redirect URL is not found
+        val watchUrl = redirectUrl ?: (if (data.contains("/watching")) data else data.trimEnd('/') + "/watching/")
+        Log.i(serverLogTag, "Watch URL: $watchUrl")
 
         try {
+            // 2. Load the watch/redirect URL using WebViewResolver
             val responseText = withContext(Dispatchers.IO) {
                 app.get(
                     watchUrl,
                     referer = "https://cimanow.cc/",
                     headers = HEADERS,
-                    timeout = 30000
+                    interceptor = WebViewResolver(Regex("hide_my_HTML_")),
+                    timeout = 60000
                 ).text
             }
 
             Log.e(serverLogTag, "HTML DUMP 1: " + responseText.take(2500))
 
-            // Extract iframes
-            val iframes = iframeSrcRegex.findAll(responseText).mapNotNull { it.groups[1]?.value }.toList()
-            iframes.forEach { iframeUrl ->
-                if (!iframeUrl.contains("youtube.com")) {
-                    val finalUrl = if (iframeUrl.startsWith("//")) "https:$iframeUrl" else iframeUrl
-                    Log.i(serverLogTag, "Found embedded iframe: $finalUrl")
-                    loadExtractor(finalUrl, "https://cimanow.cc/", subtitleCallback, callback)
+            // 3. Extract the encrypted HTML string
+            val hideString = hideMyHtmlRegex.find(responseText)?.groups?.get(1)?.value
+                ?.let { rawGroup ->
+                    quoteExtractRegex.findAll(rawGroup)
+                        .map { it.groups[1]?.value ?: it.groups[2]?.value ?: "" }
+                        .joinToString("")
+                }
+
+            if (hideString.isNullOrEmpty()) {
+                Log.e(serverLogTag, "❌ Failed to extract hide_my_HTML_")
+                return@coroutineScope false
+            }
+
+            // 4. Decrypt the string
+            val decoded = StringBuilder()
+            val numberBuilder = StringBuilder(10)
+            hideString.splitToSequence('.').forEach { part ->
+                if (part.isNotEmpty()) {
+                    try {
+                        val b64 = Base64.decode(part, Base64.DEFAULT)
+                        numberBuilder.clear()
+                        for (byte in b64) {
+                            val char = byte.toInt().toChar()
+                            if (char.isDigit()) numberBuilder.append(char)
+                        }
+                        if (numberBuilder.isNotEmpty()) {
+                            val digits = numberBuilder.toString()
+                            val codePoint = digits.toInt() - 87653
+                            if (codePoint in 0..0x10FFFF) decoded.append(codePoint.toChar())
+                        }
+                    } catch (_: Exception) { }
                 }
             }
 
-            // Extract servers
-            val servers = serverRegex.findAll(responseText)
+            // 5. Parse servers
+            val servers = serverRegex.findAll(decoded.toString())
                 .mapNotNull { match ->
                     val (index, id, name) = match.destructured
                     Triple(index, id, name.trim())
                 }.toList()
 
-            Log.i(serverLogTag, "Extracted ${servers.size} servers from DOM")
+            Log.i(serverLogTag, "Extracted ${servers.size} servers from decrypted HTML")
 
+            // 6. Request each server's iframe and load links
             servers.map { (index, id, name) ->
                 async(Dispatchers.IO) {
-                    withTimeoutOrNull(5000) {
+                    withTimeoutOrNull(8000) {
                         try {
                             val switchUrl = "https://cimanow.cc/wp-content/themes/Cima%20Now%20New/core.php?action=switch&index=$index&id=$id"
                             val serverResponse = app.get(
