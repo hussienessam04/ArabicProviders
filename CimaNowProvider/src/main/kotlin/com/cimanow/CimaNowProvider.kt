@@ -116,7 +116,7 @@ class CimaNow : MainAPI() {
             "${request.data.trimEnd('/')}/page/$page/"
         }
 
-        val doc = app.get(url, timeout = 60, interceptor = WebViewResolver(Regex("cimanow"))).document
+        val doc = app.get(url, timeout = 60000, interceptor = WebViewResolver(Regex("cimanow"))).document
 
         return if (isHomePage) {
             val pages = doc.select("section:has(span):has(.owl-body)").mapNotNull { section ->
@@ -144,14 +144,14 @@ class CimaNow : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val doc = app.get("$mainUrl/?s=$query", timeout = 60, interceptor = WebViewResolver(Regex("cimanow"))).document
+        val doc = app.get("$mainUrl/?s=$query", timeout = 60000, interceptor = WebViewResolver(Regex("cimanow"))).document
         return doc.select("section article[aria-label='post'] a").mapNotNull {
             it.toSearchResponse()
         }
     }
 
     override suspend fun load(url: String): LoadResponse {
-        val doc = app.get(url, timeout = 60, interceptor = WebViewResolver(Regex("cimanow"))).document
+        val doc = app.get(url, timeout = 60000, interceptor = WebViewResolver(Regex("cimanow"))).document
         val posterUrl = doc.select("meta[property=\"og:image\"]").attr("content")
         val year = doc.select("article ul:nth-child(1) li a").last()?.text()?.toIntOrNull()
         val title = doc.select("title").text().split(" | ")[0]
@@ -190,7 +190,7 @@ class CimaNow : MainAPI() {
 
             val episodes = if (seasons.isNotEmpty()) {
                 seasons.amap { (seasonUrl, seasonNum) ->
-                    val seasonDoc = app.get(seasonUrl, timeout = 60, interceptor = WebViewResolver(Regex("cimanow"))).document
+                    val seasonDoc = app.get(seasonUrl, timeout = 60000, interceptor = WebViewResolver(Regex("cimanow"))).document
                     seasonDoc.select("ul#eps li a").mapNotNull { epEl ->
                         newEpisode(epEl.attr("abs:href")) {
                             this.name = epEl.select("img:nth-child(2)").attr("alt")
@@ -249,7 +249,7 @@ class CimaNow : MainAPI() {
                     referer = "https://rm.freex2line.online/2020/02/blog-post.html/",
                     headers = mapOf("User-Agent" to "Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115 Mobile Safari/537.36"),
                     interceptor = WebViewResolver(Regex("hide_my_HTML_")),
-                    timeout = 60
+                    timeout = 60000
                 ).text
             }
 
