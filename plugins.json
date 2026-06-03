@@ -1,61 +1,61 @@
 [
   {
-  "iconUrl": "https://aflaam.com/style/assets/images/logo.png",
-  "apiVersion": 1,
-  "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
-  "fileSize": 14800,
-  "status": 1,
-  "language": "ar",
-  "authors": [
-    "flavasava2022"
-  ],
-  "tvTypes": [
-    "TvSeries",
-    "Movie"
-  ],
-  "version": 1,
-  "internalName": "Aflaam",
-  "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Aflaam.cs3",
-  "name": "Aflaam"
-},
-{
-  "iconUrl": "https://fitnur.com/uploads/avatars/c5ae8dadf88bcea9549657ec451a1563.jpg",
-  "apiVersion": 1,
-  "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
-  "fileSize": 11500,
-  "status": 1,
-  "language": "ar",
-  "authors": [
-    "flavasava2022"
-  ],
-  "tvTypes": [
-    "TvSeries",
-    "Movie"
-  ],
-  "version": 1,
-  "internalName": "Alooytv",
-  "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Alooytv.cs3",
-  "name": "Alooytv"
-},
-{
-  "iconUrl": "https://cdn.wccftech.com/wp-content/uploads/2018/01/Youtube-music.png",
-  "apiVersion": 1,
-  "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
-  "fileSize": 18100,
-  "status": 1,
-  "language": "ar",
-  "authors": [
-    "flavasava2022"
-  ],
-  "tvTypes": [
-    "TvSeries",
-    "Movie"
-  ],
-  "version": 1,
-  "internalName": "Shahidwbas",
-  "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Shahidwbas.cs3",
-  "name": "Shahidwbas"
-},
+    "iconUrl": "https://aflaam.com/style/assets/images/logo.png",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
+    "fileSize": 14800,
+    "status": 1,
+    "language": "ar",
+    "authors": [
+      "flavasava2022"
+    ],
+    "tvTypes": [
+      "TvSeries",
+      "Movie"
+    ],
+    "version": 1,
+    "internalName": "Aflaam",
+    "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Aflaam.cs3",
+    "name": "Aflaam"
+  },
+  {
+    "iconUrl": "https://fitnur.com/uploads/avatars/c5ae8dadf88bcea9549657ec451a1563.jpg",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
+    "fileSize": 11500,
+    "status": 1,
+    "language": "ar",
+    "authors": [
+      "flavasava2022"
+    ],
+    "tvTypes": [
+      "TvSeries",
+      "Movie"
+    ],
+    "version": 1,
+    "internalName": "Alooytv",
+    "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Alooytv.cs3",
+    "name": "Alooytv"
+  },
+  {
+    "iconUrl": "https://cdn.wccftech.com/wp-content/uploads/2018/01/Youtube-music.png",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
+    "fileSize": 18100,
+    "status": 1,
+    "language": "ar",
+    "authors": [
+      "flavasava2022"
+    ],
+    "tvTypes": [
+      "TvSeries",
+      "Movie"
+    ],
+    "version": 1,
+    "internalName": "Shahidwbas",
+    "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Shahidwbas.cs3",
+    "name": "Shahidwbas"
+  },
   {
     "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9Lci-tXtOtWaHcEp9An7bqIkXs4yzH7EcfA&s",
     "apiVersion": 1,
@@ -116,7 +116,7 @@
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Anime4up.cs3",
     "name": "Anime4up"
   },
-    {
+  {
     "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNGolDYucryXGa3PI72DhhJHaL3y6NkWT7MjSFvPKG1A&s=10",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
@@ -135,7 +135,7 @@
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Ohatv.cs3",
     "name": "Ohatv"
   },
-    {
+  {
     "iconUrl": "https://www.dima-toon.com/wp-content/uploads/2025/10/DimaToonlogo11.png",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
@@ -154,7 +154,7 @@
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/dima-toon.cs3",
     "name": "Dima toon"
   },
-        {
+  {
     "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ10TEG3tTtkEF9_g3IslEP3xs0wx9EVhBs7b_H5M1gpg&s=10",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
@@ -173,7 +173,7 @@
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/TukTukcima.cs3",
     "name": "Tuktukcima"
   },
-        {
+  {
     "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-AxQJRe4rlDqMAJMNUoAJ-e-MAH1Vy8h16nOmXvVWQ&s=10",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
@@ -192,7 +192,7 @@
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Cimawbas.cs3",
     "name": "Cimawbas"
   },
-    {
+  {
     "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSF607wnarFL8Ob8KLPahUPJzcLjbtg1pEH0A&s",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
@@ -362,8 +362,8 @@
       "flavasava2022"
     ],
     "tvTypes": [
-    "Movie",
-    "tvTypes"
+      "Movie",
+      "tvTypes"
     ],
     "version": 2,
     "internalName": "LodyNet",
@@ -381,8 +381,8 @@
       "flavasava2022"
     ],
     "tvTypes": [
-    "Movie",
-    "tvTypes"
+      "Movie",
+      "tvTypes"
     ],
     "version": 1,
     "internalName": "WeCima",
@@ -400,8 +400,8 @@
       "flavasava2022"
     ],
     "tvTypes": [
-    "Movie",
-    "tvTypes"
+      "Movie",
+      "tvTypes"
     ],
     "version": 1,
     "internalName": "TopCinema",
@@ -419,9 +419,9 @@
       "flavasava2022"
     ],
     "tvTypes": [
-    "Movie",
-    "Others",
-    "live"
+      "Movie",
+      "Others",
+      "live"
     ],
     "version": 2,
     "internalName": "FullMatchShows",
@@ -439,7 +439,7 @@
       "flavasava2022"
     ],
     "tvTypes": [
-    "Anime"
+      "Anime"
     ],
     "version": 1,
     "internalName": "Brstej",
@@ -457,7 +457,7 @@
       "flavasava2022"
     ],
     "tvTypes": [
-    "Anime"
+      "Anime"
     ],
     "version": 3,
     "internalName": "AnimeWitcher",
@@ -475,10 +475,10 @@
       "flavasava2022"
     ],
     "tvTypes": [
-    "Movie",
-    "TvSeries",
-    "Anime",
-    "AsianDrama"
+      "Movie",
+      "TvSeries",
+      "Anime",
+      "AsianDrama"
     ],
     "version": 1,
     "internalName": "Egydead",
@@ -496,10 +496,10 @@
       "flavasava2022"
     ],
     "tvTypes": [
-    "Movie",
-    "TvSeries",
-    "Anime",
-    "AsianDrama"
+      "Movie",
+      "TvSeries",
+      "Anime",
+      "AsianDrama"
     ],
     "version": 1,
     "internalName": "Mycima",
@@ -517,10 +517,10 @@
       "flavasava2022"
     ],
     "tvTypes": [
-            "Movie",
-            "TvSeries",
-            "AsianDrama"
-        ],
+      "Movie",
+      "TvSeries",
+      "AsianDrama"
+    ],
     "version": 3,
     "internalName": "Asia2tv 2",
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Aia2tv%202.cs3",
@@ -537,10 +537,10 @@
       "flavasava2022"
     ],
     "tvTypes": [
-            "Movie",
-            "TvSeries",
-            "AsianDrama"
-        ],
+      "Movie",
+      "TvSeries",
+      "AsianDrama"
+    ],
     "version": 3,
     "internalName": "Asia2tv",
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Aia2tv.cs3",
@@ -660,7 +660,7 @@
     "internalName": "Witanime",
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Witanime.cs3",
     "name": "Witanime"
-  },  
+  },
   {
     "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3Ig85ZYdRsjDw--peeI2RsBqOWmvnmvKKsT4UONdPMQ&s=10",
     "apiVersion": 1,
@@ -679,7 +679,7 @@
     "internalName": "Shahid4u",
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Shahid4u.cs3",
     "name": "Shahid4u"
-  },  
+  },
   {
     "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX1z-0NYyzyEiFs4q7X9c8SSBR6kJtVl7f7A&s",
     "apiVersion": 1,
@@ -723,7 +723,7 @@
     "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcamMqAuvsinzX-pcOGRo1KkYEbfv2zVJawHsugiX3dDcr64h-CJiL8ShJ&s=10",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
-    "fileSize": 23552,
+    "fileSize": 23663,
     "status": 1,
     "language": "ar",
     "authors": [
@@ -733,7 +733,7 @@
       "TvSeries",
       "Movie"
     ],
-    "version": 8,
+    "version": 9,
     "internalName": "Cimanaw",
     "description": "ÙŠØ³ØªØºØ±Ù‚ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø±ÙˆØ§Ø¨Ø· Ø¨Ø¹Ø¶ Ø§Ù„ÙˆÙ‚Øª ÙƒÙ† ØµØ¨ÙˆØ±Ø§",
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/CimaNowProvider.cs3",
@@ -779,4 +779,3 @@
     "name": "Shabakaty Cinemana (ðŸ‡®ðŸ‡¶)"
   }
 ]
-
