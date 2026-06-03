@@ -66,6 +66,8 @@ class CimaNow : MainAPI() {
     override val hasMainPage = true
     override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
 
+    private val HEADERS = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
+
 
     override val mainPage = mainPageOf(
         mainUrl to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©",
@@ -116,7 +118,7 @@ class CimaNow : MainAPI() {
             "${request.data.trimEnd('/')}/page/$page/"
         }
 
-        val doc = app.get(url, timeout = 60000, interceptor = WebViewResolver(Regex("cimanow"))).document
+        val doc = app.get(url, timeout = 60000, headers = HEADERS).document
 
         return if (isHomePage) {
             val pages = doc.select("section:has(span):has(.owl-body)").mapNotNull { section ->
@@ -144,14 +146,14 @@ class CimaNow : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val doc = app.get("$mainUrl/?s=$query", timeout = 60000, interceptor = WebViewResolver(Regex("cimanow"))).document
+        val doc = app.get("$mainUrl/?s=$query", timeout = 60000, headers = HEADERS).document
         return doc.select("section article[aria-label='post'] a").mapNotNull {
             it.toSearchResponse()
         }
     }
 
     override suspend fun load(url: String): LoadResponse {
-        val doc = app.get(url, timeout = 60000, interceptor = WebViewResolver(Regex("cimanow"))).document
+        val doc = app.get(url, timeout = 60000, headers = HEADERS).document
         val posterUrl = doc.select("meta[property=\"og:image\"]").attr("content")
         val year = doc.select("article ul:nth-child(1) li a").last()?.text()?.toIntOrNull()
         val title = doc.select("title").text().split(" | ")[0]
@@ -190,7 +192,7 @@ class CimaNow : MainAPI() {
 
             val episodes = if (seasons.isNotEmpty()) {
                 seasons.amap { (seasonUrl, seasonNum) ->
-                    val seasonDoc = app.get(seasonUrl, timeout = 60000, interceptor = WebViewResolver(Regex("cimanow"))).document
+                    val seasonDoc = app.get(seasonUrl, timeout = 60000, headers = HEADERS).document
                     seasonDoc.select("ul#eps li a").mapNotNull { epEl ->
                         newEpisode(epEl.attr("abs:href")) {
                             this.name = epEl.select("img:nth-child(2)").attr("alt")
@@ -235,69 +237,42 @@ class CimaNow : MainAPI() {
     ): Boolean = coroutineScope {
         val serverLogTag = "CimaNowDecode"
 
-        val hideMyHtmlRegex = Regex("hide_my_HTML_\\s*=\\s*((?:'[^']*'|\"[^\"]*\")(?:\\s*\\+\\s*(?:'[^']*'|\"[^\"]*\"))*)\\s*;", RegexOption.DOT_MATCHES_ALL)
-        val quoteExtractRegex = Regex("'([^']*)'|\"([^\"]*)\"")
         val serverRegex = Regex("<li[^>]+data-index=\"(\\d+)\"[^>]+data-id=\"(\\d+)\"[^>]*>([^<]+)</li>")
         val iframeSrcRegex = Regex("<iframe[^>]+src=\"([^\"]+)\"")
 
-        val watchUrl = if (data.contains("/watching")) data else data.trimEnd('/') + "/watching/"
+        val watchUrl = data // No /watching/ appended!
 
         try {
             val responseText = withContext(Dispatchers.IO) {
                 app.get(
                     watchUrl,
-                    referer = "https://rm.freex2line.online/2020/02/blog-post.html/",
-                    headers = mapOf("User-Agent" to "Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115 Mobile Safari/537.36"),
-                    timeout = 60000
+                    referer = "https://cimanow.cc/",
+                    headers = HEADERS,
+                    timeout = 30000,
+                    interceptor = WebViewResolver(Regex("data-index=\"\\d+\"|class=\"server\""))
                 ).text
             }
 
             Log.e(serverLogTag, "HTML DUMP 1: " + responseText.take(2500))
-            if (responseText.length > 2500) Log.e(serverLogTag, "HTML DUMP 2: " + responseText.substring(2500).take(2500))
-            if (responseText.length > 5000) Log.e(serverLogTag, "HTML DUMP 3: " + responseText.substring(5000).take(2500))
-            if (responseText.length > 7500) Log.e(serverLogTag, "HTML DUMP 4: " + responseText.substring(7500).take(2500))
-            if (responseText.length > 10000) Log.e(serverLogTag, "HTML DUMP 5: " + responseText.substring(10000).take(2500))
 
-
-            val hideString = hideMyHtmlRegex.find(responseText)?.groups?.get(1)?.value
-                ?.let { rawGroup ->
-                    quoteExtractRegex.findAll(rawGroup)
-                        .map { it.groups[1]?.value ?: it.groups[2]?.value ?: "" }
-                        .joinToString("")
-                }
-
-            if (hideString.isNullOrEmpty()) {
-                Log.e(serverLogTag, "âŒ ÙØ´Ù„ Ø§Ø³ØªØ®Ø±Ø§Ø¬ hide_my_HTML_")
-                return@coroutineScope false
-            }
-
-            val decoded = StringBuilder()
-            val numberBuilder = StringBuilder(10)
-            hideString.splitToSequence('.').forEach { part ->
-                if (part.isNotEmpty()) {
-                    try {
-                        val b64 = Base64.decode(part, Base64.DEFAULT)
-                        numberBuilder.clear()
-                        for (byte in b64) {
-                            val char = byte.toInt().toChar()
-                            if (char.isDigit()) numberBuilder.append(char)
-                        }
-                        if (numberBuilder.isNotEmpty()) {
-                            val digits = numberBuilder.toString()
-                            val codePoint = digits.toInt() - 87653
-                            if (codePoint in 0..0x10FFFF) decoded.append(codePoint.toChar())
-                        }
-                    } catch (_: Exception) { }
+            // Extract iframes
+            val iframes = iframeSrcRegex.findAll(responseText).mapNotNull { it.groups[1]?.value }.toList()
+            iframes.forEach { iframeUrl ->
+                if (!iframeUrl.contains("youtube.com")) {
+                    val finalUrl = if (iframeUrl.startsWith("//")) "https:$iframeUrl" else iframeUrl
+                    Log.i(serverLogTag, "Found embedded iframe: $finalUrl")
+                    loadExtractor(finalUrl, "https://cimanow.cc/", subtitleCallback, callback)
                 }
             }
 
-            val servers = serverRegex.findAll(decoded.toString())
+            // Extract servers
+            val servers = serverRegex.findAll(responseText)
                 .mapNotNull { match ->
                     val (index, id, name) = match.destructured
                     Triple(index, id, name.trim())
                 }.toList()
 
-            Log.i(serverLogTag, "âœ… ØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ ${servers.size} Ø³ÙŠØ±ÙØ±Ø§Øª")
+            Log.i(serverLogTag, "Extracted ${servers.size} servers from DOM")
 
             servers.map { (index, id, name) ->
                 async(Dispatchers.IO) {
@@ -307,23 +282,20 @@ class CimaNow : MainAPI() {
                             val serverResponse = app.get(
                                 switchUrl,
                                 referer = "https://cimanow.cc/",
-                                headers = mapOf("User-Agent" to "Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115 Mobile Safari/537.36")
+                                headers = HEADERS
                             ).text
-
-                            Log.d(serverLogTag, "ðŸ“¥ [$name] Ø§Ø³ØªØ¬Ø§Ø¨Ø© Ø§Ù„Ø³ÙŠØ±ÙØ± (Ø£ÙˆÙ„ 200): " +
-                                    serverResponse.take(200).replace("\n", " "))
 
                             if (name.equals("Cima Now", ignoreCase = true)) {
                                 val iframeUrl = iframeSrcRegex.find(serverResponse)?.groupValues?.get(1)
                                 if (!iframeUrl.isNullOrEmpty()) {
                                     val finalUrl = if (iframeUrl.startsWith("//")) "https:$iframeUrl" else iframeUrl
-                                    Log.i(serverLogTag, "   âœ… [$name] ØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ iframe: $finalUrl")
+                                    Log.i(serverLogTag, "[$name] CimaNow iframe: $finalUrl")
 
                                     try {
                                         val iframeResponse = app.get(
                                             finalUrl,
                                             referer = finalUrl,
-                                            headers = mapOf("User-Agent" to "Mozilla/5.0")
+                                            headers = HEADERS
                                         ).text
 
                                         val regex = Regex("""\[(\d+p)]\s+(/uploads/[^\"]+\.mp4)""")
@@ -342,42 +314,31 @@ class CimaNow : MainAPI() {
                                                 this.quality = getQualityFromName(quality)
                                                 this.referer = finalUrl
                                             }
-
-                                            Log.i(serverLogTag, "   ðŸŽ¬ [$name] Ø±Ø§Ø¨Ø· $quality => $videoUrl")
                                             callback.invoke(link)
                                         }
-                                    } catch (ex: Exception) {
-                                        Log.e(serverLogTag, "   âŒ [$name] Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø§Ø³ØªØ®Ø±Ø§Ø¬ Ø±ÙˆØ§Ø¨Ø· iframe", ex)
-                                    }
-                                } else {
-                                    Log.w(serverLogTag, "   âš ï¸ [$name] Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ iframe Ø¯Ø§Ø®Ù„ Ø§Ø³ØªØ¬Ø§Ø¨Ø© CimaNow")
+                                    } catch (ex: Exception) {}
                                 }
                             } else {
                                 val iframeUrl = iframeSrcRegex.find(serverResponse)?.groupValues?.get(1)
                                 if (!iframeUrl.isNullOrEmpty()) {
                                     val finalUrl = if (iframeUrl.startsWith("//")) "https:$iframeUrl" else iframeUrl
-                                    Log.i(serverLogTag, "   âœ… [$name] ØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ø±Ø§Ø¨Ø· iframe: $finalUrl")
-
-                                    Log.d(serverLogTag, "   - [$name] Ø¬Ø§Ø±ÙŠ Ø§Ø³ØªØ¯Ø¹Ø§Ø¡ loadExtractor...")
+                                    Log.i(serverLogTag, "[$name] -> iframe: $finalUrl")
                                     loadExtractor(finalUrl, "https://cimanow.cc/", subtitleCallback, callback)
-                                } else {
-                                    Log.w(serverLogTag, "   âš ï¸ [$name] Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ø±Ø§Ø¨Ø· iframe")
                                 }
                             }
-                        } catch (e: Exception) {
-                            Log.e(serverLogTag, "   âŒ [$name] Ø­Ø¯Ø« Ø®Ø·Ø£ Ø¹Ø§Ù… Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„Ù…Ø¹Ø§Ù„Ø¬Ø©", e)
-                        }
-                    } ?: Log.e(serverLogTag, "   âŒ [$name] ÙØ´Ù„ Ø¨Ø³Ø¨Ø¨ Ø§Ù†ØªÙ‡Ø§Ø¡ Ø§Ù„Ù…Ù‡Ù„Ø© (Timeout)")
+                        } catch (e: Exception) {}
+                    }
                 }
             }.awaitAll()
 
             return@coroutineScope true
         } catch (e: Exception) {
-            Log.e(serverLogTag, "âŒ Ø®Ø·Ø£ Ø¹Ø§Ù… ÙÙŠ loadLinks", e)
+            Log.e(serverLogTag, "loadLinks failed", e)
             return@coroutineScope false
         }
     }
 }
+
 
 
 
