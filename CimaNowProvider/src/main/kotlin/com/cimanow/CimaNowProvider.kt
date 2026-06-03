@@ -248,8 +248,7 @@ class CimaNow : MainAPI() {
                     watchUrl,
                     referer = "https://cimanow.cc/",
                     headers = HEADERS,
-                    timeout = 30000,
-                    interceptor = WebViewResolver(Regex("data-index=\"\\d+\"|class=\"server\""))
+                    timeout = 30000
                 ).text
             }
 
