@@ -1,4 +1,4 @@
-package com.cimawbas
+﻿package com.cimawbas
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
@@ -16,13 +16,13 @@ class CimaTn : MainAPI() {
     override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
 
     override val mainPage = mainPageOf(
-        "$mainUrl/search/label/أحدث الإضافات" to "أحدث الإضافات",
-        "$mainUrl/search/label/أفلام تونسية" to "أفلام تونسية",
-        "$mainUrl/search/label/مسلسلات تونسية" to "مسلسلات تونسية",
-        "$mainUrl/search/label/رمضان2025" to "رمضان 2025",
-        "$mainUrl/search/label/دراما" to "دراما",
-        "$mainUrl/search/label/كوميديا" to "كوميديا",
-        "$mainUrl/search/label/أكشن" to "أكشن"
+        "$mainUrl/search/label/Ø£Ø­Ø¯Ø« Ø§Ù„Ø¥Ø¶Ø§ÙØ§Øª" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ø¥Ø¶Ø§ÙØ§Øª",
+        "$mainUrl/search/label/Ø£ÙÙ„Ø§Ù… ØªÙˆÙ†Ø³ÙŠØ©" to "Ø£ÙÙ„Ø§Ù… ØªÙˆÙ†Ø³ÙŠØ©",
+        "$mainUrl/search/label/Ù…Ø³Ù„Ø³Ù„Ø§Øª ØªÙˆÙ†Ø³ÙŠØ©" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª ØªÙˆÙ†Ø³ÙŠØ©",
+        "$mainUrl/search/label/Ø±Ù…Ø¶Ø§Ù†2025" to "Ø±Ù…Ø¶Ø§Ù† 2025",
+        "$mainUrl/search/label/Ø¯Ø±Ø§Ù…Ø§" to "Ø¯Ø±Ø§Ù…Ø§",
+        "$mainUrl/search/label/ÙƒÙˆÙ…ÙŠØ¯ÙŠØ§" to "ÙƒÙˆÙ…ÙŠØ¯ÙŠØ§",
+        "$mainUrl/search/label/Ø£ÙƒØ´Ù†" to "Ø£ÙƒØ´Ù†"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -226,7 +226,7 @@ class CimaTn : MainAPI() {
             val linksStr = linksMatch.groupValues[1]
             val urlsRegex = Regex("""["'](https?://[^"']+)["']""")
             urlsRegex.findAll(linksStr).forEachIndexed { index, matchResult ->
-                episodes.add(Pair("الحلقة ${index + 1}", matchResult.groupValues[1]))
+                episodes.add(Pair("Ø§Ù„Ø­Ù„Ù‚Ø© ${index + 1}", matchResult.groupValues[1]))
             }
             if (episodes.isNotEmpty()) return episodes
         }
@@ -248,7 +248,7 @@ class CimaTn : MainAPI() {
 
                 if (watchPageUrl != null) {
                     for (i in 1..totalEps) {
-                        episodes.add(Pair("الحلقة $i", "$watchPageUrl?episode=$i"))
+                        episodes.add(Pair("Ø§Ù„Ø­Ù„Ù‚Ø© $i", "$watchPageUrl?episode=$i"))
                     }
                     return episodes
                 }
@@ -257,7 +257,7 @@ class CimaTn : MainAPI() {
 
         if (totalEpMatch != null) {
             val baseLinkMatch = Regex("""const\s+baseLink\s*=\s*"([^"]+)";""").find(html)
-            if (baseLinkMatch != null && slugMatch == null) { // تأكد أنه ليس FlashBack
+            if (baseLinkMatch != null && slugMatch == null) { // ØªØ£ÙƒØ¯ Ø£Ù†Ù‡ Ù„ÙŠØ³ FlashBack
                 val count = totalEpMatch.groupValues[1].toInt()
                 var baseLink = baseLinkMatch.groupValues[1]
 
@@ -268,7 +268,7 @@ class CimaTn : MainAPI() {
                         if (baseLink.startsWith("/")) baseLink = baseLink.substring(1)
                         "$domain/p/$baseLink$i.html"
                     }
-                    episodes.add(Pair("الحلقة $i", fullLink))
+                    episodes.add(Pair("Ø§Ù„Ø­Ù„Ù‚Ø© $i", fullLink))
                 }
                 return episodes
             }
@@ -292,7 +292,7 @@ class CimaTn : MainAPI() {
         } catch (e: Exception) { "" }
 
         if (slug.isNotEmpty()) {
-            val feedUrl = "$domain/feeds/pages/default?alt=json&max-results=500" // جلب 500 لضمان الشمولية
+            val feedUrl = "$domain/feeds/pages/default?alt=json&max-results=500" // Ø¬Ù„Ø¨ 500 Ù„Ø¶Ù…Ø§Ù† Ø§Ù„Ø´Ù…ÙˆÙ„ÙŠØ©
             try {
                 val jsonString = app.get(feedUrl).text
                 val cleanJson = if (jsonString.contains("{")) jsonString.substring(jsonString.indexOf("{"), jsonString.lastIndexOf("}") + 1) else jsonString
@@ -385,3 +385,4 @@ class CimaTn : MainAPI() {
     }
 
 }
+

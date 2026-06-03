@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.arabseed.Aia2tv-release-3:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Hussien Essam\\.gradle\\caches\\8.12\\transforms\\295f37366ae65b59e40293a80c8b2136\\transformed\\material-1.13.0\\res\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "63",
+                        "endOffsets": "114"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.arabseed.Aia2tv-mergeReleaseResources-1:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Hussien Essam\\.gradle\\caches\\8.12\\transforms\\295f37366ae65b59e40293a80c8b2136\\transformed\\material-1.13.0\\res\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "63",
+                        "endOffsets": "114"
+                    }
+                }
+            ]
+        }
+    ]
+}

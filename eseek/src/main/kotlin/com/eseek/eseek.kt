@@ -1,4 +1,4 @@
-package com.eseek
+﻿package com.eseek
 
 import android.util.Base64
 import com.google.gson.Gson
@@ -24,7 +24,7 @@ import kotlin.collections.forEach
 
 class GessehProvider : MainAPI() {
     override var mainUrl = "https://qeseh.net"
-    override var name = "عشق 2"
+    override var name = "Ø¹Ø´Ù‚ 2"
     override val hasMainPage = true
     override var lang = "ar"
     override val supportedTypes = setOf(
@@ -47,9 +47,9 @@ class GessehProvider : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/all-series/page/" to "جميع المسلسلات",
-        "$mainUrl/category/الأفلام-التركية/page/" to "افلام تركية",
-        "$mainUrl/page/" to "آخر الحلقات",
+        "$mainUrl/all-series/page/" to "Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª",
+        "$mainUrl/category/Ø§Ù„Ø£ÙÙ„Ø§Ù…-Ø§Ù„ØªØ±ÙƒÙŠØ©/page/" to "Ø§ÙÙ„Ø§Ù… ØªØ±ÙƒÙŠØ©",
+        "$mainUrl/page/" to "Ø¢Ø®Ø± Ø§Ù„Ø­Ù„Ù‚Ø§Øª",
     )
 
     private fun Element.toSearchResponse(): SearchResponse? {
@@ -330,7 +330,7 @@ class GessehProvider : MainAPI() {
         }
 
         var targetUrl = rawExtractorHref
-        var playerReferer = "https://fashny.net/" // قيمة افتراضية للريفرير
+        var playerReferer = "https://fashny.net/" // Ù‚ÙŠÙ…Ø© Ø§ÙØªØ±Ø§Ø¶ÙŠØ© Ù„Ù„Ø±ÙŠÙØ±ÙŠØ±
 
         val urlMatch = Regex("[?&]url=([^&]+)").find(rawExtractorHref)
         if (urlMatch != null) {
@@ -341,7 +341,7 @@ class GessehProvider : MainAPI() {
                     extracted = String(decodedBytes, Charsets.UTF_8).trim()
                 }
                 if (extracted.startsWith("http")) {
-                    targetUrl = extracted // الرابط الداخلي (thenextstop)
+                    targetUrl = extracted // Ø§Ù„Ø±Ø§Ø¨Ø· Ø§Ù„Ø¯Ø§Ø®Ù„ÙŠ (thenextstop)
 
                     val uri = java.net.URI(rawExtractorHref)
                     playerReferer = "${uri.scheme}://${uri.host}/"
@@ -471,7 +471,7 @@ class GessehProvider : MainAPI() {
             } catch (e: Exception) {
                 println("[GessehProvider] Custom Dailymotion extractor failed: ${e.message}")
             }
-            return // نوقف التنفيذ هنا بعد معالجة Dailymotion
+            return // Ù†ÙˆÙ‚Ù Ø§Ù„ØªÙ†ÙÙŠØ° Ù‡Ù†Ø§ Ø¨Ø¹Ø¯ Ù…Ø¹Ø§Ù„Ø¬Ø© Dailymotion
         }
 
         when {
@@ -529,13 +529,13 @@ class GessehProvider : MainAPI() {
     open class QesehDailymotionExtractor : ExtractorApi() {
         override val mainUrl = "https://www.dailymotion.com"
         override val name = "Dailymotion (Qeseh)"
-        override val requiresReferer = true // مهم لتحديد أن الريفير مطلوب
+        override val requiresReferer = true // Ù…Ù‡Ù… Ù„ØªØ­Ø¯ÙŠØ¯ Ø£Ù† Ø§Ù„Ø±ÙŠÙÙŠØ± Ù…Ø·Ù„ÙˆØ¨
         private val baseUrl = "https://www.dailymotion.com"
         private val videoIdRegex = "^[kx][a-zA-Z0-9]+$".toRegex()
 
         override suspend fun getUrl(
             url: String,
-            referer: String?, // سيتم تجاهل هذا الريفير
+            referer: String?, // Ø³ÙŠØªÙ… ØªØ¬Ø§Ù‡Ù„ Ù‡Ø°Ø§ Ø§Ù„Ø±ÙŠÙÙŠØ±
             subtitleCallback: (SubtitleFile) -> Unit,
             callback: (ExtractorLink) -> Unit
         ) {
@@ -600,4 +600,6 @@ class GessehProvider : MainAPI() {
         data class SubtitleData(val label: String, val urls: List<String>)
     }
 }
+
+
 

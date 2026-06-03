@@ -1,4 +1,4 @@
-package com.oha
+﻿package com.oha
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -75,7 +75,7 @@ class OhaTvProvider : MainAPI() {
             }
             HomePageList(countryName, items)
         }
-        return HomePageResponse(homeLists)
+        return newHomePageResponse(homeLists)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -169,7 +169,7 @@ class OhaTvProvider : MainAPI() {
         "austria" to "at",
         "australia" to "au",
         "aruba" to "aw",
-        "åland islands" to "ax",
+        "Ã¥land islands" to "ax",
         "azerbaijan" to "az",
         "bosnia and herzegovina" to "ba",
         "barbados" to "bb",
@@ -181,7 +181,7 @@ class OhaTvProvider : MainAPI() {
         "burundi" to "bi",
         "benin" to "bj",
         "balkans" to "bk",
-        "saint barthélemy" to "bl",
+        "saint barthÃ©lemy" to "bl",
         "bermuda" to "bm",
         "brunei darussalam" to "bn",
         "bolivia" to "bo",
@@ -199,7 +199,7 @@ class OhaTvProvider : MainAPI() {
         "central african republic" to "cf",
         "republic of the congo" to "cg",
         "switzerland" to "ch",
-        "côte d'ivoire" to "ci",
+        "cÃ´te d'ivoire" to "ci",
         "cook islands" to "ck",
         "chile" to "cl",
         "cameroon" to "cm",
@@ -208,7 +208,7 @@ class OhaTvProvider : MainAPI() {
         "costa rica" to "cr",
         "cuba" to "cu",
         "cape verde" to "cv",
-        "curaçao" to "cw",
+        "curaÃ§ao" to "cw",
         "christmas island" to "cx",
         "cyprus" to "cy",
         "czech republic" to "cz",
@@ -348,7 +348,7 @@ class OhaTvProvider : MainAPI() {
         "palau" to "pw",
         "paraguay" to "py",
         "qatar" to "qa",
-        "réunion" to "re",
+        "rÃ©union" to "re",
         "romania" to "ro",
         "serbia" to "rs",
         "russia" to "ru",

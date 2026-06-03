@@ -1,4 +1,4 @@
-package com.animerco
+﻿package com.animerco
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
@@ -84,10 +84,10 @@ class animerco : MainAPI() {
 
         document.select("div.featured-slider div.anime-card").mapNotNull {
             toSearchResponse(it)
-        }.let { if (it.isNotEmpty()) homePageList.add(HomePageList("أنميات مميزة", it)) }
+        }.let { if (it.isNotEmpty()) homePageList.add(HomePageList("Ø£Ù†Ù…ÙŠØ§Øª Ù…Ù…ÙŠØ²Ø©", it)) }
 
         val latestEpisodes =
-            document.select("div.media-section:contains(آخر الحلقات المضافة) div.episode-card")
+            document.select("div.media-section:contains(Ø¢Ø®Ø± Ø§Ù„Ø­Ù„Ù‚Ø§Øª Ø§Ù„Ù…Ø¶Ø§ÙØ©) div.episode-card")
                 .mapNotNull {
                     val animeTitle =
                         it.selectFirst("div.info a h3")?.text() ?: return@mapNotNull null
@@ -104,24 +104,24 @@ class animerco : MainAPI() {
         if (latestEpisodes.isNotEmpty()) {
             homePageList.add(
                 HomePageList(
-                    "آخر الحلقات المضافة",
+                    "Ø¢Ø®Ø± Ø§Ù„Ø­Ù„Ù‚Ø§Øª Ø§Ù„Ù…Ø¶Ø§ÙØ©",
                     latestEpisodes
                 )
             )
         }
 
-        document.select("div.media-section:contains(آخر الأنميات المضافة) div.anime-card")
+        document.select("div.media-section:contains(Ø¢Ø®Ø± Ø§Ù„Ø£Ù†Ù…ÙŠØ§Øª Ø§Ù„Ù…Ø¶Ø§ÙØ©) div.anime-card")
             .mapNotNull {
                 toSearchResponse(it)
             }
-            .let { if (it.isNotEmpty()) homePageList.add(HomePageList("آخر الأنميات المضافة", it)) }
+            .let { if (it.isNotEmpty()) homePageList.add(HomePageList("Ø¢Ø®Ø± Ø§Ù„Ø£Ù†Ù…ÙŠØ§Øª Ø§Ù„Ù…Ø¶Ø§ÙØ©", it)) }
 
-        document.select("div.media-section:contains(آخر الأفلام المضافة) div.anime-card")
+        document.select("div.media-section:contains(Ø¢Ø®Ø± Ø§Ù„Ø£ÙÙ„Ø§Ù… Ø§Ù„Ù…Ø¶Ø§ÙØ©) div.anime-card")
             .mapNotNull {
                 toSearchResponse(it)
-            }.let { if (it.isNotEmpty()) homePageList.add(HomePageList("آخر الأفلام المضافة", it)) }
+            }.let { if (it.isNotEmpty()) homePageList.add(HomePageList("Ø¢Ø®Ø± Ø§Ù„Ø£ÙÙ„Ø§Ù… Ø§Ù„Ù…Ø¶Ø§ÙØ©", it)) }
 
-        return HomePageResponse(homePageList)
+        return newHomePageResponse(homePageList)
     }
 
     data class PlayerAjaxResponse(
@@ -221,10 +221,10 @@ class animerco : MainAPI() {
             val poster = doc.selectFirst("div.anime-card div.image")?.attr("data-src")
             val plot = doc.selectFirst("div.media-story div.content p")?.text()
             val tags = doc.select("div.genres a").map { it.text() }
-            val year = doc.select("ul.media-info li:contains(بداية العرض) a").text().toIntOrNull()
-            val rating = doc.selectFirst("div.votes span.score")?.text()?.toRatingInt()
+            val year = doc.select("ul.media-info li:contains(Ø¨Ø¯Ø§ÙŠØ© Ø§Ù„Ø¹Ø±Ø¶) a").text().toIntOrNull()
+            val rating = doc.selectFirst("div.votes span.score")?.text()?.toIntOrNull()
 
-            val typeText = doc.select("div.media-info li:contains(النوع) span").text()
+            val typeText = doc.select("div.media-info li:contains(Ø§Ù„Ù†ÙˆØ¹) span").text()
             val isMovieByText = typeText.contains("Movie", ignoreCase = true) || typeText.contains("film", ignoreCase = true)
             val isMovieByUrl = url.contains("/movies/", ignoreCase = true) || url.contains("/movie/", ignoreCase = true)
             val isMovie = isMovieByText || isMovieByUrl
@@ -242,7 +242,7 @@ class animerco : MainAPI() {
                     this.plot = plot
                     this.tags = tags
                     this.year = year
-                    this.rating = rating
+        // rating = rating
                 }
             }
 
@@ -252,14 +252,14 @@ class animerco : MainAPI() {
                 val candidateSelectors = listOf(
                     "a.btn.seasons",
                     "a.seasons",
-                    "a:contains(المواسم)",
+                    "a:contains(Ø§Ù„Ù…ÙˆØ§Ø³Ù…)",
                     "div.page-controls a.btn.seasons",
                     "div.page-controls a.seasons",
                     "a[href*='/animes/']",
                     "a[href*='/anime/']",
                     "a[href*='season']",
                     "div.breadcrumb a",
-                    "a[title*='المواسم']"
+                    "a[title*='Ø§Ù„Ù…ÙˆØ§Ø³Ù…']"
                 )
 
                 var parentHref: String? = null
@@ -296,7 +296,7 @@ class animerco : MainAPI() {
                     this.plot = plot
                     this.tags = tags
                     this.year = year
-                    this.rating = rating
+        // rating = rating
                 }
             }
 
@@ -325,7 +325,7 @@ class animerco : MainAPI() {
                 this.plot = plot
                 this.tags = tags
                 this.year = year
-                this.rating = rating
+        // rating = rating
             }
         } catch (e: Exception) {
 
@@ -649,7 +649,7 @@ class animerco : MainAPI() {
                             val lowerServer = btn.name.lowercase()
                             if (lowerServer.contains("megabox") || lowerServer.contains("megamax") || abs.lowercase().contains("megabox") || abs.lowercase().contains("megamax")) {
                                 runCatching {
-                                    val extras = processMegabox(abs, data) // processMegabox يجب أن يعيد قائمة مشابهة للبايثون
+                                    val extras = processMegabox(abs, data) // processMegabox ÙŠØ¬Ø¨ Ø£Ù† ÙŠØ¹ÙŠØ¯ Ù‚Ø§Ø¦Ù…Ø© Ù…Ø´Ø§Ø¨Ù‡Ø© Ù„Ù„Ø¨Ø§ÙŠØ«ÙˆÙ†
                                     for (mb in extras) {
 
                                         val mbUrl = when (mb) {
@@ -769,7 +769,7 @@ class animerco : MainAPI() {
                                 } catch (e: Exception) {
 
                                 }
-                                continue // انتقل للتوكين التالي
+                                continue // Ø§Ù†ØªÙ‚Ù„ Ù„Ù„ØªÙˆÙƒÙŠÙ† Ø§Ù„ØªØ§Ù„ÙŠ
                             }
                         }
 
@@ -865,7 +865,7 @@ class animerco : MainAPI() {
                         "yonaplay.net",
                         ignoreCase = true
                     )
-                ) return@forEach // تجاهل روابط yonaplay نفسها
+                ) return@forEach // ØªØ¬Ø§Ù‡Ù„ Ø±ÙˆØ§Ø¨Ø· yonaplay Ù†ÙØ³Ù‡Ø§
                 try {
                     loadExtractor(candidate, yonaplayUrl, subtitleCallback, callback)
                 } catch (e: Exception) {
@@ -878,3 +878,5 @@ class animerco : MainAPI() {
         }
     }
 }
+
+

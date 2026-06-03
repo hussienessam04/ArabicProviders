@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.arabseed.Aia2tv 2-release-3:/layout-land/material_timepicker.xml",
+        "source": "com.arabseed.Aia2tv 2-material-1.13.0-12:/layout-land/material_timepicker.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv 2-release-3:/layout-land/material_clock_period_toggle_land.xml",
+        "source": "com.arabseed.Aia2tv 2-material-1.13.0-12:/layout-land/material_clock_period_toggle_land.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv 2-release-3:/layout-land/mtrl_picker_header_dialog.xml",
+        "source": "com.arabseed.Aia2tv 2-material-1.13.0-12:/layout-land/mtrl_picker_header_dialog.xml"
+    }
+]

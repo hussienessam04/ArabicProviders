@@ -1,4 +1,4 @@
-package com.anime3rb
+﻿package com.anime3rb
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -40,7 +40,7 @@ class Anime3rb(val context: Context) : MainAPI() {
         private const val TAG = "Anime3rb_Log"
         private val NON_DIGITS = Regex("[^0-9]")
         private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
-        private val TITLE_EP_REGEX = Regex("الحلقة \\d+")
+        private val TITLE_EP_REGEX = Regex("Ø§Ù„Ø­Ù„Ù‚Ø© \\d+")
     }
 
     private fun toAbsoluteUrl(url: String): String {
@@ -97,14 +97,14 @@ class Anime3rb(val context: Context) : MainAPI() {
                 params.width = 1
                 params.height = 1
                 params.gravity = Gravity.TOP or Gravity.START
-                params.x = -10 // خارج الشاشة
-                params.y = -10 // خارج الشاشة
+                params.x = -10 // Ø®Ø§Ø±Ø¬ Ø§Ù„Ø´Ø§Ø´Ø©
+                params.y = -10 // Ø®Ø§Ø±Ø¬ Ø§Ù„Ø´Ø§Ø´Ø©
                 dialog.window?.attributes = params
 
                 val webView = WebView(activity)
                 dialog.setContentView(
                     webView,
-                    ViewGroup.LayoutParams(1, 1) // حجم 1x1 بكسل
+                    ViewGroup.LayoutParams(1, 1) // Ø­Ø¬Ù… 1x1 Ø¨ÙƒØ³Ù„
                 )
 
                 try {
@@ -113,7 +113,7 @@ class Anime3rb(val context: Context) : MainAPI() {
                         domStorageEnabled = true
                         databaseEnabled = true
                         userAgentString = USER_AGENT
-                        blockNetworkImage = true // لا نحتاج الصور في الفحص المخفي
+                        blockNetworkImage = true // Ù„Ø§ Ù†Ø­ØªØ§Ø¬ Ø§Ù„ØµÙˆØ± ÙÙŠ Ø§Ù„ÙØ­Øµ Ø§Ù„Ù…Ø®ÙÙŠ
                     }
                 } catch (_: Exception) {}
 
@@ -187,26 +187,26 @@ class Anime3rb(val context: Context) : MainAPI() {
         val doc = getDocumentSmart(request.data) ?: return null
         val homeSets = mutableListOf<HomePageList>()
         try {
-            doc.select("h2:contains(الأنميات المثبتة)").firstOrNull()?.let { header ->
+            doc.select("h2:contains(Ø§Ù„Ø£Ù†Ù…ÙŠØ§Øª Ø§Ù„Ù…Ø«Ø¨ØªØ©)").firstOrNull()?.let { header ->
                 val list = header.parent()?.parent()?.parent()
                     ?.select(".glide__slide:not(.glide__slide--clone) a.video-card")
                     ?.mapNotNull { toSearchResult(it) }
-                if (!list.isNullOrEmpty()) homeSets.add(HomePageList("الأنميات المثبتة", list))
+                if (!list.isNullOrEmpty()) homeSets.add(HomePageList("Ø§Ù„Ø£Ù†Ù…ÙŠØ§Øª Ø§Ù„Ù…Ø«Ø¨ØªØ©", list))
             }
             val latest = doc.select("#videos a.video-card").mapNotNull { toSearchResult(it) }
-            if (latest.isNotEmpty()) homeSets.add(HomePageList("أحدث الحلقات", latest))
+            if (latest.isNotEmpty()) homeSets.add(HomePageList("Ø£Ø­Ø¯Ø« Ø§Ù„Ø­Ù„Ù‚Ø§Øª", latest))
 
-            doc.select("h3:contains(آخر الأنميات المضافة)").firstOrNull()?.let { header ->
+            doc.select("h3:contains(Ø¢Ø®Ø± Ø§Ù„Ø£Ù†Ù…ÙŠØ§Øª Ø§Ù„Ù…Ø¶Ø§ÙØ©)").firstOrNull()?.let { header ->
                 val list = header.parent()?.parent()?.parent()
                     ?.select(".glide__slide:not(.glide__slide--clone) a.video-card")
                     ?.mapNotNull { toSearchResult(it) }
-                if (!list.isNullOrEmpty()) homeSets.add(HomePageList("آخر الأنميات المضافة", list))
+                if (!list.isNullOrEmpty()) homeSets.add(HomePageList("Ø¢Ø®Ø± Ø§Ù„Ø£Ù†Ù…ÙŠØ§Øª Ø§Ù„Ù…Ø¶Ø§ÙØ©", list))
             }
         } catch (e: Exception) { Log.e(TAG, "MainPage Error: ${e.message}") }
         return newHomePageResponse(homeSets)
     }
 
-    override val mainPage = mainPageOf("$mainUrl/" to "الرئيسية")
+    override val mainPage = mainPageOf("$mainUrl/" to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©")
 
     private fun toSearchResult(element: Element): SearchResponse? {
         return try {
@@ -241,7 +241,7 @@ class Anime3rb(val context: Context) : MainAPI() {
             "Content-Type" to "application/json",
             "Origin" to mainUrl,
             "Referer" to "$mainUrl/",
-            "Cookie" to savedCookies // 👈 إرسال الـ Session هنا
+            "Cookie" to savedCookies // ðŸ‘ˆ Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ù€ Session Ù‡Ù†Ø§
         )
 
         val updateUrl = "$mainUrl/livewire/update"
@@ -281,7 +281,7 @@ class Anime3rb(val context: Context) : MainAPI() {
             val ratingTag = item.selectFirst(".badge")
             val rating = ratingTag?.text()?.trim() ?: "N/A"
 
-            val type = if (rating.contains("Movie") || rating.contains("Film") || title.contains("فيلم")) {
+            val type = if (rating.contains("Movie") || rating.contains("Film") || title.contains("ÙÙŠÙ„Ù…")) {
                 TvType.AnimeMovie
             } else {
                 TvType.Anime
@@ -312,7 +312,7 @@ class Anime3rb(val context: Context) : MainAPI() {
     private fun cleanTitleText(text: String): String {
         return text.replace("\\n", " ")
             .replace("\n", " ")
-            .replace(Regex("بترجمة.*"), "")
+            .replace(Regex("Ø¨ØªØ±Ø¬Ù…Ø©.*"), "")
             .replace(Regex("\\s+"), " ")
             .trim()
     }
@@ -391,11 +391,11 @@ class Anime3rb(val context: Context) : MainAPI() {
             rawTitle = cleanTitleText(rawTitle)
 
             val title = TITLE_EP_REGEX.replace(rawTitle, "")
-                .replace("( مسلسل )", "")
-                .replace("( فيلم )", "")
+                .replace("( Ù…Ø³Ù„Ø³Ù„ )", "")
+                .replace("( ÙÙŠÙ„Ù… )", "")
                 .trim()
 
-            val poster = doc.selectFirst("img[alt*='بوستر']")?.attr("src") ?: ""
+            val poster = doc.selectFirst("img[alt*='Ø¨ÙˆØ³ØªØ±']")?.attr("src") ?: ""
 
             val elements = doc.select(".video-list a, .episodes-list a")
             var episodes = elements.mapNotNull { element ->
@@ -616,3 +616,5 @@ class Anime3rb(val context: Context) : MainAPI() {
             ?: Qualities.Unknown.value
     }
 }
+
+

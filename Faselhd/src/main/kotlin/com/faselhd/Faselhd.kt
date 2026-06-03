@@ -1,4 +1,4 @@
-package com.faselhd
+﻿package com.faselhd
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -229,7 +229,7 @@ class FASELHD(private val context: Context) : MainAPI() {
         }
     }
     override val mainPage = mainPageOf(
-        "$mainUrl/main" to "الرئيسية" // تحديث الرابط ليكون /main
+        "$mainUrl/main" to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©" // ØªØ­Ø¯ÙŠØ« Ø§Ù„Ø±Ø§Ø¨Ø· Ù„ÙŠÙƒÙˆÙ† /main
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -258,7 +258,7 @@ class FASELHD(private val context: Context) : MainAPI() {
                 }
             }
             if (sliderItems.isNotEmpty()) {
-                lists.add(HomePageList("أحدث الإضافات", sliderItems, isHorizontalImages = true))
+                lists.add(HomePageList("Ø£Ø­Ø¯Ø« Ø§Ù„Ø¥Ø¶Ø§ÙØ§Øª", sliderItems, isHorizontalImages = true))
             }
 
             document.select("section#blockList").forEach { block ->
@@ -271,16 +271,16 @@ class FASELHD(private val context: Context) : MainAPI() {
             }
 
             document.select("div.slider")
-                .firstOrNull { it.selectFirst(".h4")?.text()?.contains("مشاهدة") == true }
+                .firstOrNull { it.selectFirst(".h4")?.text()?.contains("Ù…Ø´Ø§Ù‡Ø¯Ø©") == true }
                 ?.let { mostWatchedBlock ->
-                    val title = mostWatchedBlock.selectFirst(".h4")?.text()?.trim() ?: "الأكثر مشاهدة"
+                    val title = mostWatchedBlock.selectFirst(".h4")?.text()?.trim() ?: "Ø§Ù„Ø£ÙƒØ«Ø± Ù…Ø´Ø§Ù‡Ø¯Ø©"
                     val items = mostWatchedBlock.select(".itemviews .postDiv").mapNotNull { it.toSearchResult() }
                     if (items.isNotEmpty()) {
                         lists.add(HomePageList(title, items, isHorizontalImages = true))
                     }
                 }
 
-            return HomePageResponse(lists.filter { it.list.isNotEmpty() }, hasNext = false)
+            return newHomePageResponse(lists.filter { it.list.isNotEmpty() }, hasNext = false)
         } else {
 
             val items = document.select(".postDiv, .blockMovie").mapNotNull { it.toSearchResult() }
@@ -338,11 +338,11 @@ class FASELHD(private val context: Context) : MainAPI() {
 
 
 
-                        val ajaxDoc = Jsoup.parse(bodyStr, baseUrl()) // يعمل الآن بأمان!
+                        val ajaxDoc = Jsoup.parse(bodyStr, baseUrl()) // ÙŠØ¹Ù…Ù„ Ø§Ù„Ø¢Ù† Ø¨Ø£Ù…Ø§Ù†!
 
                         items = ajaxDoc.select("div.postDiv, article, .result, .search-item").mapNotNull { it.toSearchResult() }
                         hasNext = ajaxDoc.select("a.dtc_more").isNotEmpty() ||
-                                ajaxDoc.select("a").any { it.text().contains("المزيد", ignoreCase = true) }
+                                ajaxDoc.select("a").any { it.text().contains("Ø§Ù„Ù…Ø²ÙŠØ¯", ignoreCase = true) }
 
                     }
                 } catch (e: Exception) {
@@ -354,9 +354,9 @@ class FASELHD(private val context: Context) : MainAPI() {
         }
 
         /**
-         * دالة مساعدة لتنفيذ أي طلب مع إعادة محاولة تلقائية عند فشل Cloudflare.
-         * @param requestBlock دالة تستقبل الكوكيز وتُرجع استجابة الطلب كـ String.
-         * @return String نتيجة الاستجابة الناجحة، أو null إذا فشلت المحاولتان.
+         * Ø¯Ø§Ù„Ø© Ù…Ø³Ø§Ø¹Ø¯Ø© Ù„ØªÙ†ÙÙŠØ° Ø£ÙŠ Ø·Ù„Ø¨ Ù…Ø¹ Ø¥Ø¹Ø§Ø¯Ø© Ù…Ø­Ø§ÙˆÙ„Ø© ØªÙ„Ù‚Ø§Ø¦ÙŠØ© Ø¹Ù†Ø¯ ÙØ´Ù„ Cloudflare.
+         * @param requestBlock Ø¯Ø§Ù„Ø© ØªØ³ØªÙ‚Ø¨Ù„ Ø§Ù„ÙƒÙˆÙƒÙŠØ² ÙˆØªÙØ±Ø¬Ø¹ Ø§Ø³ØªØ¬Ø§Ø¨Ø© Ø§Ù„Ø·Ù„Ø¨ ÙƒÙ€ String.
+         * @return String Ù†ØªÙŠØ¬Ø© Ø§Ù„Ø§Ø³ØªØ¬Ø§Ø¨Ø© Ø§Ù„Ù†Ø§Ø¬Ø­Ø©ØŒ Ø£Ùˆ null Ø¥Ø°Ø§ ÙØ´Ù„Øª Ø§Ù„Ù…Ø­Ø§ÙˆÙ„ØªØ§Ù†.
          */
 
         private suspend fun makeAjaxRequest(
@@ -367,7 +367,7 @@ class FASELHD(private val context: Context) : MainAPI() {
         ): String {
             val client = app.baseClient.newBuilder()
                 .cookieJar(CookieJar.NO_COOKIES)
-                .followRedirects(false) // معالجة التحويلات يدوياً للحفاظ على POST
+                .followRedirects(false) // Ù…Ø¹Ø§Ù„Ø¬Ø© Ø§Ù„ØªØ­ÙˆÙŠÙ„Ø§Øª ÙŠØ¯ÙˆÙŠØ§Ù‹ Ù„Ù„Ø­ÙØ§Ø¸ Ø¹Ù„Ù‰ POST
                 .build()
 
             var currentUrl = ajaxUrl
@@ -400,7 +400,7 @@ class FASELHD(private val context: Context) : MainAPI() {
                     }
                 }
             }
-            return "" // تم الوصول للحد الأقصى للتحويلات
+            return "" // ØªÙ… Ø§Ù„ÙˆØµÙˆÙ„ Ù„Ù„Ø­Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰ Ù„Ù„ØªØ­ÙˆÙŠÙ„Ø§Øª
         }
     override suspend fun load(url: String): LoadResponse? {
         val base = baseUrl()
@@ -432,7 +432,7 @@ class FASELHD(private val context: Context) : MainAPI() {
             val onclickAttr = seasonEl.attr("onclick")
             val seasonPoster = seasonEl.selectFirst("img")?.attr("data-src") ?: seasonEl.selectFirst("img")?.attr("src")
             val seasonUrlRel = seasonUrlRegex.find(onclickAttr)?.groupValues?.get(1) ?: return@mapNotNull null
-            val seasonTitle = seasonEl.selectFirst(".title")?.text()?.replace("\\n", "")?.trim() ?: "موسم"
+            val seasonTitle = seasonEl.selectFirst(".title")?.text()?.replace("\\n", "")?.trim() ?: "Ù…ÙˆØ³Ù…"
             val fullSeasonUrl = if (seasonUrlRel.startsWith("http")) seasonUrlRel else "$base$seasonUrlRel"
             newTvSeriesSearchResponse(seasonTitle, fullSeasonUrl, TvType.TvSeries) {
                 this.posterUrl = seasonPoster
@@ -474,7 +474,7 @@ class FASELHD(private val context: Context) : MainAPI() {
             for (i in 0 until seasonCards.size) {
                 val actualSeasonNum = i + 1
 
-                val seasonName = seasonCards[i].selectFirst(".title")?.text()?.replace("\\n", "")?.trim() ?: "الموسم $actualSeasonNum"
+                val seasonName = seasonCards[i].selectFirst(".title")?.text()?.replace("\\n", "")?.trim() ?: "Ø§Ù„Ù…ÙˆØ³Ù… $actualSeasonNum"
 
                 if (i == currentSeasonIndex) {
 
@@ -482,7 +482,7 @@ class FASELHD(private val context: Context) : MainAPI() {
                         val epUrlRaw = el.attr("href").trim()
                         if (epUrlRaw.isNotBlank()) {
                             val epTitle = el.ownText().ifBlank { el.text() }.replace("\\n", "").replace("\n", "").trim()
-                            if (!epTitle.contains("باقي الحلقات") && !epTitle.contains("المزيد")) {
+                            if (!epTitle.contains("Ø¨Ø§Ù‚ÙŠ Ø§Ù„Ø­Ù„Ù‚Ø§Øª") && !epTitle.contains("Ø§Ù„Ù…Ø²ÙŠØ¯")) {
                                 val epNum = Regex("""\d+""").find(epTitle)?.value?.toIntOrNull()
                                 currentSeasonEpisodes.add(newEpisode(if (epUrlRaw.startsWith("http")) epUrlRaw else "$base$epUrlRaw") {
 
@@ -498,7 +498,7 @@ class FASELHD(private val context: Context) : MainAPI() {
                 } else {
 
                     otherSeasonsFakeEpisodes.add(newEpisode("$absoluteUrl?s=$actualSeasonNum#fake") {
-                        this.name = "($seasonName في الاقتراحات فوق في الزاوية اليسار)"
+                        this.name = "($seasonName ÙÙŠ Ø§Ù„Ø§Ù‚ØªØ±Ø§Ø­Ø§Øª ÙÙˆÙ‚ ÙÙŠ Ø§Ù„Ø²Ø§ÙˆÙŠØ© Ø§Ù„ÙŠØ³Ø§Ø±)"
                         this.episode = 1
                         this.season = fakeSeasonCounter
                         this.posterUrl = "https://raw.githubusercontent.com/Abodabodd/Oldarabrepo/refs/heads/main/img/1.jpg"
@@ -626,11 +626,11 @@ class FASELHD(private val context: Context) : MainAPI() {
             dialog.setCancelable(false)
             dialog.setCanceledOnTouchOutside(false)
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(false) // غير قابل للإلغاء لأنه مخفي
+            dialog.setCancelable(false) // ØºÙŠØ± Ù‚Ø§Ø¨Ù„ Ù„Ù„Ø¥Ù„ØºØ§Ø¡ Ù„Ø£Ù†Ù‡ Ù…Ø®ÙÙŠ
 
             dialog.window?.apply {
                 setBackgroundDrawableResource(android.R.color.transparent)
-                setDimAmount(0f) // بدون تعتيم
+                setDimAmount(0f) // Ø¨Ø¯ÙˆÙ† ØªØ¹ØªÙŠÙ…
                 clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
 
                 addFlags(
@@ -649,7 +649,7 @@ class FASELHD(private val context: Context) : MainAPI() {
 
             val webView = WebView(activity).apply {
                 layoutParams = ViewGroup.LayoutParams(1, 1)
-                visibility = View.INVISIBLE // إخفاء إضافي للعنصر نفسه
+                visibility = View.INVISIBLE // Ø¥Ø®ÙØ§Ø¡ Ø¥Ø¶Ø§ÙÙŠ Ù„Ù„Ø¹Ù†ØµØ± Ù†ÙØ³Ù‡
                 isHorizontalScrollBarEnabled = false
                 isVerticalScrollBarEnabled = false
             }
@@ -712,7 +712,7 @@ class FASELHD(private val context: Context) : MainAPI() {
             val maxAttempts = 2
             val attemptTimeoutMs = 12_000L
             var attemptTimeoutRunnable: Runnable? = null
-            var autoTouchRunnable: Runnable? = null // سنستخدمه لتكرار تشغيل الـ JS داخل المحاولة
+            var autoTouchRunnable: Runnable? = null // Ø³Ù†Ø³ØªØ®Ø¯Ù…Ù‡ Ù„ØªÙƒØ±Ø§Ø± ØªØ´ØºÙŠÙ„ Ø§Ù„Ù€ JS Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©
 
             fun cleanup() {
                 try { attemptTimeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
@@ -778,7 +778,7 @@ class FASELHD(private val context: Context) : MainAPI() {
                         if (foundM3u8.isEmpty()) {
 
                             currentAttempt++
-                            startNextAttempt() // ابدأ المحاولة التالية
+                            startNextAttempt() // Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ø§Ù„ØªØ§Ù„ÙŠØ©
                         } else {
                             chooseAndFinish()
                         }
@@ -1063,7 +1063,7 @@ class FASELHD(private val context: Context) : MainAPI() {
         var foundLink = false
 
         iframeUrls.distinct().forEach { iframeUrl ->
-            if (foundLink) return@forEach // إذا وجدنا رابط وتوقفنا
+            if (foundLink) return@forEach // Ø¥Ø°Ø§ ÙˆØ¬Ø¯Ù†Ø§ Ø±Ø§Ø¨Ø· ÙˆØªÙˆÙ‚ÙÙ†Ø§
 
             val m3u8 = resolveWithWebView(iframeUrl, data)
 
@@ -1073,7 +1073,7 @@ class FASELHD(private val context: Context) : MainAPI() {
                 M3u8Helper.generateM3u8(
                     source = name,
                     streamUrl = m3u8,
-                    referer = iframeUrl, // هنا السيرفر يتوقع أن الطلب قادم من الـ iframe
+                    referer = iframeUrl, // Ù‡Ù†Ø§ Ø§Ù„Ø³ÙŠØ±ÙØ± ÙŠØªÙˆÙ‚Ø¹ Ø£Ù† Ø§Ù„Ø·Ù„Ø¨ Ù‚Ø§Ø¯Ù… Ù…Ù† Ø§Ù„Ù€ iframe
                     headers = mapOf(
                         "Referer" to iframeUrl,
                         "User-Agent" to lastValidUserAgent
@@ -1085,6 +1085,8 @@ class FASELHD(private val context: Context) : MainAPI() {
         return foundLink
     }
 }
+
+
 
 
 

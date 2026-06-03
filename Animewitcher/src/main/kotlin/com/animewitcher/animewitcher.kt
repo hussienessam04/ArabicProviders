@@ -1,4 +1,4 @@
-package com.animewitcher
+﻿package com.animewitcher
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -85,14 +85,14 @@ class AnimeWitcherProvider : MainAPI() {
                         if (!newAppId.isNullOrEmpty() && !newApiKey.isNullOrEmpty()) {
                             algoliaAppId = newAppId
                             algoliaApiKey = newApiKey
-                            logd("✅ Keys Updated from Firestore: ID=$algoliaAppId")
+                            logd("âœ… Keys Updated from Firestore: ID=$algoliaAppId")
                             return
                         }
                     }
                 }
             }
         } catch (e: Exception) {
-            logd("❌ Failed to refresh Algolia keys: ${e.message}")
+            logd("âŒ Failed to refresh Algolia keys: ${e.message}")
         }
     }
 
@@ -125,7 +125,7 @@ class AnimeWitcherProvider : MainAPI() {
             val url = "$mainUrl/watch/${URLEncoder.encode(animeId, "utf-8")}?data=$fullData"
             list.add(newAnimeSearchResponse(title, url, TvType.Anime) { this.posterUrl = poster })
         }
-        return@withContext newHomePageResponse("أحدث الأنميات", list)
+        return@withContext newHomePageResponse("Ø£Ø­Ø¯Ø« Ø§Ù„Ø£Ù†Ù…ÙŠØ§Øª", list)
     }
 
     override suspend fun search(query: String): List<SearchResponse> = withContext(Dispatchers.IO) {
@@ -189,7 +189,7 @@ class AnimeWitcherProvider : MainAPI() {
         val epList = episodes.map { info ->
             val dataStr = "$animeId|${info.id}"
             newEpisode(data = dataStr) {
-                name = info.name ?: "الحلقة ${info.number}"
+                name = info.name ?: "Ø§Ù„Ø­Ù„Ù‚Ø© ${info.number}"
                 episode = info.number
                 posterUrl = info.imageUrl ?: poster
             }
@@ -201,7 +201,7 @@ class AnimeWitcherProvider : MainAPI() {
             animeJson.optJSONObject("_highlightResult")?.optJSONObject("story")?.optString("value")?.replace(Regex("</?em>"), "")
         }
         val year = details.optString("year").toIntOrNull()
-        val status = if (details.optString("state") == "مكتمل") ShowStatus.Completed else ShowStatus.Ongoing
+        val status = if (details.optString("state") == "Ù…ÙƒØªÙ…Ù„") ShowStatus.Completed else ShowStatus.Ongoing
         val tagsArray = animeJson.optJSONArray("tags")
         val tags = if (tagsArray != null) (0 until tagsArray.length()).map { tagsArray.getString(it) } else emptyList()
 
@@ -386,7 +386,7 @@ class AnimeWitcherProvider : MainAPI() {
                     val html = try { app.get(link).text } catch (e: Exception) { "" }
                     val og = Regex("""<meta property="og:video" content="([^"]+)""").find(html)?.groupValues?.get(1)
                     if (!og.isNullOrEmpty()) return@withContext og.replace("&amp;", "&")
-                    val m = Regex("""href="(/u/[A-Za-z0-9_-]+)"[^>]*>\s*(?:Download|تحميل|download)""", RegexOption.IGNORE_CASE).find(html)
+                    val m = Regex("""href="(/u/[A-Za-z0-9_-]+)"[^>]*>\s*(?:Download|ØªØ­Ù…ÙŠÙ„|download)""", RegexOption.IGNORE_CASE).find(html)
                     if (m != null) {
                         val rel = m.groupValues[1]
                         val full = try { URL(link).let { base -> URL(base, rel).toString() } } catch (_: Exception) { rel }
@@ -470,9 +470,9 @@ class AnimeWitcherProvider : MainAPI() {
             val sortedServers = servers.sortedWith(compareByDescending<ServerModel> { getQualityAsInt(it.quality) }
                 .thenBy {
                     when(it.name?.uppercase(Locale.getDefault())) {
-                        "PD" -> 0          // أعلى أولوية
-                        "PD EU TEST" -> 1  // بعده مباشرة
-                        else -> 2          // باقي السيرفرات حسب الجودة
+                        "PD" -> 0          // Ø£Ø¹Ù„Ù‰ Ø£ÙˆÙ„ÙˆÙŠØ©
+                        "PD EU TEST" -> 1  // Ø¨Ø¹Ø¯Ù‡ Ù…Ø¨Ø§Ø´Ø±Ø©
+                        else -> 2          // Ø¨Ø§Ù‚ÙŠ Ø§Ù„Ø³ÙŠØ±ÙØ±Ø§Øª Ø­Ø³Ø¨ Ø§Ù„Ø¬ÙˆØ¯Ø©
                     }
                 }
             )
@@ -480,7 +480,7 @@ class AnimeWitcherProvider : MainAPI() {
             logd("Fetched and sorted ${sortedServers.size} servers for this episode: ${sortedServers.map { "${it.name}-${it.quality}" }}")
 
             val resolvedList = mutableListOf<Pair<ServerModel, String>>()
-            for (server in sortedServers) {   // <-- استخدم sortedServers هنا بدلاً من servers
+            for (server in sortedServers) {   // <-- Ø§Ø³ØªØ®Ø¯Ù… sortedServers Ù‡Ù†Ø§ Ø¨Ø¯Ù„Ø§Ù‹ Ù…Ù† servers
                 try {
                     logd("Resolving server: ${server.name} -> ${server.link}")
                     val resolvedUrl = resolveServerModel(server)
@@ -579,3 +579,4 @@ class AnimeWitcherProvider : MainAPI() {
         }
     }
 }
+

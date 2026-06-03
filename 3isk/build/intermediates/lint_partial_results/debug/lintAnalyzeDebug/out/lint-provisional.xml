@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.7.3" type="conditional_incidents">
+
+    <incident
+        id="InlinedApi"
+        severity="warning"
+        message="">
+        <fix-data minSdk="fffffffffff00000" requiresApi="ffffffffe0000000"/>
+        <location
+            file="${:3isk*debug*MAIN*sourceProvider*0*javaDir*2}/com/eshk/eishk.kt"
+            line="447"
+            column="23"
+            startOffset="17116"
+            endLine="447"
+            endColumn="26"
+            endOffset="17119"/>
+        <map>
+            <entry
+                name="message"
+                string="Field requires API level 30 (current min is %1$s): `android.service.controls.ControlsProviderService#TAG`"/>
+            <api-levels id="minSdk"
+                value="fffffffffff00000"/>
+            <entry
+                name="name"
+                string="TAG"/>
+            <entry
+                name="owner"
+                string="android.service.controls.ControlsProviderService"/>
+            <api-levels id="requiresApi"
+                value="ffffffffe0000000"/>
+        </map>
+    </incident>
+
+    <incident
+        id="InlinedApi"
+        severity="warning"
+        message="">
+        <fix-data minSdk="fffffffffff00000" requiresApi="ffffffffe0000000"/>
+        <location
+            file="${:3isk*debug*MAIN*sourceProvider*0*javaDir*2}/com/eshk/eishk.kt"
+            line="452"
+            column="21"
+            startOffset="17278"
+            endLine="452"
+            endColumn="24"
+            endOffset="17281"/>
+        <map>
+            <entry
+                name="message"
+                string="Field requires API level 30 (current min is %1$s): `android.service.controls.ControlsProviderService#TAG`"/>
+            <api-levels id="minSdk"
+                value="fffffffffff00000"/>
+            <entry
+                name="name"
+                string="TAG"/>
+            <entry
+                name="owner"
+                string="android.service.controls.ControlsProviderService"/>
+            <api-levels id="requiresApi"
+                value="ffffffffe0000000"/>
+        </map>
+    </incident>
+
+    <incident
+        id="InlinedApi"
+        severity="warning"
+        message="">
+        <fix-data minSdk="fffffffffff00000" requiresApi="ffffffffe0000000"/>
+        <location
+            file="${:3isk*debug*MAIN*sourceProvider*0*javaDir*2}/com/eshk/eishk.kt"
+            line="472"
+            column="54"
+            startOffset="18092"
+            endLine="472"
+            endColumn="57"
+            endOffset="18095"/>
+        <map>
+            <entry
+                name="message"
+                string="Field requires API level 30 (current min is %1$s): `android.service.controls.ControlsProviderService#TAG`"/>
+            <api-levels id="minSdk"
+                value="fffffffffff00000"/>
+            <entry
+                name="name"
+                string="TAG"/>
+            <entry
+                name="owner"
+                string="android.service.controls.ControlsProviderService"/>
+            <api-levels id="requiresApi"
+                value="ffffffffe0000000"/>
+        </map>
+    </incident>
+
+    <incident
+        id="InlinedApi"
+        severity="warning"
+        message="">
+        <fix-data minSdk="fffffffffff00000" requiresApi="ffffffffe0000000"/>
+        <location
+            file="${:3isk*debug*MAIN*sourceProvider*0*javaDir*2}/com/eshk/eishk.kt"
+            line="489"
+            column="23"
+            startOffset="18888"
+            endLine="489"
+            endColumn="26"
+            endOffset="18891"/>
+        <map>
+            <entry
+                name="message"
+                string="Field requires API level 30 (current min is %1$s): `android.service.controls.ControlsProviderService#TAG`"/>
+            <api-levels id="minSdk"
+                value="fffffffffff00000"/>
+            <entry
+                name="name"
+                string="TAG"/>
+            <entry
+                name="owner"
+                string="android.service.controls.ControlsProviderService"/>
+            <api-levels id="requiresApi"
+                value="ffffffffe0000000"/>
+        </map>
+    </incident>
+
+    <incident
+        id="InlinedApi"
+        severity="warning"
+        message="">
+        <fix-data minSdk="fffffffffff00000" requiresApi="ffffffffe0000000"/>
+        <location
+            file="${:3isk*debug*MAIN*sourceProvider*0*javaDir*2}/com/eshk/eishk.kt"
+            line="493"
+            column="50"
+            startOffset="19046"
+            endLine="493"
+            endColumn="53"
+            endOffset="19049"/>
+        <map>
+            <entry
+                name="message"
+                string="Field requires API level 30 (current min is %1$s): `android.service.controls.ControlsProviderService#TAG`"/>
+            <api-levels id="minSdk"
+                value="fffffffffff00000"/>
+            <entry
+                name="name"
+                string="TAG"/>
+            <entry
+                name="owner"
+                string="android.service.controls.ControlsProviderService"/>
+            <api-levels id="requiresApi"
+                value="ffffffffe0000000"/>
+        </map>
+    </incident>
+
+    <incident
+        id="InlinedApi"
+        severity="warning"
+        message="">
+        <fix-data minSdk="fffffffffff00000" requiresApi="ffffffffe0000000"/>
+        <location
+            file="${:3isk*debug*MAIN*sourceProvider*0*javaDir*2}/com/eshk/eishk.kt"
+            line="500"
+            column="54"
+            startOffset="19402"
+            endLine="500"
+            endColumn="57"
+            endOffset="19405"/>
+        <map>
+            <entry
+                name="message"
+                string="Field requires API level 30 (current min is %1$s): `android.service.controls.ControlsProviderService#TAG`"/>
+            <api-levels id="minSdk"
+                value="fffffffffff00000"/>
+            <entry
+                name="name"
+                string="TAG"/>
+            <entry
+                name="owner"
+                string="android.service.controls.ControlsProviderService"/>
+            <api-levels id="requiresApi"
+                value="ffffffffe0000000"/>
+        </map>
+    </incident>
+
+    <incident
+        id="InlinedApi"
+        severity="warning"
+        message="">
+        <fix-data minSdk="fffffffffff00000" requiresApi="ffffffffe0000000"/>
+        <location
+            file="${:3isk*debug*MAIN*sourceProvider*0*javaDir*2}/com/eshk/eishk.kt"
+            line="510"
+            column="23"
+            startOffset="19840"
+            endLine="510"
+            endColumn="26"
+            endOffset="19843"/>
+        <map>
+            <entry
+                name="message"
+                string="Field requires API level 30 (current min is %1$s): `android.service.controls.ControlsProviderService#TAG`"/>
+            <api-levels id="minSdk"
+                value="fffffffffff00000"/>
+            <entry
+                name="name"
+                string="TAG"/>
+            <entry
+                name="owner"
+                string="android.service.controls.ControlsProviderService"/>
+            <api-levels id="requiresApi"
+                value="ffffffffe0000000"/>
+        </map>
+    </incident>
+
+    <incident
+        id="InlinedApi"
+        severity="warning"
+        message="">
+        <fix-data minSdk="fffffffffff00000" requiresApi="ffffffffe0000000"/>
+        <location
+            file="${:3isk*debug*MAIN*sourceProvider*0*javaDir*2}/com/eshk/eishk.kt"
+            line="514"
+            column="50"
+            startOffset="19989"
+            endLine="514"
+            endColumn="53"
+            endOffset="19992"/>
+        <map>
+            <entry
+                name="message"
+                string="Field requires API level 30 (current min is %1$s): `android.service.controls.ControlsProviderService#TAG`"/>
+            <api-levels id="minSdk"
+                value="fffffffffff00000"/>
+            <entry
+                name="name"
+                string="TAG"/>
+            <entry
+                name="owner"
+                string="android.service.controls.ControlsProviderService"/>
+            <api-levels id="requiresApi"
+                value="ffffffffe0000000"/>
+        </map>
+    </incident>
+
+</incidents>

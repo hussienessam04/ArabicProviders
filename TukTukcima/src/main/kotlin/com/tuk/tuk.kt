@@ -1,4 +1,4 @@
-package com.tuktukhd
+﻿package com.tuktukhd
 
 import android.util.Base64
 import com.lagradost.cloudstream3.*
@@ -18,10 +18,10 @@ class TukTukHd : MainAPI() {
     override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime)
 
     override val mainPage = mainPageOf(
-        "$mainUrl/recent/page/" to "المضاف حديثاً",
-        "$mainUrl/category/movies-2/page/" to "أحدث الأفلام",
-        "$mainUrl/category/series-1/page/" to "أحدث الحلقات",
-        "$mainUrl/category/movies-2/%d8%a7%d9%81%d9%84%d8%a7%d9%85-%d9%85%d8%af%d8%a8%d9%84%d8%ac%d8%a9/page/" to "أفلام مدبلجة"
+        "$mainUrl/recent/page/" to "Ø§Ù„Ù…Ø¶Ø§Ù Ø­Ø¯ÙŠØ«Ø§Ù‹",
+        "$mainUrl/category/movies-2/page/" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ø£ÙÙ„Ø§Ù…",
+        "$mainUrl/category/series-1/page/" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ø­Ù„Ù‚Ø§Øª",
+        "$mainUrl/category/movies-2/%d8%a7%d9%81%d9%84%d8%a7%d9%85-%d9%85%d8%af%d8%a8%d9%84%d8%ac%d8%a9/page/" to "Ø£ÙÙ„Ø§Ù… Ù…Ø¯Ø¨Ù„Ø¬Ø©"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -45,7 +45,7 @@ class TukTukHd : MainAPI() {
             ?: imgTag?.attr("src")
 
         val isMovie =
-            !title.contains("مسلسل") && !title.contains("حلقة") && !href.contains("series")
+            !title.contains("Ù…Ø³Ù„Ø³Ù„") && !title.contains("Ø­Ù„Ù‚Ø©") && !href.contains("series")
 
         return if (isMovie) {
             newMovieSearchResponse(title, href, TvType.Movie) {
@@ -96,8 +96,8 @@ class TukTukHd : MainAPI() {
 
             val title = item.name
 
-            if (title.contains("فيلم", true) ||
-                title.contains("فلم", true) ||
+            if (title.contains("ÙÙŠÙ„Ù…", true) ||
+                title.contains("ÙÙ„Ù…", true) ||
                 title.contains("movie", true)
             ) {
                 grouped[title] = item
@@ -105,7 +105,7 @@ class TukTukHd : MainAPI() {
             }
 
             val normalized = title
-                .replace(Regex("""الحلقة\s*\d+"""), "")
+                .replace(Regex("""Ø§Ù„Ø­Ù„Ù‚Ø©\s*\d+"""), "")
                 .replace(Regex("""episode\s*\d+""", RegexOption.IGNORE_CASE), "")
                 .replace(Regex("""\d+$"""), "")
                 .trim()
@@ -123,7 +123,7 @@ class TukTukHd : MainAPI() {
 
         val fullTitle = doc.selectFirst("h1.post-title a")?.text() ?: doc.selectFirst("h1")?.text() ?: "Unknown"
 
-        val cleanTitle = fullTitle.replace(Regex("""\s*(الحلقة\s*\d+|مترجم|مدبلج).*"""), "").trim()
+        val cleanTitle = fullTitle.replace(Regex("""\s*(Ø§Ù„Ø­Ù„Ù‚Ø©\s*\d+|Ù…ØªØ±Ø¬Ù…|Ù…Ø¯Ø¨Ù„Ø¬).*"""), "").trim()
 
         val desc = doc.select(".story p").text()
         val poster = doc.selectFirst(".MainSingle .left .image img")?.attr("src")
@@ -143,7 +143,7 @@ class TukTukHd : MainAPI() {
 
             if (seasonElements.isNotEmpty()) {
 
-                seasonElements.apmap { seasonEl ->
+                seasonElements.amap { seasonEl ->
                     val seasonUrl = fixUrl(seasonEl.attr("href"))
                     val seasonName = seasonEl.select("h3").text()
                     val seasonNum = seasonName.filter { it.isDigit() }.toIntOrNull() ?: 1
@@ -190,7 +190,7 @@ class TukTukHd : MainAPI() {
                 this.posterUrl = poster
                 this.plot = desc
                 this.year = year
-                this.rating = ratingInt
+        // rating = ratingInt
             }
 
         } else {
@@ -200,7 +200,7 @@ class TukTukHd : MainAPI() {
                 this.posterUrl = poster
                 this.plot = desc
                 this.year = year
-                this.rating = ratingInt
+        // rating = ratingInt
             }
         }
     }
@@ -238,7 +238,7 @@ class TukTukHd : MainAPI() {
                     "X-Inertia" to "true",
                     "X-Inertia-Version" to version,
                     "X-Inertia-Partial-Component" to "files/mirror/video",
-                    "X-Inertia-Partial-Data" to "streams", // هذا يسرع الطلب جداً لأنه يطلب الروابط فقط
+                    "X-Inertia-Partial-Data" to "streams", // Ù‡Ø°Ø§ ÙŠØ³Ø±Ø¹ Ø§Ù„Ø·Ù„Ø¨ Ø¬Ø¯Ø§Ù‹ Ù„Ø£Ù†Ù‡ ÙŠØ·Ù„Ø¨ Ø§Ù„Ø±ÙˆØ§Ø¨Ø· ÙÙ‚Ø·
                     "X-Requested-With" to "XMLHttpRequest",
                     "Referer" to playerUrl,
                     "Content-Type" to "application/json"
@@ -258,7 +258,7 @@ class TukTukHd : MainAPI() {
                     } ?: emptyList()
                 } ?: emptyList()
 
-                allLinks.apmap { link ->
+                allLinks.amap { link ->
                     loadExtractor(link, subtitleCallback, callback)
                 }
             }
@@ -276,3 +276,6 @@ class TukTukHd : MainAPI() {
     data class StreamItem(val mirrors: List<MirrorItem>?)
     data class MirrorItem(val link: String?)
 }
+
+
+

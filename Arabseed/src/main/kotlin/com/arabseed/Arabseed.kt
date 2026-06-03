@@ -1,4 +1,4 @@
-package com.arabseed
+﻿package com.arabseed
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -8,7 +8,7 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import org.jsoup.Jsoup
 import kotlinx.serialization.Serializable
-import com.lagradost.nicehttp.NiceResponse // تأكد من استيراد NiceResponse
+import com.lagradost.nicehttp.NiceResponse // ØªØ£ÙƒØ¯ Ù…Ù† Ø§Ø³ØªÙŠØ±Ø§Ø¯ NiceResponse
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -158,7 +158,7 @@ class Arabseed : MainAPI() {
             val posterUrl = a.selectFirst("img")?.let { img ->
                 (img.attr("data-src").ifBlank { img.attr("src") }).toAbsolute()
             }
-            val isMovie = href.contains("/%d9%81%d9%8a%d9%84%d9%85-") // /فيلم-
+            val isMovie = href.contains("/%d9%81%d9%8a%d9%84%d9%85-") // /ÙÙŠÙ„Ù…-
             val tvType = if (isMovie) TvType.Movie else TvType.TvSeries
 
             newMovieSearchResponse(title, href, tvType) {
@@ -169,15 +169,15 @@ class Arabseed : MainAPI() {
     }
 
     override val mainPage = mainPageOf(
-        "$mainUrl/main0/" to "الرئيسية",
-        "$mainUrl/main0/" to "الرئيسية",
-        "$mainUrl/recently/" to "مضاف حديثا",
-        "$mainUrl/movies/" to "أفلام",
-        "$mainUrl/main0/" to "المسلسلات",
-        "$mainUrl/category/افلام-انيميشن/" to "افلام انيميشن",
-        "$mainUrl/category/cartoon-series/" to "مسلسلات كرتون",
-        "$mainUrl/category/arabic-series-2/" to "مسلسلات عربي",
-        "$mainUrl/category/arabic-movies-6/" to "افلام عربي",
+        "$mainUrl/main0/" to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©",
+        "$mainUrl/main0/" to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©",
+        "$mainUrl/recently/" to "Ù…Ø¶Ø§Ù Ø­Ø¯ÙŠØ«Ø§",
+        "$mainUrl/movies/" to "Ø£ÙÙ„Ø§Ù…",
+        "$mainUrl/main0/" to "Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª",
+        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø§Ù†ÙŠÙ…ÙŠØ´Ù†/" to "Ø§ÙÙ„Ø§Ù… Ø§Ù†ÙŠÙ…ÙŠØ´Ù†",
+        "$mainUrl/category/cartoon-series/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª ÙƒØ±ØªÙˆÙ†",
+        "$mainUrl/category/arabic-series-2/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¹Ø±Ø¨ÙŠ",
+        "$mainUrl/category/arabic-movies-6/" to "Ø§ÙÙ„Ø§Ù… Ø¹Ø±Ø¨ÙŠ",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -305,7 +305,7 @@ class Arabseed : MainAPI() {
                 }
             }
         } else {
-            val seasonNumFromName = doc.selectFirst(".bread__crumbs li:contains(الموسم) span")?.text()?.let { Regex("""\d+""").find(it)?.value?.toIntOrNull() } ?: 1
+            val seasonNumFromName = doc.selectFirst(".bread__crumbs li:contains(Ø§Ù„Ù…ÙˆØ³Ù…) span")?.text()?.let { Regex("""\d+""").find(it)?.value?.toIntOrNull() } ?: 1
             doc.select("ul.episodes__list li a").forEach { epEl ->
                 val epHref = epEl.attr("href").toAbsolute()
                 val epTitle = epEl.selectFirst(".epi__num")?.text()?.trim() ?: epEl.text().trim()
@@ -401,3 +401,4 @@ class Arabseed : MainAPI() {
         return true
     }
 }
+

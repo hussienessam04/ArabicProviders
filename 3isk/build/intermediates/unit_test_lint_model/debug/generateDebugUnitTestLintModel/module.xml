@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="C:\Users\Hussien Essam\.gemini\antigravity\scratch\re-3arabi\3isk"
+    name=":3isk"
+    type="LIBRARY"
+    maven="CloudstreamPlugins:3isk:unspecified"
+    agpVersion="8.7.3"
+    buildFolder="build"
+    bootClassPath="C:\tools\sdk\platforms\android-34\android.jar;C:\tools\sdk\build-tools\34.0.0\core-lambda-stubs.jar"
+    javaSourceLevel="1.8"
+    compileTarget="android-34"
+    neverShrinking="true">
+  <lintOptions
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="debug"/>
+</lint-module>

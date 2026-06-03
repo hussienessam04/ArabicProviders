@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.arabseed.3isk-release-3:/layout-v21/notification_action_tombstone.xml",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/layout-v21/notification_action.xml",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/layout-v21/notification_template_custom_big.xml",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/layout-v21/notification_template_icon_group.xml",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/layout-v21/notification_template_icon_group.xml"
+    }
+]

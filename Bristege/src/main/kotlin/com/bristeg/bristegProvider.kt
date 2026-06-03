@@ -1,4 +1,4 @@
-package com.bristeg
+﻿package com.bristeg
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.loadExtractor
@@ -92,11 +92,11 @@ class BrstejProvider : MainAPI() {
     }
 
     override val mainPage = mainPageOf(
-        "index.php" to "الرئيسية",
-        "category818.php?cat=prss7-2025" to "مسلسلات برستيج",
-        "category.php?cat=movies2-2224" to "افلام",
-        "category.php?cat=ramdan1-2024" to "مسلسلات رمضان 2024",
-        "newvideo.php" to "أخر الاضافات"
+        "index.php" to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©",
+        "category818.php?cat=prss7-2025" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¨Ø±Ø³ØªÙŠØ¬",
+        "category.php?cat=movies2-2224" to "Ø§ÙÙ„Ø§Ù…",
+        "category.php?cat=ramdan1-2024" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø±Ù…Ø¶Ø§Ù† 2024",
+        "newvideo.php" to "Ø£Ø®Ø± Ø§Ù„Ø§Ø¶Ø§ÙØ§Øª"
     )
 
     override suspend fun getMainPage(
@@ -165,17 +165,17 @@ class BrstejProvider : MainAPI() {
 
             val description = document.selectFirst("div.pm-video-description > div.txtv")?.text()?.trim()
 
-            val categoryTags = document.select("dl.dl-horizontal p strong:contains(اقسام) ~ span a span")
+            val categoryTags = document.select("dl.dl-horizontal p strong:contains(Ø§Ù‚Ø³Ø§Ù…) ~ span a span")
                 .map { it.text().trim() }
                 .filter { it.isNotBlank() }
 
-            val keywordTags = document.select("dl.dl-horizontal strong:contains(الكلمات الدلالية) ~ a")
+            val keywordTags = document.select("dl.dl-horizontal strong:contains(Ø§Ù„ÙƒÙ„Ù…Ø§Øª Ø§Ù„Ø¯Ù„Ø§Ù„ÙŠØ©) ~ a")
                 .map { it.text().trim() }
                 .filter { it.isNotBlank() }
 
             val allTags = (categoryTags + keywordTags).distinct()
 
-            val isMovieByTag = allTags.any { it.contains("افلام", ignoreCase = true) || it.contains("فلم", ignoreCase = true) }
+            val isMovieByTag = allTags.any { it.contains("Ø§ÙÙ„Ø§Ù…", ignoreCase = true) || it.contains("ÙÙ„Ù…", ignoreCase = true) }
             val hasSeasonBox = document.selectFirst("div.SeasonsBox") != null
             val seasonListItems = document.select("div.SeasonsBoxUL ul li")
             val hasActualEpisodes = seasonListItems.any {
@@ -483,3 +483,4 @@ class BrstejProvider : MainAPI() {
         }
     }
 }
+

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/layout-v26/abc_screen_toolbar.xml",
+        "source": "com.arabseed.Aia2tv-appcompat-1.7.0-20:/layout-v26/abc_screen_toolbar.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/layout-v26/mtrl_calendar_month.xml",
+        "source": "com.arabseed.Aia2tv-material-1.13.0-12:/layout-v26/mtrl_calendar_month.xml"
+    }
+]

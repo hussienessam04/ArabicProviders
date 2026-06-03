@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.arabseed.3isk-release-3:/color-night-v8/material_timepicker_clockface.xml",
+        "source": "com.arabseed.3isk-material-1.13.0-12:/color-night-v8/material_timepicker_clockface.xml"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/color-night-v8/material_timepicker_modebutton_tint.xml",
+        "source": "com.arabseed.3isk-material-1.13.0-12:/color-night-v8/material_timepicker_modebutton_tint.xml"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/color-night-v8/material_timepicker_button_stroke.xml",
+        "source": "com.arabseed.3isk-material-1.13.0-12:/color-night-v8/material_timepicker_button_stroke.xml"
+    }
+]

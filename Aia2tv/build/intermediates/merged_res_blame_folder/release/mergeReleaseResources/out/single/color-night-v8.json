@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/color-night-v8/material_timepicker_modebutton_tint.xml",
+        "source": "com.arabseed.Aia2tv-material-1.13.0-12:/color-night-v8/material_timepicker_modebutton_tint.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/color-night-v8/material_timepicker_button_stroke.xml",
+        "source": "com.arabseed.Aia2tv-material-1.13.0-12:/color-night-v8/material_timepicker_button_stroke.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/color-night-v8/material_timepicker_clockface.xml",
+        "source": "com.arabseed.Aia2tv-material-1.13.0-12:/color-night-v8/material_timepicker_clockface.xml"
+    }
+]

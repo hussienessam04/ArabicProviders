@@ -1,4 +1,4 @@
-package com.viu
+﻿package com.viu
 
 
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -129,8 +129,8 @@ class Viu : MainAPI() {
 
         val image = this.coverLandscapeImage
             ?: this.seriesCoverLandscapeImage
-            ?: this.imageUrl // البانر عادة يكون أفقي
-            ?: this.coverImageUrl // احتياطي عمودي
+            ?: this.imageUrl // Ø§Ù„Ø¨Ø§Ù†Ø± Ø¹Ø§Ø¯Ø© ÙŠÙƒÙˆÙ† Ø£ÙÙ‚ÙŠ
+            ?: this.coverImageUrl // Ø§Ø­ØªÙŠØ§Ø·ÙŠ Ø¹Ù…ÙˆØ¯ÙŠ
             ?: this.productImageUrl
 
         val isMovieType = this.isMovie == 1
@@ -254,10 +254,10 @@ class Viu : MainAPI() {
         }.sortedBy { it.episode }
 
         val first = products.firstOrNull()
-        val seriesTitle = first?.seriesCategoryName ?: "Unknown Series" // أو يمكن جلبه من loadLinks لاحقاً
+        val seriesTitle = first?.seriesCategoryName ?: "Unknown Series" // Ø£Ùˆ ÙŠÙ…ÙƒÙ† Ø¬Ù„Ø¨Ù‡ Ù…Ù† loadLinks Ù„Ø§Ø­Ù‚Ø§Ù‹
 
         return newTvSeriesLoadResponse(
-            first?.synopsis?.split("-")?.firstOrNull()?.trim() ?: "Viu Series", // محاولة استخراج اسم المسلسل من اسم الحلقة
+            first?.synopsis?.split("-")?.firstOrNull()?.trim() ?: "Viu Series", // Ù…Ø­Ø§ÙˆÙ„Ø© Ø§Ø³ØªØ®Ø±Ø§Ø¬ Ø§Ø³Ù… Ø§Ù„Ù…Ø³Ù„Ø³Ù„ Ù…Ù† Ø§Ø³Ù… Ø§Ù„Ø­Ù„Ù‚Ø©
             url,
             TvType.TvSeries,
             episodes
@@ -279,8 +279,8 @@ class Viu : MainAPI() {
         return try {
 
             val json = AppUtils.parseJson<Map<String, String>>(data)
-            val ccsId = json["ccs"] ?: return false.also { println("[VIU-DEBUG] ❌ Error: ccsId is null") }
-            val productId = json["pid"] ?: return false.also { println("[VIU-DEBUG] ❌ Error: productId is null") }
+            val ccsId = json["ccs"] ?: return false.also { println("[VIU-DEBUG] âŒ Error: ccsId is null") }
+            val productId = json["pid"] ?: return false.also { println("[VIU-DEBUG] âŒ Error: productId is null") }
 
             println("[VIU-DEBUG] Processing Product ID: $productId | CCS ID: $ccsId")
 
@@ -309,7 +309,7 @@ class Viu : MainAPI() {
             val currentProduct = detailResp.data?.currentProduct
 
             if (currentProduct == null) {
-                println("[VIU-DEBUG] ⚠️ Warning: current_product is null in JSON response!")
+                println("[VIU-DEBUG] âš ï¸ Warning: current_product is null in JSON response!")
             } else {
                 val subsList = currentProduct.subtitles
                 println("[VIU-DEBUG] Found Subtitles List Size: ${subsList?.size ?: 0}")
@@ -328,9 +328,9 @@ class Viu : MainAPI() {
                                 url = subUrl
                             )
                         )
-                        println("[VIU-DEBUG] ✅ Added Subtitle: $subName")
+                        println("[VIU-DEBUG] âœ… Added Subtitle: $subName")
                     } else {
-                        println("[VIU-DEBUG] ❌ Skipped Subtitle: URL is empty")
+                        println("[VIU-DEBUG] âŒ Skipped Subtitle: URL is empty")
                     }
                 }
             }
@@ -345,7 +345,7 @@ class Viu : MainAPI() {
             val streams = playResp?.data?.stream?.url
 
             if (streams.isNullOrEmpty()) {
-                println("[VIU-DEBUG] ❌ No video streams found!")
+                println("[VIU-DEBUG] âŒ No video streams found!")
             } else {
                 println("[VIU-DEBUG] Found ${streams.size} video qualities.")
                 streams.forEach { (q, url) ->
@@ -374,7 +374,7 @@ class Viu : MainAPI() {
             println("[VIU-DEBUG] ================= END LOADLINKS =================")
             true
         } catch (e: Exception) {
-            println("[VIU-DEBUG] 💥 Critical Error in loadLinks: ${e.message}")
+            println("[VIU-DEBUG] ðŸ’¥ Critical Error in loadLinks: ${e.message}")
             e.printStackTrace()
             false
         }
@@ -539,7 +539,7 @@ class Viu : MainAPI() {
         @JsonProperty("title") val title: String?,
         @JsonProperty("synopsis") val synopsis: String?,
 
-        @JsonProperty("image_url") val imageUrl: String?, // عادة للبانر
+        @JsonProperty("image_url") val imageUrl: String?, // Ø¹Ø§Ø¯Ø© Ù„Ù„Ø¨Ø§Ù†Ø±
         @JsonProperty("cover_image_url") val coverImageUrl: String?,
         @JsonProperty("product_image_url") val productImageUrl: String?,
 
@@ -549,3 +549,4 @@ class Viu : MainAPI() {
         @JsonProperty("is_movie") val isMovie: Int?
     )
 }
+

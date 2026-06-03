@@ -1,4 +1,4 @@
-package com.egydead
+﻿package com.egydead
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -25,7 +25,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 class EgyDead : MainAPI() {
     override var mainUrl = "https://egydead.beer"
-    override var name = "ايجي ديد"
+    override var name = "Ø§ÙŠØ¬ÙŠ Ø¯ÙŠØ¯"
     override val hasMainPage = true
     override var lang = "ar"
     override val supportedTypes = setOf(
@@ -82,7 +82,7 @@ class EgyDead : MainAPI() {
 
         if (res.code == 403 && !cfBypassed) {
             log("GET-REQUEST", "403 detected. Running bypass...")
-            runCloudflareBypass() // سيقوم بالحل والانتظار
+            runCloudflareBypass() // Ø³ÙŠÙ‚ÙˆÙ… Ø¨Ø§Ù„Ø­Ù„ ÙˆØ§Ù„Ø§Ù†ØªØ¸Ø§Ø±
 
             res = app.get(url, headers = headers, interceptor = cloudflareKiller, timeout = 30)
         }
@@ -143,7 +143,7 @@ class EgyDead : MainAPI() {
                 }
                 delay(1000)
             }
-            cfBypassed = true // حتى لو فشل، نفتح المجال للطلب الرئيسي ليحاول
+            cfBypassed = true // Ø­ØªÙ‰ Ù„Ùˆ ÙØ´Ù„ØŒ Ù†ÙØªØ­ Ø§Ù„Ù…Ø¬Ø§Ù„ Ù„Ù„Ø·Ù„Ø¨ Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ Ù„ÙŠØ­Ø§ÙˆÙ„
         }
     }
 
@@ -156,7 +156,7 @@ class EgyDead : MainAPI() {
             httpGet(mainUrl)
         } catch (e: Exception) {
             log(logTag, "CRITICAL ERROR: Failed to fetch main page -> ${e.message}")
-            return HomePageResponse(emptyList())
+            return newHomePageResponse(emptyList())
         }
 
         val homePageList = ArrayList<HomePageList>()
@@ -164,7 +164,7 @@ class EgyDead : MainAPI() {
         log(logTag, "Parsing Pinned Section (div.pin-posts-list)...")
         val pinnedSection = document.selectFirst("div.pin-posts-list")
         if (pinnedSection != null) {
-            val sectionTitle = pinnedSection.selectFirst("h1.TitleMaster em")?.text()?.trim() ?: "المميز"
+            val sectionTitle = pinnedSection.selectFirst("h1.TitleMaster em")?.text()?.trim() ?: "Ø§Ù„Ù…Ù…ÙŠØ²"
             log(logTag, "Pinned Section found! Title: '$sectionTitle'")
 
             val items = pinnedSection.select("li.movieItem").mapNotNull {
@@ -186,7 +186,7 @@ class EgyDead : MainAPI() {
         log(logTag, "Found ${mainSections.size} main-section containers.")
 
         mainSections.forEachIndexed { index, section ->
-            val sectionTitle = section.selectFirst("h1.TitleMaster em")?.text()?.trim() ?: "قسم ${index + 1}"
+            val sectionTitle = section.selectFirst("h1.TitleMaster em")?.text()?.trim() ?: "Ù‚Ø³Ù… ${index + 1}"
             log(logTag, "Processing Section [$index]: '$sectionTitle'")
 
             val items = section.select("li.movieItem").mapNotNull {
@@ -208,7 +208,7 @@ class EgyDead : MainAPI() {
             log(logTag, "WARNING: homePageList is empty. Possible selector mismatch or empty page.")
         }
 
-        return HomePageResponse(homePageList.filter { it.list.isNotEmpty() })
+        return newHomePageResponse(homePageList.filter { it.list.isNotEmpty() })
     }
 
     private fun Element.toSearchResponse(parentTag: String): SearchResponse? {
@@ -254,7 +254,7 @@ class EgyDead : MainAPI() {
 
     private val seasonNumRegex = Regex(
         """(?ix)
-        (?:الموسم[\s:\-_.]*0*(\d+))
+        (?:Ø§Ù„Ù…ÙˆØ³Ù…[\s:\-_.]*0*(\d+))
         |
         (?:S(?:eason)?[\s:\-_.]*0*(\d+))
         """.trimIndent().replace("\n", "")
@@ -262,7 +262,7 @@ class EgyDead : MainAPI() {
 
     private val episodeNumRegex = Regex(
         """(?ix)
-        (?:حلقة[\s:\-_.]*0*(\d+))|
+        (?:Ø­Ù„Ù‚Ø©[\s:\-_.]*0*(\d+))|
         (?:Episode[\s:\-_.]*0*(\d+))|
         (?:EP[\s:\-_.]*0*(\d+))|
         (?:\d+[xX]0*(\d+))|
@@ -340,7 +340,7 @@ class EgyDead : MainAPI() {
             for (u in batch) {
                 val doc = docs[u] ?: continue
                 val title = doc.selectFirst("meta[property=og:title]")?.attr("content")?.trim()
-                    ?: "موسم غير معروف"
+                    ?: "Ù…ÙˆØ³Ù… ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙ"
                 discovered.add(Triple(nextIndex++, title, u))
 
                 val seasonsCont =
@@ -483,9 +483,9 @@ class EgyDead : MainAPI() {
             val poster = document.selectFirst("meta[property=og:image]")?.attr("content")
             val plot = document.selectFirst("div.singleStory")?.text()?.trim()
             val year =
-                document.select("div.LeftBox li:has(span:contains(السنه)) a").text().toIntOrNull()
+                document.select("div.LeftBox li:has(span:contains(Ø§Ù„Ø³Ù†Ù‡)) a").text().toIntOrNull()
             val tags =
-                document.select("div.LeftBox li:has(span:contains(النوع)) a").map { it.text() }
+                document.select("div.LeftBox li:has(span:contains(Ø§Ù„Ù†ÙˆØ¹)) a").map { it.text() }
             val recommendations = parseRecommendations(document, url)
             log("Movie parsed: title='$title', year=$year, tags=${tags.size}, recs=${recommendations.size}")
             return newMovieLoadResponse(title, url, TvType.Movie, url) {
@@ -662,7 +662,7 @@ class EgyDead : MainAPI() {
 
             val seriesTitle =
                 startDoc.selectFirst("meta[property=og:title]")?.attr("content")?.trim()
-                    ?.replace(Regex("""\s*(الموسم|الحلقة)\s+.*"""), "")?.trim() ?: "TV Series"
+                    ?.replace(Regex("""\s*(Ø§Ù„Ù…ÙˆØ³Ù…|Ø§Ù„Ø­Ù„Ù‚Ø©)\s+.*"""), "")?.trim() ?: "TV Series"
             val poster = startDoc.selectFirst("meta[property=og:image]")?.attr("content")
             val plot = startDoc.selectFirst("div.singleStory")?.text()?.trim()
 
@@ -832,7 +832,7 @@ class EgyDead : MainAPI() {
             }
 
             println("loadLinks: collected candidate count = ${candidates.size}")
-            println("===== السيرفرات التي تم العثور عليها =====")
+            println("===== Ø§Ù„Ø³ÙŠØ±ÙØ±Ø§Øª Ø§Ù„ØªÙŠ ØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„ÙŠÙ‡Ø§ =====")
 
             candidates.forEachIndexed { index, pair ->
                 val link = pair.first ?: "null"

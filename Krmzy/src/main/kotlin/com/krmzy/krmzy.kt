@@ -1,4 +1,4 @@
-
+﻿
 package com.krmzy
 
 import com.lagradost.cloudstream3.*
@@ -15,7 +15,7 @@ import java.net.URI
 
 class krmzyProvider : MainAPI() {
     override var mainUrl = "https://krmzi.org"
-    override var name = "قرمزي"
+    override var name = "Ù‚Ø±Ù…Ø²ÙŠ"
     override val hasMainPage = true
     override var lang = "ar"
     override val supportedTypes = setOf(
@@ -23,7 +23,7 @@ class krmzyProvider : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/series-list/page/" to "جميع المسلسلات",
+        "$mainUrl/series-list/page/" to "Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª",
     )
 
     private val cloudflareKiller by lazy { CloudflareKiller() }
@@ -114,7 +114,7 @@ class krmzyProvider : MainAPI() {
                 newEpisode(epUrl) {
                     name = epTitle
                     episode = epNum
-                    posterUrl = epPoster // إضافة الصورة لكل حلقة
+                    posterUrl = epPoster // Ø¥Ø¶Ø§ÙØ© Ø§Ù„ØµÙˆØ±Ø© Ù„ÙƒÙ„ Ø­Ù„Ù‚Ø©
                 }
             }.reversed()
 
@@ -214,8 +214,8 @@ class krmzyProvider : MainAPI() {
 
 
     /**
-     * دالة مساعدة لمحاكاة منطق البايثون في فحص الريفير المناسب للتشغيل.
-     * تتحقق من: رابط الـ Iframe نفسه، ثم qesen، ثم newaat.
+     * Ø¯Ø§Ù„Ø© Ù…Ø³Ø§Ø¹Ø¯Ø© Ù„Ù…Ø­Ø§ÙƒØ§Ø© Ù…Ù†Ø·Ù‚ Ø§Ù„Ø¨Ø§ÙŠØ«ÙˆÙ† ÙÙŠ ÙØ­Øµ Ø§Ù„Ø±ÙŠÙÙŠØ± Ø§Ù„Ù…Ù†Ø§Ø³Ø¨ Ù„Ù„ØªØ´ØºÙŠÙ„.
+     * ØªØªØ­Ù‚Ù‚ Ù…Ù†: Ø±Ø§Ø¨Ø· Ø§Ù„Ù€ Iframe Ù†ÙØ³Ù‡ØŒ Ø«Ù… qesenØŒ Ø«Ù… newaat.
      */
     private suspend fun checkWorkingStreamReferer(
         streamUrl: String,
@@ -265,7 +265,7 @@ class krmzyProvider : MainAPI() {
     }
 
     /**
-     * تم تعديل الدالة لتقبل قائمة من الـ Referers وتجربها بالتتابع
+     * ØªÙ… ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ø¯Ø§Ù„Ø© Ù„ØªÙ‚Ø¨Ù„ Ù‚Ø§Ø¦Ù…Ø© Ù…Ù† Ø§Ù„Ù€ Referers ÙˆØªØ¬Ø±Ø¨Ù‡Ø§ Ø¨Ø§Ù„ØªØªØ§Ø¨Ø¹
      */
     private suspend fun extractLinkFromObfuscatedPage(
         url: String,
@@ -538,3 +538,4 @@ class krmzyProvider : MainAPI() {
         return true
     }
 }
+

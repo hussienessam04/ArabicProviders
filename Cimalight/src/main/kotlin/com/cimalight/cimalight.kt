@@ -1,4 +1,4 @@
-package com.cimalight
+﻿package com.cimalight
 import android.util.Log
 import android.webkit.CookieManager
 import com.lagradost.cloudstream3.*
@@ -23,10 +23,10 @@ class CimaLightProvider : MainAPI() {
     private val userAgent = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Mobile Safari/537.36"
 
     override val mainPage = mainPageOf(
-        "$mainUrl/main16" to "الرئيسية",
-        "$mainUrl/movies.php" to "أحدث الأفلام",
-        "$mainUrl/episodes.php" to "أحدث الحلقات",
-        "$mainUrl/all-series.php" to "أحدث المسلسلات"
+        "$mainUrl/main16" to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©",
+        "$mainUrl/movies.php" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ø£ÙÙ„Ø§Ù…",
+        "$mainUrl/episodes.php" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ø­Ù„Ù‚Ø§Øª",
+        "$mainUrl/all-series.php" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª"
     )
 
     private val customHeaders = mapOf(
@@ -95,7 +95,7 @@ class CimaLightProvider : MainAPI() {
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = getDocOrSolve(request.data) ?: return HomePageResponse(emptyList())
+        val document = getDocOrSolve(request.data) ?: return newHomePageResponse(emptyList())
         val homePageList = ArrayList<HomePageList>()
         val addedSectionNames = mutableSetOf<String>()
 
@@ -104,8 +104,8 @@ class CimaLightProvider : MainAPI() {
             if (featured.isNotEmpty()) {
                 val items = featured.mapNotNull { it.toSearchResult() }
                 if (items.isNotEmpty()) {
-                    homePageList.add(HomePageList("أعمال مميزة", items))
-                    addedSectionNames.add("أعمال مميزة")
+                    homePageList.add(HomePageList("Ø£Ø¹Ù…Ø§Ù„ Ù…Ù…ÙŠØ²Ø©", items))
+                    addedSectionNames.add("Ø£Ø¹Ù…Ø§Ù„ Ù…Ù…ÙŠØ²Ø©")
                 }
             }
         }
@@ -116,7 +116,7 @@ class CimaLightProvider : MainAPI() {
                 ?: head.selectFirst("h2")?.text()?.trim()
                 ?: head.text().trim()
 
-            if (title.isEmpty() || title.contains("جديد الموقع") || title.contains("أحدث الأفلام") || addedSectionNames.contains(title)) {
+            if (title.isEmpty() || title.contains("Ø¬Ø¯ÙŠØ¯ Ø§Ù„Ù…ÙˆÙ‚Ø¹") || title.contains("Ø£Ø­Ø¯Ø« Ø§Ù„Ø£ÙÙ„Ø§Ù…") || addedSectionNames.contains(title)) {
                 return@forEach
             }
 
@@ -134,14 +134,14 @@ class CimaLightProvider : MainAPI() {
             }
         }
 
-        if (!addedSectionNames.contains("مسلسلات مميزة")) {
+        if (!addedSectionNames.contains("Ù…Ø³Ù„Ø³Ù„Ø§Øª Ù…Ù…ÙŠØ²Ø©")) {
             val sidebarSeries = document.select("div.block-series").mapNotNull { it.toSearchResult() }
             if (sidebarSeries.isNotEmpty()) {
-                homePageList.add(HomePageList("مسلسلات مميزة", sidebarSeries))
+                homePageList.add(HomePageList("Ù…Ø³Ù„Ø³Ù„Ø§Øª Ù…Ù…ÙŠØ²Ø©", sidebarSeries))
             }
         }
 
-        return HomePageResponse(homePageList)
+        return newHomePageResponse(homePageList)
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
@@ -157,7 +157,7 @@ class CimaLightProvider : MainAPI() {
         val posterUrl = this.selectFirst("img")?.attr("src")
             ?: this.selectFirst("div[style*=background-image]")?.attr("style")?.substringAfter("url('")?.substringBefore("')")
 
-        val isTvSeries = href.contains("/episode/") || href.contains("/series/") || title.contains("مسلسل") || this.selectFirst("span.ep, div.ribbon") != null
+        val isTvSeries = href.contains("/episode/") || href.contains("/series/") || title.contains("Ù…Ø³Ù„Ø³Ù„") || this.selectFirst("span.ep, div.ribbon") != null
 
         return if (isTvSeries) {
             newTvSeriesSearchResponse(title, href, TvType.TvSeries) {
@@ -184,7 +184,7 @@ class CimaLightProvider : MainAPI() {
         val title = document.selectFirst("h1[itemprop=name]")?.text()?.trim() ?: return null
         val poster = fixUrlNull(document.selectFirst("div.video-bibplayer-poster")?.attr("style")?.substringAfter("url(")?.substringBefore(")"))
         val description = document.selectFirst("div[itemprop=description] p")?.text()?.trim()
-        val isTvSeries = document.select("div.SeasonsBox").isNotEmpty() || title.contains("مسلسل")
+        val isTvSeries = document.select("div.SeasonsBox").isNotEmpty() || title.contains("Ù…Ø³Ù„Ø³Ù„")
 
         if (isTvSeries) {
             val episodes = ArrayList<Episode>()
@@ -213,7 +213,7 @@ class CimaLightProvider : MainAPI() {
                 }
             } else {
                 episodes.add(newEpisode(url) {
-                    this.name = "الحلقة المحددة"
+                    this.name = "Ø§Ù„Ø­Ù„Ù‚Ø© Ø§Ù„Ù…Ø­Ø¯Ø¯Ø©"
                     this.posterUrl = poster
                 })
             }
@@ -244,11 +244,11 @@ class CimaLightProvider : MainAPI() {
             .toMutableMap()
             .apply {
                 put("Referer", mainUrl)
-                savedCookies?.let { put("Cookie", it) } // تمرير الكوكيز إذا وجدت
+                savedCookies?.let { put("Cookie", it) } // ØªÙ…Ø±ÙŠØ± Ø§Ù„ÙƒÙˆÙƒÙŠØ² Ø¥Ø°Ø§ ÙˆØ¬Ø¯Øª
             }
 
         val intermediateDoc = app.get(intermediateUrl, headers = headersWithReferer).document
-        intermediateDoc.select("div.embeding ul li").apmap { serverElement ->
+        intermediateDoc.select("div.embeding ul li").amap { serverElement ->
             val serverUrl = serverElement.attr("data-embed")
             if (serverUrl.startsWith("http")) {
                 loadExtractor(serverUrl, data, subtitleCallback, callback)
@@ -258,3 +258,4 @@ class CimaLightProvider : MainAPI() {
         return true
     }
 }
+

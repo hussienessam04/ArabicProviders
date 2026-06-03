@@ -1,4 +1,4 @@
-package com.replaymatch
+﻿package com.replaymatch
 
 import android.content.Context
 import androidx.preference.PreferenceManager
@@ -92,7 +92,7 @@ class FullMatchShowsProvider(private val context: Context) : MainAPI() {
             }
         }
 
-        return HomePageResponse(lists)
+        return newHomePageResponse(lists)
     }
 
     override suspend fun load(url: String): LoadResponse? {
@@ -240,7 +240,7 @@ class FullMatchShowsProvider(private val context: Context) : MainAPI() {
                             url = m3u8Url,
                         ) {
                             this.referer = url
-                            quality = Qualities.P720.value // أو Unknown
+                            quality = Qualities.P720.value // Ø£Ùˆ Unknown
                         }
                     )
                     found = true

@@ -1,4 +1,4 @@
-package com.cimaclub
+﻿package com.cimaclub
 
 import android.util.Log
 import com.lagradost.cloudstream3.*
@@ -15,19 +15,19 @@ class CimaClub : MainAPI() {
 
 
     override val mainPage = mainPageOf(
-        "$mainUrl/category/افلام-اجنبي/" to "أفلام أجنبي",
-        "$mainUrl/category/افلام-عربي/" to "أفلام عربي",
-        "$mainUrl/category/افلام-هندي/" to "أفلام هندي",
-        "$mainUrl/category/افلام-اسيوية/" to "أفلام اسيوية",
-        "$mainUrl/category/افلام-انمي/" to "أفلام انمي",
-        "$mainUrl/category/مسلسلات-رمضان-2025/" to "مسلسلات رمضان 2025",
-        "$mainUrl/category/مسلسلات-اجنبي/" to "مسلسلات أجنبي",
-        "$mainUrl/category/مسلسلات-تركية/" to "مسلسلات تركية",
-        "$mainUrl/category/مسلسلات-عربي/" to "مسلسلات عربي",
-        "$mainUrl/category/مسلسلات-اسيوية/" to "مسلسلات اسيوية",
-        "$mainUrl/category/مسلسلات-هندية/" to "مسلسلات هندي",
-        "$mainUrl/category/مسلسلات-انمي/" to "مسلسلات انمي",
-        "$mainUrl/category/مسلسلات-مدبلجة/" to "مسلسلات مدبلجة",
+        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø§Ø¬Ù†Ø¨ÙŠ/" to "Ø£ÙÙ„Ø§Ù… Ø£Ø¬Ù†Ø¨ÙŠ",
+        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø¹Ø±Ø¨ÙŠ/" to "Ø£ÙÙ„Ø§Ù… Ø¹Ø±Ø¨ÙŠ",
+        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ù‡Ù†Ø¯ÙŠ/" to "Ø£ÙÙ„Ø§Ù… Ù‡Ù†Ø¯ÙŠ",
+        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø§Ø³ÙŠÙˆÙŠØ©/" to "Ø£ÙÙ„Ø§Ù… Ø§Ø³ÙŠÙˆÙŠØ©",
+        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø§Ù†Ù…ÙŠ/" to "Ø£ÙÙ„Ø§Ù… Ø§Ù†Ù…ÙŠ",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø±Ù…Ø¶Ø§Ù†-2025/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø±Ù…Ø¶Ø§Ù† 2025",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø§Ø¬Ù†Ø¨ÙŠ/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø£Ø¬Ù†Ø¨ÙŠ",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-ØªØ±ÙƒÙŠØ©/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª ØªØ±ÙƒÙŠØ©",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø¹Ø±Ø¨ÙŠ/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¹Ø±Ø¨ÙŠ",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø§Ø³ÙŠÙˆÙŠØ©/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø§Ø³ÙŠÙˆÙŠØ©",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ù‡Ù†Ø¯ÙŠØ©/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ù‡Ù†Ø¯ÙŠ",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø§Ù†Ù…ÙŠ/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø§Ù†Ù…ÙŠ",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ù…Ø¯Ø¨Ù„Ø¬Ø©/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ù…Ø¯Ø¨Ù„Ø¬Ø©",
     )
 
     private fun Element.toSearchResponse(): SearchResponse? {
@@ -37,7 +37,7 @@ class CimaClub : MainAPI() {
             it.attr("data-src").ifBlank { it.attr("src") }
         }?.ifBlank { null }
 
-        val isTv = href.contains("/series/") || href.contains("/مسلسل-") || this.selectFirst(".number") != null
+        val isTv = href.contains("/series/") || href.contains("/Ù…Ø³Ù„Ø³Ù„-") || this.selectFirst(".number") != null
 
         return if (isTv) {
             newTvSeriesSearchResponse(title, href, TvType.TvSeries) {
@@ -63,7 +63,7 @@ class CimaClub : MainAPI() {
                 it.attr("data-src").ifBlank { it.attr("src") }
             }?.ifBlank { null }
 
-            val isTv = href.contains("/series/") || href.contains("/مسلسل-") || element.selectFirst(".number") != null
+            val isTv = href.contains("/series/") || href.contains("/Ù…Ø³Ù„Ø³Ù„-") || element.selectFirst(".number") != null
 
             if (isTv) {
                 newTvSeriesSearchResponse(title, href, TvType.TvSeries) {
@@ -96,19 +96,19 @@ class CimaClub : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val isTvSeries = url.contains("/series/") || url.contains("/مسلسل-") ||
+        val isTvSeries = url.contains("/series/") || url.contains("/Ù…Ø³Ù„Ø³Ù„-") ||
                 document.select("section.allepcont .row a").size > 1
 
         val title = document.selectFirst("h1.PostTitle")?.text()?.trim()
             ?: throw RuntimeException("Title not found on page: $url")
         val poster =
             document.selectFirst(".MainSingle .left .image img")?.attr("src")?.ifBlank { null }
-        val plot = document.selectFirst(".StoryArea p")?.text()?.replace("قصة العرض", "")?.trim()
+        val plot = document.selectFirst(".StoryArea p")?.text()?.replace("Ù‚ØµØ© Ø§Ù„Ø¹Ø±Ø¶", "")?.trim()
         val tags = document.select(".TaxContent a[href*='/genre/']").mapNotNull { it.text() }
         val year =
             document.selectFirst(".TaxContent a[href*='/release-year/']")?.text()?.toIntOrNull()
         val contentRating =
-            document.select(".half-tags li span:contains(التصنيف العمرى)").firstOrNull()
+            document.select(".half-tags li span:contains(Ø§Ù„ØªØµÙ†ÙŠÙ Ø§Ù„Ø¹Ù…Ø±Ù‰)").firstOrNull()
                 ?.parent()?.selectFirst("a")?.text()?.trim()
 
         if (isTvSeries) {
@@ -116,7 +116,7 @@ class CimaClub : MainAPI() {
             val seasons = document.select("section.allseasonss .Small--Box a")
 
             if (seasons.isNotEmpty()) {
-                seasons.apmap { seasonLink ->
+                seasons.amap { seasonLink ->
                     val seasonUrl = seasonLink.attr("href")
                     val seasonDoc = if (seasonUrl == url) document else app.get(seasonUrl).document
                     val seasonNumText =
@@ -183,7 +183,7 @@ class CimaClub : MainAPI() {
 
         val document = app.get(watchUrl).document
 
-        document.select("ul#watch li").apmap {
+        document.select("ul#watch li").amap {
             val embedUrl = it.attr("data-watch")
             if (embedUrl.isNotBlank()) {
 
@@ -191,7 +191,7 @@ class CimaClub : MainAPI() {
             }
         }
 
-        document.select(".ServersList.Download a").apmap { element ->
+        document.select(".ServersList.Download a").amap { element ->
             val downloadUrl = element.attr("href")?.trim()
             if (!downloadUrl.isNullOrBlank()) {
 
@@ -202,3 +202,6 @@ class CimaClub : MainAPI() {
         return true
     }
 }
+
+
+

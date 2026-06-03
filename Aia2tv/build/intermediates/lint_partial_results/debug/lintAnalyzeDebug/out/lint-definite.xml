@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.7.3" type="incidents">
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of com.google.android.material:material than 1.13.0 is available: 1.14.0">
+        <fix-replace
+            description="Change to 1.14.0"
+            family="Update versions"
+            oldString="1.13.0"
+            replacement="1.14.0"
+            priority="0"/>
+        <location
+            file="${:Aia2tv*projectDir}/build.gradle.kts"
+            line="37"
+            column="20"
+            startOffset="674"
+            endLine="37"
+            endColumn="65"
+            endOffset="719"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.browser:browser than 1.9.0 is available: 1.10.0">
+        <fix-replace
+            description="Change to 1.10.0"
+            family="Update versions"
+            oldString="1.9.0"
+            replacement="1.10.0"
+            priority="0"/>
+        <location
+            file="${:Aia2tv*projectDir}/build.gradle.kts"
+            line="39"
+            column="20"
+            startOffset="796"
+            endLine="39"
+            endColumn="52"
+            endOffset="828"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.room:room-ktx than 2.8.0 is available: 2.8.4">
+        <fix-replace
+            description="Change to 2.8.4"
+            family="Update versions"
+            oldString="2.8.0"
+            replacement="2.8.4"
+            priority="0"/>
+        <location
+            file="${:Aia2tv*projectDir}/build.gradle.kts"
+            line="40"
+            column="20"
+            startOffset="849"
+            endLine="40"
+            endColumn="50"
+            endOffset="879"/>
+    </incident>
+
+</incidents>

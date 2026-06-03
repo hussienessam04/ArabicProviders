@@ -1,4 +1,4 @@
-package com.lagradost.cloudstream3.plugins
+﻿package com.lagradost.cloudstream3.plugins
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
@@ -56,10 +56,10 @@ class LodyNet : MainAPI() {
         }
 
         if(pinnedMovies.isNotEmpty()) {
-            homePageList.add(0, HomePageList("مثبتات", pinnedMovies))
+            homePageList.add(0, HomePageList("Ù…Ø«Ø¨ØªØ§Øª", pinnedMovies))
         }
 
-        return HomePageResponse(homePageList)
+        return newHomePageResponse(homePageList)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -123,7 +123,7 @@ class LodyNet : MainAPI() {
         var title = doc.select("h1#PrimaryTitle").text().trim()
 
 
-        val episodeTitleRegex = Regex("""\s*[-]*\s*(\d+|\d+\s*|)\s*(الحلقة|حلقة)\s*\d+.*""")
+        val episodeTitleRegex = Regex("""\s*[-]*\s*(\d+|\d+\s*|)\s*(Ø§Ù„Ø­Ù„Ù‚Ø©|Ø­Ù„Ù‚Ø©)\s*\d+.*""")
         title = title.replace(episodeTitleRegex, "").trim()
 
         val description = doc.select("#ContentDetails p").text().trim()
@@ -150,7 +150,7 @@ class LodyNet : MainAPI() {
         if (sliderElements.isNotEmpty()) {
             sliderElements.forEach { element ->
                 val epLink = element.attr("href")
-                val epName = element.text().trim() // "الحلقة 1"
+                val epName = element.text().trim() // "Ø§Ù„Ø­Ù„Ù‚Ø© 1"
 
                 val epNum = element.attr("id").replace("Ep", "").toIntOrNull()
                     ?: Regex("(\\d+)").find(epName)?.groupValues?.get(1)?.toIntOrNull()

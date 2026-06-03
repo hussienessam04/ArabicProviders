@@ -1,4 +1,4 @@
-package com.tvgarden
+﻿package com.tvgarden
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
@@ -150,3 +150,4 @@ class FamelackProvider : MainAPI() {
         val hasChannels: Boolean
     )
 }
+

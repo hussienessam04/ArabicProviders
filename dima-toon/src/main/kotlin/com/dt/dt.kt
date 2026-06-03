@@ -1,4 +1,4 @@
-package com.dima
+﻿package com.dima
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
@@ -15,8 +15,8 @@ class DimaToonProvider : MainAPI() {
     override val supportedTypes = setOf(TvType.Cartoon)
 
     override val mainPage = mainPageOf(
-        "series" to "المسلسلات المضافة حديثًا",
-        "episodes" to "الحلقات المضافة حديثًا"
+        "series" to "Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø§Ù„Ù…Ø¶Ø§ÙØ© Ø­Ø¯ÙŠØ«Ù‹Ø§",
+        "episodes" to "Ø§Ù„Ø­Ù„Ù‚Ø§Øª Ø§Ù„Ù…Ø¶Ø§ÙØ© Ø­Ø¯ÙŠØ«Ù‹Ø§"
     )
 
     override suspend fun getMainPage(
@@ -145,3 +145,4 @@ class DimaToonProvider : MainAPI() {
     }
 
 }
+

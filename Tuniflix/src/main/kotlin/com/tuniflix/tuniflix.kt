@@ -1,4 +1,4 @@
-package com.lagradost.cloudstream3.plugins
+﻿package com.lagradost.cloudstream3.plugins
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -7,7 +7,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Base64 // قد نحتاجها أحياناً، لكن الاعتماد الأساسي على Hex
+import java.util.Base64 // Ù‚Ø¯ Ù†Ø­ØªØ§Ø¬Ù‡Ø§ Ø£Ø­ÙŠØ§Ù†Ø§Ù‹ØŒ Ù„ÙƒÙ† Ø§Ù„Ø§Ø¹ØªÙ…Ø§Ø¯ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ Ø¹Ù„Ù‰ Hex
 
 class Tuniflix : MainAPI() {
     override var mainUrl = "https://tuniflix.site"
@@ -17,11 +17,11 @@ class Tuniflix : MainAPI() {
     override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
 
     override val mainPage = mainPageOf(
-        "$mainUrl/movies/page/" to "أفلام",
-        "$mainUrl/series/page/" to "مسلسلات",
-        "$mainUrl/tg/tunisian-movies/page/" to "أفلام تونسية",
-        "$mainUrl/tg/arabic-movies/page/" to "أفلام عربية",
-        "$mainUrl/tg/turkish-series/page/" to "مسلسلات تركية"
+        "$mainUrl/movies/page/" to "Ø£ÙÙ„Ø§Ù…",
+        "$mainUrl/series/page/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª",
+        "$mainUrl/tg/tunisian-movies/page/" to "Ø£ÙÙ„Ø§Ù… ØªÙˆÙ†Ø³ÙŠØ©",
+        "$mainUrl/tg/arabic-movies/page/" to "Ø£ÙÙ„Ø§Ù… Ø¹Ø±Ø¨ÙŠØ©",
+        "$mainUrl/tg/turkish-series/page/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª ØªØ±ÙƒÙŠØ©"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -273,7 +273,7 @@ class Tuniflix : MainAPI() {
 
                                 if (linksToAdd.isNotEmpty()) {
 
-                                    linksToAdd.apmap { (name, rawLink) ->
+                                    linksToAdd.amap { (name, rawLink) ->
 
                                         val masterM3u8 = sanitizeUrl(rawLink)
 
@@ -296,9 +296,9 @@ class Tuniflix : MainAPI() {
 
                                 }
 
-                                if (foundLinks) return // نجحنا، نخرج من الدالة
+                                if (foundLinks) return // Ù†Ø¬Ø­Ù†Ø§ØŒ Ù†Ø®Ø±Ø¬ Ù…Ù† Ø§Ù„Ø¯Ø§Ù„Ø©
 
-                            } catch (e: Exception) { /* JSON غير صالح، نكمل */ }
+                            } catch (e: Exception) { /* JSON ØºÙŠØ± ØµØ§Ù„Ø­ØŒ Ù†ÙƒÙ…Ù„ */ }
                         }
                     }
                 } catch (e: Exception) {
@@ -350,3 +350,5 @@ class Tuniflix : MainAPI() {
         )
     }
 }
+
+

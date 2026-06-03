@@ -1,4 +1,4 @@
-package com.mycima
+﻿package com.mycima
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -93,7 +93,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
             "Upgrade-Insecure-Requests" to "1",
             "Cache-Control" to "no-cache",
             "Pragma" to "no-cache",
-            "Referer" to (referer ?: mainUrl) // هنا نجعل الـ Referer الأساسي هو mainUrl
+            "Referer" to (referer ?: mainUrl) // Ù‡Ù†Ø§ Ù†Ø¬Ø¹Ù„ Ø§Ù„Ù€ Referer Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ Ù‡Ùˆ mainUrl
         )
         if (cookies.isNotEmpty()) map["Cookie"] = cookies
         return map
@@ -114,7 +114,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
 
             dialog.window?.apply {
                 setBackgroundDrawableResource(android.R.color.transparent)
-                clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND) // إزالة التعتيم الخلفي
+                clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND) // Ø¥Ø²Ø§Ù„Ø© Ø§Ù„ØªØ¹ØªÙŠÙ… Ø§Ù„Ø®Ù„ÙÙŠ
                 addFlags(
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
@@ -339,13 +339,13 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
 
 
     override val mainPage = mainPageOf(
-        "$mainUrl/" to "احدث الاضافات",
-        "$mainUrl/movies/" to "افلام جديدة",
-        "$mainUrl/series/" to "مسلسلات جديدة",
-        "$mainUrl/category/افلام-اجنبي/" to "افلام اجنبي",
-        "$mainUrl/category/مسلسلات-عربي/" to "مسلسلات عربي",
-        "$mainUrl/category/افلام-انمي/" to "أفلام أنمي",
-        "$mainUrl/category/مسلسلات-انمي/" to "مسلسلات أنمي",
+        "$mainUrl/" to "Ø§Ø­Ø¯Ø« Ø§Ù„Ø§Ø¶Ø§ÙØ§Øª",
+        "$mainUrl/movies/" to "Ø§ÙÙ„Ø§Ù… Ø¬Ø¯ÙŠØ¯Ø©",
+        "$mainUrl/series/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¬Ø¯ÙŠØ¯Ø©",
+        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø§Ø¬Ù†Ø¨ÙŠ/" to "Ø§ÙÙ„Ø§Ù… Ø§Ø¬Ù†Ø¨ÙŠ",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø¹Ø±Ø¨ÙŠ/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¹Ø±Ø¨ÙŠ",
+        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø§Ù†Ù…ÙŠ/" to "Ø£ÙÙ„Ø§Ù… Ø£Ù†Ù…ÙŠ",
+        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø§Ù†Ù…ÙŠ/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø£Ù†Ù…ÙŠ",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -358,7 +358,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
 
             val document = smartGet(url)
 
-            val isBannerRequest = request.name == "احدث الاضافات" && page == 1
+            val isBannerRequest = request.name == "Ø§Ø­Ø¯Ø« Ø§Ù„Ø§Ø¶Ø§ÙØ§Øª" && page == 1
             val selector = "div.Grid--WecimaPosts div.GridItem, div#MainFiltar div.GridItem, div.Slider--Grid div.GridItem"
             val list = document.select(selector).mapNotNull { it.toSearchResult() }
 
@@ -398,8 +398,8 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
             if (title.isNullOrBlank()) {
                 title = document.selectFirst("meta[property='og:title']")?.attr("content")?.trim()
 
-                title = title?.replace(" - وي سيما WECIMA ماي سيما MYCIMA", "")
-                    ?.replace(" - ماي سيما", "")
+                title = title?.replace(" - ÙˆÙŠ Ø³ÙŠÙ…Ø§ WECIMA Ù…Ø§ÙŠ Ø³ÙŠÙ…Ø§ MYCIMA", "")
+                    ?.replace(" - Ù…Ø§ÙŠ Ø³ÙŠÙ…Ø§", "")
             }
 
             if (title.isNullOrBlank()) {
@@ -412,11 +412,11 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
             val poster = getPosterFromStyle(document.selectFirst("wecima.separated--top"))
             val year = document.selectFirst("div.Title--Content--Single-begin h1 a")?.text()?.toIntOrNull()
             val plot = document.selectFirst("div.StoryMovieContent")?.text()?.trim()
-            val tags = document.select("ul.Terms--Content--Single-begin li:has(span:contains(النوع)) p a").map { it.text() }
+            val tags = document.select("ul.Terms--Content--Single-begin li:has(span:contains(Ø§Ù„Ù†ÙˆØ¹)) p a").map { it.text() }
             val recommendations = document.select("div.Grid--WecimaPosts div.GridItem").mapNotNull { it.toSearchResult() }
 
             val isSeriesPage = document.selectFirst("div.SeasonsList, .Seasons--Episodes") != null
-            val seriesUrlFromEpisode = document.selectFirst("ul.Terms--Content--Single-begin li:contains(المسلسل) a")?.attr("href")
+            val seriesUrlFromEpisode = document.selectFirst("ul.Terms--Content--Single-begin li:contains(Ø§Ù„Ù…Ø³Ù„Ø³Ù„) a")?.attr("href")
 
             fun extractPostId(doc: org.jsoup.nodes.Document): String? {
                 doc.selectFirst("input[name=post_id]")?.attr("value")?.takeIf { it.isNotBlank() }?.let { return it }
@@ -431,7 +431,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
 
             fun extractEpisodeNumberFromText(text: String?): String? {
                 if (text.isNullOrBlank()) return null
-                Regex("""الحلقة\s*(\d+)""").find(text)?.groups?.get(1)?.value?.let { return it }
+                Regex("""Ø§Ù„Ø­Ù„Ù‚Ø©\s*(\d+)""").find(text)?.groups?.get(1)?.value?.let { return it }
                 Regex("""\b(\d{1,3})\b""").find(text)?.groups?.get(1)?.value?.let { return it }
                 return null
             }
@@ -461,7 +461,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
                         val epTitleRaw = a.selectFirst(".episodetitle")?.text() ?: a.attr("title").ifBlank { a.text() }
                         val epNumText = extractEpisodeNumberFromText(epTitleRaw)
                         val epNum = epNumText?.toIntOrNull()
-                        val newTitle = if (epNum != null) "الحلقة $epNum" else (epTitleRaw ?: "حلقة")
+                        val newTitle = if (epNum != null) "Ø§Ù„Ø­Ù„Ù‚Ø© $epNum" else (epTitleRaw ?: "Ø­Ù„Ù‚Ø©")
                         var epHref = a.attr("href").ifBlank { a.attr("data-href") }
                         if (epHref.isNullOrBlank()) continue
                         epHref = resolveUrl(url, epHref)
@@ -494,9 +494,9 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
 
                     val seasonLabel = when {
                         rawSeasonText.isNotBlank() && !rawSeasonText.matches(Regex("^\\d{3,}\$")) -> {
-                            if (rawSeasonText.matches(Regex("^\\d{1,3}\$"))) "الموسم $rawSeasonText" else rawSeasonText
+                            if (rawSeasonText.matches(Regex("^\\d{1,3}\$"))) "Ø§Ù„Ù…ÙˆØ³Ù… $rawSeasonText" else rawSeasonText
                         }
-                        else -> "الموسم $seasonNumber"
+                        else -> "Ø§Ù„Ù…ÙˆØ³Ù… $seasonNumber"
                     }
 
                     var gotEpisodesForThisSeason = false
@@ -519,7 +519,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
                                     if (epHref.isNullOrBlank()) continue
                                     epHref = resolveUrl(url, epHref)
                                     episodes.add(newEpisode(epHref) {
-                                        this.name = "$seasonLabel الحلقة $epNum"
+                                        this.name = "$seasonLabel Ø§Ù„Ø­Ù„Ù‚Ø© $epNum"
                                         this.season = seasonNumber
                                         this.episode = epNum
                                         this.posterUrl = poster
@@ -551,7 +551,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
                                     if (epHref.isNullOrBlank()) continue
                                     epHref = resolveUrl(url, epHref)
                                     episodes.add(newEpisode(epHref) {
-                                        this.name = "$seasonLabel الحلقة $epNum"
+                                        this.name = "$seasonLabel Ø§Ù„Ø­Ù„Ù‚Ø© $epNum"
                                         this.season = seasonNumber
                                         this.episode = epNum
                                         this.posterUrl = poster
@@ -580,7 +580,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
                                     if (epHref.isNullOrBlank()) continue
                                     epHref = resolveUrl(url, epHref)
                                     episodes.add(newEpisode(epHref) {
-                                        this.name = "$seasonLabel الحلقة $epNum"
+                                        this.name = "$seasonLabel Ø§Ù„Ø­Ù„Ù‚Ø© $epNum"
                                         this.season = seasonNumber
                                         this.episode = epNum
                                         this.posterUrl = poster
@@ -642,7 +642,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
 
         document.select("ul.List--Download--Wecima--Single li a[href]").forEach {
             val url = it.attr("href")
-            val name = it.selectFirst("quality")?.text()?.trim() ?: "تحميل"
+            val name = it.selectFirst("quality")?.text()?.trim() ?: "ØªØ­Ù…ÙŠÙ„"
             if (url.isNotBlank()) linksToProcess.add(url to name)
         }
 
@@ -676,7 +676,7 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
                                     callback.invoke(
                                         newExtractorLink(
                                             this@MyCimaProvider.name,
-                                            "$serverName (مخصص)",
+                                            "$serverName (Ù…Ø®ØµØµ)",
                                             customLink,
                                         ) {
                                             this.quality = Qualities.Unknown.value
@@ -695,3 +695,4 @@ class MyCimaProvider(private val context: Context) : MainAPI() {
         return true
     }
 }
+

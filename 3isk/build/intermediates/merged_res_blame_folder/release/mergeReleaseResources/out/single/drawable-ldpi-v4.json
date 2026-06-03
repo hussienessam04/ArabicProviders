@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.arabseed.3isk-release-3:/drawable-ldpi-v4/ic_call_decline.png",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/drawable-ldpi-v4/ic_call_decline.png"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/drawable-ldpi-v4/ic_call_decline_low.png",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/drawable-ldpi-v4/ic_call_decline_low.png"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/drawable-ldpi-v4/ic_call_answer_video.png",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/drawable-ldpi-v4/ic_call_answer_video.png"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/drawable-ldpi-v4/ic_call_answer_low.png",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/drawable-ldpi-v4/ic_call_answer_low.png"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/drawable-ldpi-v4/ic_call_answer_video_low.png",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/drawable-ldpi-v4/ic_call_answer_video_low.png"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/drawable-ldpi-v4/ic_call_answer.png",
+        "source": "com.arabseed.3isk-core-1.13.0-36:/drawable-ldpi-v4/ic_call_answer.png"
+    }
+]

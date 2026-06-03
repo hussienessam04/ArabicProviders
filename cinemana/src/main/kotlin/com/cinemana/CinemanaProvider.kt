@@ -1,4 +1,4 @@
-package com.cinemana
+﻿package com.cinemana
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -13,8 +13,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.jsoup.nodes.Element
 import java.net.URLEncoder
-import com.lagradost.cloudstream3.Actor       // <--- تأكد من هذا الاستيراد
-import com.lagradost.cloudstream3.ActorData // <--- وتأكد من هذا الاستيراد
+import com.lagradost.cloudstream3.Actor       // <--- ØªØ£ÙƒØ¯ Ù…Ù† Ù‡Ø°Ø§ Ø§Ù„Ø§Ø³ØªÙŠØ±Ø§Ø¯
+import com.lagradost.cloudstream3.ActorData // <--- ÙˆØªØ£ÙƒØ¯ Ù…Ù† Ù‡Ø°Ø§ Ø§Ù„Ø§Ø³ØªÙŠØ±Ø§Ø¯
 
 
 class Cinemana : MainAPI() {
@@ -25,25 +25,25 @@ class Cinemana : MainAPI() {
     override val hasMainPage = true
     private val apiV2 = "$mainUrl/api/android"
     override val mainPage = mainPageOf(
-        "$apiV2/newlyVideosItems/level/0/offset/12/page/" to "أحدث الإضافات",
+        "$apiV2/newlyVideosItems/level/0/offset/12/page/" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ø¥Ø¶Ø§ÙØ§Øª",
 
-        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=desc" to "أفلام - تاريخ الرفع - الأحدث",
-        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=asc" to "أفلام - تاريخ الرفع - الأقدم",
-        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=ar_title_asc" to "أفلام - أبجديًا (أ-ي)",
-        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=ar_title_desc" to "أفلام - أبجديًا (ب-أ)",
-        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_desc" to "أفلام - أبجديًا (Z-A)",
-        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_asc" to "أفلام - أبجديًا (A-Z)",
-        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=views_desc" to "أفلام - الأكثر مشاهدة",
-        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=stars_desc" to "أفلام - أعلى تقييم IMDb",
+        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=desc" to "Ø£ÙÙ„Ø§Ù… - ØªØ§Ø±ÙŠØ® Ø§Ù„Ø±ÙØ¹ - Ø§Ù„Ø£Ø­Ø¯Ø«",
+        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=asc" to "Ø£ÙÙ„Ø§Ù… - ØªØ§Ø±ÙŠØ® Ø§Ù„Ø±ÙØ¹ - Ø§Ù„Ø£Ù‚Ø¯Ù…",
+        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=ar_title_asc" to "Ø£ÙÙ„Ø§Ù… - Ø£Ø¨Ø¬Ø¯ÙŠÙ‹Ø§ (Ø£-ÙŠ)",
+        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=ar_title_desc" to "Ø£ÙÙ„Ø§Ù… - Ø£Ø¨Ø¬Ø¯ÙŠÙ‹Ø§ (Ø¨-Ø£)",
+        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_desc" to "Ø£ÙÙ„Ø§Ù… - Ø£Ø¨Ø¬Ø¯ÙŠÙ‹Ø§ (Z-A)",
+        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_asc" to "Ø£ÙÙ„Ø§Ù… - Ø£Ø¨Ø¬Ø¯ÙŠÙ‹Ø§ (A-Z)",
+        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=views_desc" to "Ø£ÙÙ„Ø§Ù… - Ø§Ù„Ø£ÙƒØ«Ø± Ù…Ø´Ø§Ù‡Ø¯Ø©",
+        "$mainUrl/api/android/video/V/2?videoKind=1&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=stars_desc" to "Ø£ÙÙ„Ø§Ù… - Ø£Ø¹Ù„Ù‰ ØªÙ‚ÙŠÙŠÙ… IMDb",
 
-        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=desc" to "مسلسلات - تاريخ الرفع - الأحدث",
-        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=asc" to "مسلسلات - تاريخ الرفع - الأقدم",
-        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_desc" to "مسلسلات - أبجديًا (أ-ي)",
-        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_asc" to "مسلسلات - أبجديًا (ي-أ)",
-        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_desc" to "مسلسلات - أبجديًا (Z-A)",
-        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_asc" to "مسلسلات - أبجديًا (A-Z)",
-        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=views_desc" to "مسلسلات - الأكثر مشاهدة",
-        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=stars_desc" to "مسلسلات - أعلى تقييم IMDb",
+        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=desc" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª - ØªØ§Ø±ÙŠØ® Ø§Ù„Ø±ÙØ¹ - Ø§Ù„Ø£Ø­Ø¯Ø«",
+        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=asc" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª - ØªØ§Ø±ÙŠØ® Ø§Ù„Ø±ÙØ¹ - Ø§Ù„Ø£Ù‚Ø¯Ù…",
+        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_desc" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª - Ø£Ø¨Ø¬Ø¯ÙŠÙ‹Ø§ (Ø£-ÙŠ)",
+        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_asc" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª - Ø£Ø¨Ø¬Ø¯ÙŠÙ‹Ø§ (ÙŠ-Ø£)",
+        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_desc" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª - Ø£Ø¨Ø¬Ø¯ÙŠÙ‹Ø§ (Z-A)",
+        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=en_title_asc" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª - Ø£Ø¨Ø¬Ø¯ÙŠÙ‹Ø§ (A-Z)",
+        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=views_desc" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª - Ø§Ù„Ø£ÙƒØ«Ø± Ù…Ø´Ø§Ù‡Ø¯Ø©",
+        "$mainUrl/api/android/video/V/2?videoKind=2&langNb=&itemsPerPage=30&pageNumber=&level=0&sortParam=stars_desc" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª - Ø£Ø¹Ù„Ù‰ ØªÙ‚ÙŠÙŠÙ… IMDb",
     )
 
 
@@ -88,7 +88,7 @@ class Cinemana : MainAPI() {
             val resp = runCatching { app.get(fetchUrl).parsedSafe<List<Map<String, Any>>>() }.getOrNull()
             val parsed = resp?.mapNotNull { it.toCinemanaItem().toSearchResponse() } ?: emptyList()
 
-            val listTitle = request.name ?: "القسم"
+            val listTitle = request.name ?: "Ø§Ù„Ù‚Ø³Ù…"
             items.add(HomePageList(listTitle, parsed))
 
             val rawSize = resp?.size ?: parsed.size
@@ -104,7 +104,7 @@ class Cinemana : MainAPI() {
             if (response.isNotEmpty()) {
                 val newlyVideos = response.mapNotNull { it.toCinemanaItem().toSearchResponse() }
                 if (newlyVideos.isNotEmpty()) {
-                    items.add(HomePageList("أحدث الإضافات", newlyVideos))
+                    items.add(HomePageList("Ø£Ø­Ø¯Ø« Ø§Ù„Ø¥Ø¶Ø§ÙØ§Øª", newlyVideos))
                     if (response.size >= 12) hasMore = true
                 }
             }
@@ -170,7 +170,7 @@ class Cinemana : MainAPI() {
             val groups = runCatching { app.get(videoGroupsUrl).parsedSafe<List<VideoGroup>>() }.getOrNull()
             groups?.forEach { group ->
                 val gid = group.id ?: return@forEach
-                val gTitle = group.title ?: "مجموعة غير معروفة"
+                val gTitle = group.title ?: "Ù…Ø¬Ù…ÙˆØ¹Ø© ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙØ©"
                 val basePage = "$apiV2/videoListPagination/groupID/$gid/level/0/itemsPerPage/24/page/"
                 val first = if (basePage.endsWith("/page/")) "$basePage/0".replace("//0", "/0").replace("/page//0", "/page/0") else "$basePage/0"
                 val normalizedFirst = first.replace(":/", "://").replace("//", "/").replace(":/", "://")
@@ -218,7 +218,7 @@ class Cinemana : MainAPI() {
 
     override suspend fun search(query: String, page: Int): SearchResponseList? = coroutineScope {
         val encoded = URLEncoder.encode(query, "utf-8")
-        val itemsPerPageSearch = 30 // هذا لا يستخدم مباشرة لتحديد hasMore الآن
+        val itemsPerPageSearch = 30 // Ù‡Ø°Ø§ Ù„Ø§ ÙŠØ³ØªØ®Ø¯Ù… Ù…Ø¨Ø§Ø´Ø±Ø© Ù„ØªØ­Ø¯ÙŠØ¯ hasMore Ø§Ù„Ø¢Ù†
         val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
         val yearRange = "1900,$currentYear"
 
@@ -226,7 +226,7 @@ class Cinemana : MainAPI() {
 
         Log.d(
             name,
-            "🔎 [SEARCH_PAGINATION] Initiating search for query: '$query', requested page: $page"
+            "ðŸ”Ž [SEARCH_PAGINATION] Initiating search for query: '$query', requested page: $page"
         )
 
 
@@ -248,14 +248,14 @@ class Cinemana : MainAPI() {
                         if (cinemanaItem.nb == null) {
                             Log.w(
                                 name,
-                                "⚠️ [SEARCH_PAGINATION_PARSE_WARN] CinemanaItem.nb is NULL for item from $url. Raw Map: $itemMap"
+                                "âš ï¸ [SEARCH_PAGINATION_PARSE_WARN] CinemanaItem.nb is NULL for item from $url. Raw Map: $itemMap"
                             )
                         }
                         val searchResponse = cinemanaItem.toSearchResponse()
                         if (searchResponse == null) {
                             Log.w(
                                 name,
-                                "⚠️ [SEARCH_PAGINATION_PARSE_WARN] toSearchResponse returned NULL for item from $url. CinemanaItem: $cinemanaItem"
+                                "âš ï¸ [SEARCH_PAGINATION_PARSE_WARN] toSearchResponse returned NULL for item from $url. CinemanaItem: $cinemanaItem"
                             )
                         }
                         searchResponse
@@ -263,7 +263,7 @@ class Cinemana : MainAPI() {
 
                     Log.d(
                         name,
-                        "✨ [SEARCH_PAGINATION] PARSED ${parsedItems.size} valid items from $url (after filtering null IDs/responses)."
+                        "âœ¨ [SEARCH_PAGINATION] PARSED ${parsedItems.size} valid items from $url (after filtering null IDs/responses)."
                     )
                     Pair(rawSize, parsedItems)
                 }.getOrDefault(Pair(0, emptyList()))
@@ -278,11 +278,11 @@ class Cinemana : MainAPI() {
 
         Log.d(
             name,
-            "🎬 [SEARCH_PAGINATION] Movies: RAW=${moviesRawCount}, PARSED=${movies.size} for page $page."
+            "ðŸŽ¬ [SEARCH_PAGINATION] Movies: RAW=${moviesRawCount}, PARSED=${movies.size} for page $page."
         )
         Log.d(
             name,
-            "📺 [SEARCH_PAGINATION] Series: RAW=${seriesRawCount}, PARSED=${series.size} for page $page."
+            "ðŸ“º [SEARCH_PAGINATION] Series: RAW=${seriesRawCount}, PARSED=${series.size} for page $page."
         )
 
         val maxSize = maxOf(movies.size, series.size)
@@ -294,7 +294,7 @@ class Cinemana : MainAPI() {
 
         Log.d(
             name,
-            "🔄 [SEARCH_PAGINATION] Interleaved ${interleaved.size} items in total for page $page."
+            "ðŸ”„ [SEARCH_PAGINATION] Interleaved ${interleaved.size} items in total for page $page."
         )
 
         fun scoreMatch(title: String?, q: String): Int {
@@ -327,7 +327,7 @@ class Cinemana : MainAPI() {
 
         Log.d(
             name,
-            "🤔 [SEARCH_PAGINATION] Determining 'hasMore' using interleaved.isNotEmpty() logic."
+            "ðŸ¤” [SEARCH_PAGINATION] Determining 'hasMore' using interleaved.isNotEmpty() logic."
         )
 
 
@@ -391,7 +391,7 @@ class Cinemana : MainAPI() {
 
         Log.d(
             name,
-            "✅ [SEARCH_PAGINATION] Search for query: '$query', page: $page completed. Returning ${finalResults.size} items with hasMore: $hasMore."
+            "âœ… [SEARCH_PAGINATION] Search for query: '$query', page: $page completed. Returning ${finalResults.size} items with hasMore: $hasMore."
         )
         newSearchResponseList(finalResults, hasMore)
     }
@@ -453,10 +453,10 @@ class Cinemana : MainAPI() {
 
             ActorData(
                 actor = Actor(
-                    name = actorName, // فقط الاسم
+                    name = actorName, // ÙÙ‚Ø· Ø§Ù„Ø§Ø³Ù…
                     image = actorImageUrl
                 ),
-                roleString = null // تجاهل رقم الدور
+                roleString = null // ØªØ¬Ø§Ù‡Ù„ Ø±Ù‚Ù… Ø§Ù„Ø¯ÙˆØ±
             )
         } ?: emptyList()
 
@@ -474,7 +474,7 @@ class Cinemana : MainAPI() {
                 if (episodeDetails.nb != null && episodeDetails.enTitle != null) {
                     val episodeNum = (episodeDetails.episodeNummer as? String)?.toIntOrNull() ?: 1
                     val seasonNum = (episodeDetails.season as? String)?.toIntOrNull() ?: 1
-                    val episodeTitle = "الموسم $seasonNum - الحلقة $episodeNum"
+                    val episodeTitle = "Ø§Ù„Ù…ÙˆØ³Ù… $seasonNum - Ø§Ù„Ø­Ù„Ù‚Ø© $episodeNum"
 
                     val newEpisode = newEpisode(episodeDetails.nb) {
                         this.name = episodeTitle
@@ -722,3 +722,5 @@ class Cinemana : MainAPI() {
         }
     }
 }
+
+

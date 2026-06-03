@@ -1,4 +1,4 @@
-package com.syrialive
+﻿package com.syrialive
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -30,7 +30,7 @@ class SyriaLiveProvider : MainAPI() {
 
             val time = element.selectFirst(".match-time")?.text() ?: ""
             val result = element.selectFirst(".result")?.text() ?: "VS"
-            val status = element.selectFirst(".date")?.text() ?: "" // "جارية الآن" أو "انتهت"
+            val status = element.selectFirst(".date")?.text() ?: "" // "Ø¬Ø§Ø±ÙŠØ© Ø§Ù„Ø¢Ù†" Ø£Ùˆ "Ø§Ù†ØªÙ‡Øª"
 
             val title = "$rightTeam $result $leftTeam"
 
@@ -46,7 +46,7 @@ class SyriaLiveProvider : MainAPI() {
         }
 
         if (matches.isNotEmpty()) {
-            homePageList.add(HomePageList("مباريات اليوم", matches, isHorizontalImages = true))
+            homePageList.add(HomePageList("Ù…Ø¨Ø§Ø±ÙŠØ§Øª Ø§Ù„ÙŠÙˆÙ…", matches, isHorizontalImages = true))
         }
 
         val news = doc.select(".AY-PItem").mapNotNull { element ->
@@ -62,10 +62,10 @@ class SyriaLiveProvider : MainAPI() {
         }
 
         if (news.isNotEmpty()) {
-            homePageList.add(HomePageList("آخر الأخبار", news))
+            homePageList.add(HomePageList("Ø¢Ø®Ø± Ø§Ù„Ø£Ø®Ø¨Ø§Ø±", news))
         }
 
-        return HomePageResponse(homePageList)
+        return newHomePageResponse(homePageList)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -109,7 +109,7 @@ class SyriaLiveProvider : MainAPI() {
         return newMovieLoadResponse(title, url, type, url) {
             this.posterUrl = fixUrl(poster ?: "")
             this.plot = descBuilder.toString()
-            this.tags = tableInfo.map { it.select("td").text() } // إضافة معلومات المباراة كوسوم
+            this.tags = tableInfo.map { it.select("td").text() } // Ø¥Ø¶Ø§ÙØ© Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ù…Ø¨Ø§Ø±Ø§Ø© ÙƒÙˆØ³ÙˆÙ…
         }
     }
 
@@ -177,7 +177,7 @@ class SyriaLiveProvider : MainAPI() {
                     val clapprMatch = clapprRegex.find(playerResponse)
 
                     if (clapprMatch != null) {
-                        val streamUrl = clapprMatch.groupValues[1] // الرابط المباشر
+                        val streamUrl = clapprMatch.groupValues[1] // Ø§Ù„Ø±Ø§Ø¨Ø· Ø§Ù„Ù…Ø¨Ø§Ø´Ø±
 
 
                         M3u8Helper.generateM3u8(

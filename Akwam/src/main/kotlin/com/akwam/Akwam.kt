@@ -1,4 +1,4 @@
-package com.akwam
+﻿package com.akwam
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -67,23 +67,23 @@ class Akwam : MainAPI() {
             }
 
             if (list.isEmpty()) throw ErrorLoadingException()
-            return HomePageResponse(listOf(HomePageList(request.name ?: "قائمة", list)))
+            return newHomePageResponse(listOf(HomePageList(request.name ?: "Ù‚Ø§Ø¦Ù…Ø©", list)))
         }
 
         val urls = listOf(
-            "$mainUrl/movies" to "أحدث الأفلام",
-            "$mainUrl/series" to "أحدث المسلسلات",
-            "$mainUrl/shows" to "العروض",
-            "$mainUrl/series?section=29&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "مسلسلات عربي",
-            "$mainUrl/series?section=32&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "مسلسلات تركي",
-            "$mainUrl/series?section=33&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "مسلسلات اسيوية",
-            "$mainUrl/series?section=30&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "مسلسلات اجنبي",
-            "$mainUrl/series?section=31&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "مسلسلات هندي",
-            "$mainUrl/movies?section=29&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "أفلام عربي",
-            "$mainUrl/movies?section=32&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "أفلام تركي",
-            "$mainUrl/movies?section=33&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "أفلام اسيوية",
-            "$mainUrl/movies?section=30&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "أفلام اجنبي",
-            "$mainUrl/movies?section=31&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "أفلام هندي"
+            "$mainUrl/movies" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ø£ÙÙ„Ø§Ù…",
+            "$mainUrl/series" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª",
+            "$mainUrl/shows" to "Ø§Ù„Ø¹Ø±ÙˆØ¶",
+            "$mainUrl/series?section=29&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¹Ø±Ø¨ÙŠ",
+            "$mainUrl/series?section=32&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª ØªØ±ÙƒÙŠ",
+            "$mainUrl/series?section=33&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø§Ø³ÙŠÙˆÙŠØ©",
+            "$mainUrl/series?section=30&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø§Ø¬Ù†Ø¨ÙŠ",
+            "$mainUrl/series?section=31&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ù‡Ù†Ø¯ÙŠ",
+            "$mainUrl/movies?section=29&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ø£ÙÙ„Ø§Ù… Ø¹Ø±Ø¨ÙŠ",
+            "$mainUrl/movies?section=32&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ø£ÙÙ„Ø§Ù… ØªØ±ÙƒÙŠ",
+            "$mainUrl/movies?section=33&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ø£ÙÙ„Ø§Ù… Ø§Ø³ÙŠÙˆÙŠØ©",
+            "$mainUrl/movies?section=30&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ø£ÙÙ„Ø§Ù… Ø§Ø¬Ù†Ø¨ÙŠ",
+            "$mainUrl/movies?section=31&category=0&rating=0&year=0&language=0&formats=0&quality=0" to "Ø£ÙÙ„Ø§Ù… Ù‡Ù†Ø¯ÙŠ"
         )
 
         val items = ArrayList<HomePageList>()
@@ -115,7 +115,7 @@ class Akwam : MainAPI() {
         }
 
         if (items.isEmpty()) throw ErrorLoadingException()
-        return HomePageResponse(items)
+        return newHomePageResponse(items)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -147,11 +147,11 @@ class Akwam : MainAPI() {
         val mainDoc = app.get(pageUrl, headers = defaultHeaders).document
 
         val title = mainDoc.selectFirst("h1.entry-title")?.text()?.trim() ?: "Unknown"
-        val plot = mainDoc.selectFirst("h2:contains(قصة المسلسل) + div > p")?.text()?.trim()
+        val plot = mainDoc.selectFirst("h2:contains(Ù‚ØµØ© Ø§Ù„Ù…Ø³Ù„Ø³Ù„) + div > p")?.text()?.trim()
             ?: mainDoc.selectFirst("meta[name=description]")?.attr("content")?.trim()
 
         val rating = mainDoc.selectFirst("span.mx-2:contains(/)")
-            ?.text()?.substringAfter("/")?.trim()?.toRatingInt()
+            ?.text()?.substringAfter("/")?.trim()?.toIntOrNull()
 
         val tags =
             mainDoc.select("div.font-size-16.text-white a[href*='/genre/'], div.font-size-16.text-white a[href*='/category/']")
@@ -203,8 +203,8 @@ class Akwam : MainAPI() {
                 this.plot = plot
                 this.year = year
                 this.tags = tags
-                this.rating = rating
-                this.recommendations = recommendations // <-- إضافة التوصيات هنا
+        // rating = rating
+                this.recommendations = recommendations // <-- Ø¥Ø¶Ø§ÙØ© Ø§Ù„ØªÙˆØµÙŠØ§Øª Ù‡Ù†Ø§
             }
         }
 
@@ -248,8 +248,8 @@ class Akwam : MainAPI() {
                 this.plot = plot
                 this.year = year
                 this.tags = tags
-                this.rating = rating
-                this.recommendations = recommendations // <-- إضافة التوصيات هنا
+        // rating = rating
+                this.recommendations = recommendations // <-- Ø¥Ø¶Ø§ÙØ© Ø§Ù„ØªÙˆØµÙŠØ§Øª Ù‡Ù†Ø§
             }
         }
 
@@ -264,44 +264,44 @@ class Akwam : MainAPI() {
             this.plot = plot
             this.year = year
             this.tags = tags
-            this.rating = rating
-            this.recommendations = recommendations // <-- إضافة التوصيات هنا
+        // rating = rating
+            this.recommendations = recommendations // <-- Ø¥Ø¶Ø§ÙØ© Ø§Ù„ØªÙˆØµÙŠØ§Øª Ù‡Ù†Ø§
         }
     }
 
     private fun getSeasonNumber(seasonName: String): Int {
         val map = mapOf(
-            "الاول" to 1,
-            "الأول" to 1,
-            "الثاني" to 2,
-            "الثالث" to 3,
-            "الرابع" to 4,
-            "الخامس" to 5,
-            "السادس" to 6,
-            "السابع" to 7,
-            "الثامن" to 8,
-            "التاسع" to 9,
-            "العاشر" to 10,
-            "الحادي عشر" to 11,
-            "الثاني عشر" to 12,
-            "الثالث عشر" to 13,
-            "الرابع عشر" to 14,
-            "الخامس عشر" to 15,
-            "السادس عشر" to 16,
-            "السابع عشر" to 17,
-            "الثامن عشر" to 18,
-            "التاسع عشر" to 19,
-            "العشرون" to 20,
-            "الحادي والعشرون" to 21,
-            "الثاني والعشرون" to 22,
-            "الثالث والعشرون" to 23,
-            "الرابع والعشرون" to 24,
-            "الخامس والعشرون" to 25,
-            "السادس والعشرون" to 26,
-            "السابع والعشرون" to 27,
-            "الثامن والعشرون" to 28,
-            "التاسع والعشرون" to 29,
-            "الثلاثون" to 30
+            "Ø§Ù„Ø§ÙˆÙ„" to 1,
+            "Ø§Ù„Ø£ÙˆÙ„" to 1,
+            "Ø§Ù„Ø«Ø§Ù†ÙŠ" to 2,
+            "Ø§Ù„Ø«Ø§Ù„Ø«" to 3,
+            "Ø§Ù„Ø±Ø§Ø¨Ø¹" to 4,
+            "Ø§Ù„Ø®Ø§Ù…Ø³" to 5,
+            "Ø§Ù„Ø³Ø§Ø¯Ø³" to 6,
+            "Ø§Ù„Ø³Ø§Ø¨Ø¹" to 7,
+            "Ø§Ù„Ø«Ø§Ù…Ù†" to 8,
+            "Ø§Ù„ØªØ§Ø³Ø¹" to 9,
+            "Ø§Ù„Ø¹Ø§Ø´Ø±" to 10,
+            "Ø§Ù„Ø­Ø§Ø¯ÙŠ Ø¹Ø´Ø±" to 11,
+            "Ø§Ù„Ø«Ø§Ù†ÙŠ Ø¹Ø´Ø±" to 12,
+            "Ø§Ù„Ø«Ø§Ù„Ø« Ø¹Ø´Ø±" to 13,
+            "Ø§Ù„Ø±Ø§Ø¨Ø¹ Ø¹Ø´Ø±" to 14,
+            "Ø§Ù„Ø®Ø§Ù…Ø³ Ø¹Ø´Ø±" to 15,
+            "Ø§Ù„Ø³Ø§Ø¯Ø³ Ø¹Ø´Ø±" to 16,
+            "Ø§Ù„Ø³Ø§Ø¨Ø¹ Ø¹Ø´Ø±" to 17,
+            "Ø§Ù„Ø«Ø§Ù…Ù† Ø¹Ø´Ø±" to 18,
+            "Ø§Ù„ØªØ§Ø³Ø¹ Ø¹Ø´Ø±" to 19,
+            "Ø§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 20,
+            "Ø§Ù„Ø­Ø§Ø¯ÙŠ ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 21,
+            "Ø§Ù„Ø«Ø§Ù†ÙŠ ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 22,
+            "Ø§Ù„Ø«Ø§Ù„Ø« ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 23,
+            "Ø§Ù„Ø±Ø§Ø¨Ø¹ ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 24,
+            "Ø§Ù„Ø®Ø§Ù…Ø³ ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 25,
+            "Ø§Ù„Ø³Ø§Ø¯Ø³ ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 26,
+            "Ø§Ù„Ø³Ø§Ø¨Ø¹ ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 27,
+            "Ø§Ù„Ø«Ø§Ù…Ù† ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 28,
+            "Ø§Ù„ØªØ§Ø³Ø¹ ÙˆØ§Ù„Ø¹Ø´Ø±ÙˆÙ†" to 29,
+            "Ø§Ù„Ø«Ù„Ø§Ø«ÙˆÙ†" to 30
         )
         val lower = seasonName.lowercase()
         for ((k, v) in map) {
@@ -399,3 +399,5 @@ class Akwam : MainAPI() {
         }
     }
 }
+
+

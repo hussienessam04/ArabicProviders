@@ -1,4 +1,4 @@
-package com.lagradost.cloudstream3.ar
+﻿package com.lagradost.cloudstream3.ar
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -68,12 +68,12 @@ class WecimaProvider : MainAPI() {
 
 
     override val mainPage = mainPageOf(
-        "$mainUrl/seriestv" to "أحدث المسلسلات",
-        "$mainUrl/movies" to "أحدث الأفلام",
-        "$mainUrl/category/arabic-movies" to "أفلام عربية",
-        "$mainUrl/category/foreign-movies" to "أفلام أجنبية",
-        "$mainUrl/category/arabic-series" to "مسلسلات عربية",
-        "$mainUrl/category/foreign-series" to "مسلسلات أجنبية"
+        "$mainUrl/seriestv" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª",
+        "$mainUrl/movies" to "Ø£Ø­Ø¯Ø« Ø§Ù„Ø£ÙÙ„Ø§Ù…",
+        "$mainUrl/category/arabic-movies" to "Ø£ÙÙ„Ø§Ù… Ø¹Ø±Ø¨ÙŠØ©",
+        "$mainUrl/category/foreign-movies" to "Ø£ÙÙ„Ø§Ù… Ø£Ø¬Ù†Ø¨ÙŠØ©",
+        "$mainUrl/category/arabic-series" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¹Ø±Ø¨ÙŠØ©",
+        "$mainUrl/category/foreign-series" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø£Ø¬Ù†Ø¨ÙŠØ©"
     )
 
     override var sequentialMainPage = true
@@ -177,7 +177,7 @@ class WecimaProvider : MainAPI() {
 
         return newMovieSearchResponse(title, href, TvType.Movie) {
             this.posterUrl = posterUrl
-            this.posterHeaders = imageHeaders() // cf_clearance فقط
+            this.posterHeaders = imageHeaders() // cf_clearance ÙÙ‚Ø·
         }
     }
 
@@ -209,7 +209,7 @@ class WecimaProvider : MainAPI() {
                     url,
                     referer = mainUrl,
                     headers = getHeaders(isPost = false),
-                    interceptor = null // نمنع الكيلر هنا عمداً
+                    interceptor = null // Ù†Ù…Ù†Ø¹ Ø§Ù„ÙƒÙŠÙ„Ø± Ù‡Ù†Ø§ Ø¹Ù…Ø¯Ø§Ù‹
                 )
 
                 if (response.code == 200) {
@@ -218,15 +218,15 @@ class WecimaProvider : MainAPI() {
 
             } catch (e: Exception) {
 
-                currentCfCookie = null // الكوكيز تالف، نحذفه
+                currentCfCookie = null // Ø§Ù„ÙƒÙˆÙƒÙŠØ² ØªØ§Ù„ÙØŒ Ù†Ø­Ø°ÙÙ‡
             }
         }
 
         val response = app.get(
             url,
             referer = mainUrl,
-            headers = getHeaders(isPost = false), // بدون كوكيز قديمة
-            interceptor = cloudflareKiller       // الآن نسمح بالكيلر
+            headers = getHeaders(isPost = false), // Ø¨Ø¯ÙˆÙ† ÙƒÙˆÙƒÙŠØ² Ù‚Ø¯ÙŠÙ…Ø©
+            interceptor = cloudflareKiller       // Ø§Ù„Ø¢Ù† Ù†Ø³Ù…Ø­ Ø¨Ø§Ù„ÙƒÙŠÙ„Ø±
         )
 
         parseCfClearance(response.headers)
@@ -321,7 +321,7 @@ class WecimaProvider : MainAPI() {
             }
             val plot = seriesDocument.selectFirst("div.StoryMovieContent")?.text()?.trim()
             val year = seriesDocument.select("ul.Terms--Content--Single-begin li")
-                .find { it.selectFirst("span")?.text()?.contains("السنة") == true }
+                .find { it.selectFirst("span")?.text()?.contains("Ø§Ù„Ø³Ù†Ø©") == true }
                 ?.selectFirst("p")?.text()?.toIntOrNull()
 
             val episodes = mutableListOf<Episode>()
@@ -329,8 +329,8 @@ class WecimaProvider : MainAPI() {
 
             if (seasonElements.isNotEmpty()) {
 
-                seasonElements.apmap { seasonEl ->
-                    val seasonNum = Regex("الموسم (\\d+)").find(seasonEl.text())?.groupValues?.get(1)?.toIntOrNull()
+                seasonElements.amap { seasonEl ->
+                    val seasonNum = Regex("Ø§Ù„Ù…ÙˆØ³Ù… (\\d+)").find(seasonEl.text())?.groupValues?.get(1)?.toIntOrNull()
                     val dataId = seasonEl.attr("data-id")
                     val dataSeason = seasonEl.attr("data-season")
                     try {
@@ -341,7 +341,7 @@ class WecimaProvider : MainAPI() {
                                 newEpisode(epEl.attr("href")) {
                                     name = epEl.selectFirst("episodetitle")?.text()
                                     this.season = seasonNum
-                                    this.episode = Regex("الحلقة (\\d+)").find(name ?: "")?.groupValues?.get(1)?.toIntOrNull()
+                                    this.episode = Regex("Ø§Ù„Ø­Ù„Ù‚Ø© (\\d+)").find(name ?: "")?.groupValues?.get(1)?.toIntOrNull()
                                     this.posterUrl = posterUrl
 
                                 }
@@ -356,7 +356,7 @@ class WecimaProvider : MainAPI() {
                         newEpisode(epEl.attr("href")) {
                             name = epEl.selectFirst("episodetitle")?.text()
                             this.season = 1
-                            this.episode = Regex("الحلقة (\\d+)").find(name ?: "")?.groupValues?.get(1)?.toIntOrNull()
+                            this.episode = Regex("Ø§Ù„Ø­Ù„Ù‚Ø© (\\d+)").find(name ?: "")?.groupValues?.get(1)?.toIntOrNull()
                             this.posterUrl = posterUrl
                         }
                     )
@@ -383,7 +383,7 @@ class WecimaProvider : MainAPI() {
 
             val plot = document.selectFirst("div.StoryMovieContent")?.text()?.trim()
             val year = document.select("ul.Terms--Content--Single-begin li")
-                .find { it.selectFirst("span")?.text()?.contains("السنة") == true }
+                .find { it.selectFirst("span")?.text()?.contains("Ø§Ù„Ø³Ù†Ø©") == true }
                 ?.selectFirst("p")?.text()?.toIntOrNull()
 
             return newMovieLoadResponse(title, url, TvType.Movie, url) {
@@ -421,7 +421,7 @@ class WecimaProvider : MainAPI() {
 
         val document = httpGet(data)
 
-        document.select("ul.WatchServersList li btn").apmap { serverBtn ->
+        document.select("ul.WatchServersList li btn").amap { serverBtn ->
             val encodedUrl = serverBtn.attr("data-url")
             decodeWecimaUrl(encodedUrl)?.let { decodedUrl ->
 
@@ -432,13 +432,13 @@ class WecimaProvider : MainAPI() {
             }
         }
 
-        document.select(".openLinkDown").apmap { downloadBtn ->
+        document.select(".openLinkDown").amap { downloadBtn ->
             val encodedUrl = downloadBtn.attr("data-href")
             decodeWecimaUrl(encodedUrl)?.let { decodedUrl ->
 
                 val qualityText = downloadBtn.selectFirst("resolution")?.text()?.trim() ?: ""
                 val typeText = downloadBtn.selectFirst("quality")?.text()?.trim() ?: "Download"
-                val serverName = "$name $typeText" // مثال: We Cima WEB-DL
+                val serverName = "$name $typeText" // Ù…Ø«Ø§Ù„: We Cima WEB-DL
 
                 if (decodedUrl.startsWith("http")) {
                     loadExtractor(decodedUrl, mainUrl, subtitleCallback, callback)
@@ -448,3 +448,5 @@ class WecimaProvider : MainAPI() {
         return true
     }
 }
+
+

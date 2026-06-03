@@ -1,0 +1,2 @@
+C:\Users\Hussien Essam\.gemini\antigravity\scratch\re-3arabi\Akwam\src\main\kotlin\com\akwam\Akwam.kt
+C:\Users\Hussien Essam\.gemini\antigravity\scratch\re-3arabi\Akwam\src\main\kotlin\com\akwam\AkwamPlugin.kt

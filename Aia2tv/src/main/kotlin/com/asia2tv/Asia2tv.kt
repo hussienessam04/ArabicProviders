@@ -1,4 +1,4 @@
-package com.asia2tv
+﻿package com.asia2tv
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -26,7 +26,7 @@ class Asia2tvProvider : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
 
         val url = if (page > 1) {
-            "$mainUrl/series?page=$page" // رابط عام للفئات
+            "$mainUrl/series?page=$page" // Ø±Ø§Ø¨Ø· Ø¹Ø§Ù… Ù„Ù„ÙØ¦Ø§Øª
         } else {
             mainUrl
         }
@@ -43,7 +43,7 @@ class Asia2tvProvider : MainAPI() {
             }
         }
 
-        return HomePageResponse(homePageList.filter { it.list.isNotEmpty() })
+        return newHomePageResponse(homePageList.filter { it.list.isNotEmpty() })
     }
 
 
@@ -106,8 +106,8 @@ class Asia2tvProvider : MainAPI() {
         val plot = document.selectFirst("p.mb-3")?.text()?.trim()
             ?: document.selectFirst("meta[name=description]")?.attr("content")
         val tags = document.select("div.post_tags a").map { it.text() }
-        val year = document.select("ul.mb-2 li:contains(سنة العرض) a").firstOrNull()?.text()?.toIntOrNull()
-        val rating = document.selectFirst("div.post_review_avg")?.text()?.toRatingInt()
+        val year = document.select("ul.mb-2 li:contains(Ø³Ù†Ø© Ø§Ù„Ø¹Ø±Ø¶) a").firstOrNull()?.text()?.toIntOrNull()
+        val rating = document.selectFirst("div.post_review_avg")?.text()?.toIntOrNull()
         val recommendations = document.select(".row .postmovie").mapNotNull { it.toSearchResponse() }
         val allEpisodesElements = document.select("div.loop-episode a").toMutableList()
         val serieId = Regex("""serieid=(\d+)""").find(document.html())?.groupValues?.get(1)
@@ -168,7 +168,7 @@ class Asia2tvProvider : MainAPI() {
                 newEpisode(href) {
                     this.name = name
                     this.episode = epNum
-                    this.posterUrl = poster // إضافة بوستر المسلسل لكل حلقة
+                    this.posterUrl = poster // Ø¥Ø¶Ø§ÙØ© Ø¨ÙˆØ³ØªØ± Ø§Ù„Ù…Ø³Ù„Ø³Ù„ Ù„ÙƒÙ„ Ø­Ù„Ù‚Ø©
                 }
             }.sortedBy { it.episode }
 
@@ -189,7 +189,7 @@ class Asia2tvProvider : MainAPI() {
     )
 
     override suspend fun loadLinks(
-        data: String, // `data` هنا هو رابط الحلقة
+        data: String, // `data` Ù‡Ù†Ø§ Ù‡Ùˆ Ø±Ø§Ø¨Ø· Ø§Ù„Ø­Ù„Ù‚Ø©
         isCasting: Boolean,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
@@ -220,21 +220,21 @@ class Asia2tvProvider : MainAPI() {
 
         }
 
-        serverElements.apmap { serverLiElement ->
-            val serverElement = serverLiElement.selectFirst("a") ?: return@apmap
+        serverElements.amap { serverLiElement ->
+            val serverElement = serverLiElement.selectFirst("a") ?: return@amap
             val serverName = serverElement.text()?.trim() ?: "Unknown Server"
             val serverCode = serverElement.attr("data-code")
 
             if (serverCode.isBlank()) {
 
-                return@apmap
+                return@amap
             }
 
             try {
 
 
                 val postData = mapOf(
-                    "action" to "iframe_server", // <-- القيمة الصحيحة
+                    "action" to "iframe_server", // <-- Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„ØµØ­ÙŠØ­Ø©
                     "code" to serverCode
                 )
 
@@ -264,3 +264,6 @@ class Asia2tvProvider : MainAPI() {
         return true
     }
 }
+
+
+

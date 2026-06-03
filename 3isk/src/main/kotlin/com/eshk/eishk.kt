@@ -1,4 +1,4 @@
-package com.eshk
+﻿package com.eshk
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
@@ -16,7 +16,7 @@ import com.lagradost.cloudstream3.syncproviders.providers.OpenSubtitlesApi.Compa
 
 class eishk : MainAPI() {
     override var mainUrl = "https://3esk.onl"
-    override var name = "قصة عشق"
+    override var name = "Ù‚ØµØ© Ø¹Ø´Ù‚"
     override val supportedTypes = setOf(TvType.TvSeries, TvType.Movie)
     override var lang = "ar"
     override val hasMainPage = true
@@ -55,7 +55,7 @@ class eishk : MainAPI() {
             href.contains("/tvshows/") -> newTvSeriesSearchResponse(title, href) { this.posterUrl = posterUrl }
             href.contains("/movies/") -> newMovieSearchResponse(title, href) { this.posterUrl = posterUrl }
             href.contains("/episodes/") -> {
-                val seriesTitle = title.substringBefore(" الحلقة").trim()
+                val seriesTitle = title.substringBefore(" Ø§Ù„Ø­Ù„Ù‚Ø©").trim()
                 newTvSeriesSearchResponse(seriesTitle.ifBlank { title }, href) { this.posterUrl = posterUrl }
             }
             else -> null
@@ -76,7 +76,7 @@ class eishk : MainAPI() {
                 all.add(HomePageList(title, items))
             }
         }
-        return HomePageResponse(all)
+        return newHomePageResponse(all)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -134,12 +134,12 @@ class eishk : MainAPI() {
                 return null
             }
 
-            return load(seriesUrl) // أعِد استدعاء الدالة مع رابط المسلسل
+            return load(seriesUrl) // Ø£Ø¹ÙØ¯ Ø§Ø³ØªØ¯Ø¹Ø§Ø¡ Ø§Ù„Ø¯Ø§Ù„Ø© Ù…Ø¹ Ø±Ø§Ø¨Ø· Ø§Ù„Ù…Ø³Ù„Ø³Ù„
         }
 
         val document = app.get(url).document
         val title = document.selectFirst("div.single_info h1.title")?.text()
-            ?.replace("مترجم", "")?.replace("مدبلج", "")?.trim()
+            ?.replace("Ù…ØªØ±Ø¬Ù…", "")?.replace("Ù…Ø¯Ø¨Ù„Ø¬", "")?.trim()
             ?: return null
 
         val poster = document.selectFirst("div.poster-wrapper img")?.attr("src")
@@ -180,7 +180,7 @@ class eishk : MainAPI() {
                 }
 
                 val epNum = epA.attr("data-ep-num").toIntOrNull()
-                val epName = epA.attr("title").ifBlank { "الحلقة $epNum" }
+                val epName = epA.attr("title").ifBlank { "Ø§Ù„Ø­Ù„Ù‚Ø© $epNum" }
 
                 episodes.add(
                     newEpisode(epUrl) {
@@ -456,7 +456,7 @@ class eishk : MainAPI() {
 
             val soup0 = r0.document
             var watchForm = soup0.selectFirst("button.single-watch-btn")
-                ?.let { it.parent() } // قد لا يكون دقيقًا، لذلك fallback
+                ?.let { it.parent() } // Ù‚Ø¯ Ù„Ø§ ÙŠÙƒÙˆÙ† Ø¯Ù‚ÙŠÙ‚Ù‹Ø§ØŒ Ù„Ø°Ù„Ùƒ fallback
             if (watchForm == null) {
                 for (f in soup0.select("form")) {
                     val act = f.attr("action")
@@ -590,5 +590,6 @@ class eishk : MainAPI() {
 
             return false
         }
-    } // ← إغلاق try الرئيسي
-} // ← إغلاق دالة loadLinks بالكامل
+    } // â† Ø¥ØºÙ„Ø§Ù‚ try Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ
+} // â† Ø¥ØºÙ„Ø§Ù‚ Ø¯Ø§Ù„Ø© loadLinks Ø¨Ø§Ù„ÙƒØ§Ù…Ù„
+

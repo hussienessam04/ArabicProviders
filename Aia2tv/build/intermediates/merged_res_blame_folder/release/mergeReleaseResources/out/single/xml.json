@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/xml/m3expressive_button_shape_state_list.xml",
+        "source": "com.arabseed.Aia2tv-material-1.13.0-12:/xml/m3expressive_button_shape_state_list.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/xml/m3_button_group_child_size_change.xml",
+        "source": "com.arabseed.Aia2tv-material-1.13.0-12:/xml/m3_button_group_child_size_change.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/xml/m3_split_button_inner_corner_size_state_list.xml",
+        "source": "com.arabseed.Aia2tv-material-1.13.0-12:/xml/m3_split_button_inner_corner_size_state_list.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/xml/m3expressive_connected_buttons_inner_corner_size_state_list.xml",
+        "source": "com.arabseed.Aia2tv-material-1.13.0-12:/xml/m3expressive_connected_buttons_inner_corner_size_state_list.xml"
+    },
+    {
+        "merged": "com.arabseed.Aia2tv-release-3:/xml/image_share_filepaths.xml",
+        "source": "com.arabseed.Aia2tv-browser-1.9.0-18:/xml/image_share_filepaths.xml"
+    }
+]

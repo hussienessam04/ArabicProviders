@@ -1,4 +1,4 @@
-package com.asia2tv
+﻿package com.asia2tv
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -21,14 +21,14 @@ class Asia2tvProvider : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val urls = listOf(
-            Pair("$mainUrl/category/asian-drama/", "الدراما الآسيوية"),
-            Pair("$mainUrl/category/asian-drama/korean/", "دراما كورية"),
-            Pair("$mainUrl/category/asian-drama/japanese/", "دراما يابانية"),
-            Pair("$mainUrl/category/asian-movies/", "أفلام آسيوية"),
-            Pair("$mainUrl/completed-dramas/", "دراما مكتملة")
+            Pair("$mainUrl/category/asian-drama/", "Ø§Ù„Ø¯Ø±Ø§Ù…Ø§ Ø§Ù„Ø¢Ø³ÙŠÙˆÙŠØ©"),
+            Pair("$mainUrl/category/asian-drama/korean/", "Ø¯Ø±Ø§Ù…Ø§ ÙƒÙˆØ±ÙŠØ©"),
+            Pair("$mainUrl/category/asian-drama/japanese/", "Ø¯Ø±Ø§Ù…Ø§ ÙŠØ§Ø¨Ø§Ù†ÙŠØ©"),
+            Pair("$mainUrl/category/asian-movies/", "Ø£ÙÙ„Ø§Ù… Ø¢Ø³ÙŠÙˆÙŠØ©"),
+            Pair("$mainUrl/completed-dramas/", "Ø¯Ø±Ø§Ù…Ø§ Ù…ÙƒØªÙ…Ù„Ø©")
         )
 
-        val items = urls.apmap { (url, name) ->
+        val items = urls.amap { (url, name) ->
             val pageUrl = if (page > 1) "$url/page/$page/" else url
             val soup = app.get(pageUrl).document
             val home = soup.select("div.box-item").mapNotNull {
@@ -43,7 +43,7 @@ class Asia2tvProvider : MainAPI() {
             }
             HomePageList(name, home)
         }
-        return HomePageResponse(items.filter { it.list.isNotEmpty() })
+        return newHomePageResponse(items.filter { it.list.isNotEmpty() })
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -74,7 +74,7 @@ class Asia2tvProvider : MainAPI() {
             ?: soup.selectFirst("meta[property=og:image]")?.attr("content")
 
         val plot = soup.selectFirst("div.getcontent p")?.text()?.trim()
-        val tags = soup.select("div.box-tags a, li:contains(البلد) a").map { it.text() }
+        val tags = soup.select("div.box-tags a, li:contains(Ø§Ù„Ø¨Ù„Ø¯) a").map { it.text() }
 
         val year = soup.select("div.post-date")?.last()?.text()?.toIntOrNull()
 
@@ -101,9 +101,9 @@ class Asia2tvProvider : MainAPI() {
             newEpisode(href) {
                 this.name = episodeName
                 this.episode = episodeNumber
-                this.posterUrl = poster // إضافة بوستر المسلسل لكل حلقة
+                this.posterUrl = poster // Ø¥Ø¶Ø§ÙØ© Ø¨ÙˆØ³ØªØ± Ø§Ù„Ù…Ø³Ù„Ø³Ù„ Ù„ÙƒÙ„ Ø­Ù„Ù‚Ø©
             }
-        }.reversed() // عكس الترتيب لأن المواقع غالبًا ما تعرض الحلقات من الأحدث للأقدم
+        }.reversed() // Ø¹ÙƒØ³ Ø§Ù„ØªØ±ØªÙŠØ¨ Ù„Ø£Ù† Ø§Ù„Ù…ÙˆØ§Ù‚Ø¹ ØºØ§Ù„Ø¨Ù‹Ø§ Ù…Ø§ ØªØ¹Ø±Ø¶ Ø§Ù„Ø­Ù„Ù‚Ø§Øª Ù…Ù† Ø§Ù„Ø£Ø­Ø¯Ø« Ù„Ù„Ø£Ù‚Ø¯Ù…
 
 
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
@@ -123,12 +123,12 @@ class Asia2tvProvider : MainAPI() {
 
 
         val serverPageUrl = if (data.contains("/watching/")) {
-            data // هذا بالفعل رابط المشاهدة
+            data // Ù‡Ø°Ø§ Ø¨Ø§Ù„ÙØ¹Ù„ Ø±Ø§Ø¨Ø· Ø§Ù„Ù…Ø´Ø§Ù‡Ø¯Ø©
         } else {
             val doc = app.get(data).document
 
-            doc.selectFirst("div.loop-episode a.current")?.attr("href") // للمسلسلات
-                ?: doc.selectFirst("a.watch_player")?.attr("href") // للأفلام
+            doc.selectFirst("div.loop-episode a.current")?.attr("href") // Ù„Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª
+                ?: doc.selectFirst("a.watch_player")?.attr("href") // Ù„Ù„Ø£ÙÙ„Ø§Ù…
                 ?: return false
         }
 
@@ -137,9 +137,10 @@ class Asia2tvProvider : MainAPI() {
             it.attr("data-server")
         }
 
-        serverUrls.apmap { url ->
+        serverUrls.amap { url ->
             loadExtractor(url, mainUrl, subtitleCallback, callback)
         }
         return true
     }
 }
+

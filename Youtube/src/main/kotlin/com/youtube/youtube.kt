@@ -1,4 +1,4 @@
-package com.lagradost.cloudstream3.ar.youtube
+﻿package com.lagradost.cloudstream3.ar.youtube
 
 import org.json.JSONObject
 import android.content.SharedPreferences
@@ -27,7 +27,7 @@ class YoutubeProvider(
     data class CustomSection(
         @JsonProperty("name") var name: String = "",
         @JsonProperty("url") var url: String = "",
-        @JsonProperty("isEnabled") var isEnabled: Boolean = true // المتغير الجديد لحالة التفعيل
+        @JsonProperty("isEnabled") var isEnabled: Boolean = true // Ø§Ù„Ù…ØªØºÙŠØ± Ø§Ù„Ø¬Ø¯ÙŠØ¯ Ù„Ø­Ø§Ù„Ø© Ø§Ù„ØªÙØ¹ÙŠÙ„
     )
     object Config {
         const val SLEEP_BETWEEN = 1
@@ -144,12 +144,12 @@ class YoutubeProvider(
                     val text = getText(part.getMapKey("text")) ?: ""
                     if (text.isNotBlank()) {
 
-                        if (text.matches(Regex(".*(\\d+[KMBkmb]|views|مشاهدة).*"))) {
+                        if (text.matches(Regex(".*(\\d+[KMBkmb]|views|Ù…Ø´Ø§Ù‡Ø¯Ø©).*"))) {
                             views = formatViews(text)
                         }
 
-                        else if (!text.matches(Regex(".*(\\d+:\\d+|ago|قبل).*")) && text.length > 1 && !text.contains(
-                                "•"
+                        else if (!text.matches(Regex(".*(\\d+:\\d+|ago|Ù‚Ø¨Ù„).*")) && text.length > 1 && !text.contains(
+                                "â€¢"
                             )
                         ) {
                             channel = text
@@ -175,7 +175,7 @@ class YoutubeProvider(
         if (viewText.isNullOrBlank()) return "N/A"
         val text = viewText.toString()
         if (text.any { it in listOf('K', 'M', 'B', 'k', 'm', 'b') } && text.length < 15) {
-            return text.split("view")[0].split("مشاهدة")[0].trim()
+            return text.split("view")[0].split("Ù…Ø´Ø§Ù‡Ø¯Ø©")[0].trim()
         }
         val digits = text.filter { it.isDigit() }
         if (digits.isBlank()) return text
@@ -363,7 +363,7 @@ class YoutubeProvider(
                     val label = lockup.getMapKey("accessibility")?.getMapKey("accessibilityData")
                         ?.getString("label") ?: ""
                     val match =
-                        Regex("(?:by|من|عبر|قناة)\\s+(.*?)\\s+(?:\\d|view|مشاهدة)").find(label)
+                        Regex("(?:by|Ù…Ù†|Ø¹Ø¨Ø±|Ù‚Ù†Ø§Ø©)\\s+(.*?)\\s+(?:\\d|view|Ù…Ø´Ø§Ù‡Ø¯Ø©)").find(label)
                     if (match != null) channel = match.groupValues[1].replace("Shorts", "").trim()
                 }
                 val isShorts = lockup.getMapKey("content")
@@ -525,7 +525,7 @@ class YoutubeProvider(
             val isEn = lang == "en"
 
             if (sharedPref?.getBoolean("show_trending_home", true) == true) {
-                list.add(MainPageData(if (isEn) "Trending" else "الرئيسية (Trending)", "Home"))
+                list.add(MainPageData(if (isEn) "Trending" else "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ© (Trending)", "Home"))
             }
 
             val customSections = getCustomHomepages()
@@ -874,7 +874,7 @@ class YoutubeProvider(
 
             return newTvSeriesLoadResponse("Shorts Feed", url, TvType.TvSeries, targetEpisodes) {
                 this.posterUrl = poster
-                this.plot = "قائمة تشغيل تلقائية من الشورتس (${targetEpisodes.size} فيديو)"
+                this.plot = "Ù‚Ø§Ø¦Ù…Ø© ØªØ´ØºÙŠÙ„ ØªÙ„Ù‚Ø§Ø¦ÙŠØ© Ù…Ù† Ø§Ù„Ø´ÙˆØ±ØªØ³ (${targetEpisodes.size} ÙÙŠØ¯ÙŠÙˆ)"
                 this.tags = listOf("Shorts", "Feed")
             }
         }
@@ -982,7 +982,7 @@ class YoutubeProvider(
                             collectTo.add(newEpisode(vidUrl) {
                                 this.name = vidTitle
                                 this.posterUrl = thumb
-                                this.description = listOfNotNull(viewCount, publishedTime).joinToString(" • ")
+                                this.description = listOfNotNull(viewCount, publishedTime).joinToString(" â€¢ ")
                             })
                         }
                     }
@@ -1163,7 +1163,7 @@ class YoutubeProvider(
                     val descObj = secondary["attributedDescription"] as? Map<*, *>
                         ?: secondary["description"] as? Map<*, *>
 
-                    val fullDesc = getText(descObj)// استخدام دالة getText الموحدة
+                    val fullDesc = getText(descObj)// Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø¯Ø§Ù„Ø© getText Ø§Ù„Ù…ÙˆØ­Ø¯Ø©
                     if (fullDesc.isNotBlank()) {
                         plot += fullDesc
                     }
@@ -1348,7 +1348,7 @@ class YoutubeProvider(
 
                             if (!seenSubs.contains(autoUrl)) {
                                 seenSubs.add(autoUrl)
-                                val displayName = "$baseLangCode → $targetLang"
+                                val displayName = "$baseLangCode â†’ $targetLang"
                                 subtitleCallback(SubtitleFile(displayName, autoUrl))
                             }
                         }
@@ -1450,7 +1450,7 @@ class YoutubeProvider(
                             val autoUrl = "$baseUrl&fmt=ttml&tlang=$targetLang"
                             if (!seenSubs.contains(autoUrl)) {
                                 seenSubs.add(autoUrl)
-                                val displayName = "$baseLangCode → $targetLang"
+                                val displayName = "$baseLangCode â†’ $targetLang"
                                 subtitleCallback(SubtitleFile(displayName, autoUrl))
                             }
                         }
@@ -1673,7 +1673,7 @@ class YoutubeProvider(
                             listOf(tvtt, tsrt).forEach { u ->
                                 if (u !in seenSubs) {
                                     seenSubs.add(u)
-                                    subtitleCallback(SubtitleFile("$baseLang → $tlang", u))
+                                    subtitleCallback(SubtitleFile("$baseLang â†’ $tlang", u))
                                 }
                             }
                         }
@@ -1820,6 +1820,8 @@ class YoutubeProvider(
         return regex.find(this)?.groupValues?.getOrNull(1)
     }
 }
+
+
 
 
 

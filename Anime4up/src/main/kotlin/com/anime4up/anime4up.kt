@@ -1,4 +1,4 @@
-package com.anime4up
+﻿package com.anime4up
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
@@ -46,7 +46,7 @@ class Anime4up : MainAPI() {
         }
 
         doc.select(".main-widget").forEach { widget ->
-            val sectionName = widget.selectFirst(".main-didget-head h3")?.text() ?: "القسم"
+            val sectionName = widget.selectFirst(".main-didget-head h3")?.text() ?: "Ø§Ù„Ù‚Ø³Ù…"
 
             val items = widget.select(".themexblock, .anime-card-container").mapNotNull { element ->
                 val title = element.selectFirst("h3")?.text() ?: return@mapNotNull null
@@ -62,7 +62,7 @@ class Anime4up : MainAPI() {
             }
         }
 
-        return HomePageResponse(homePageList)
+        return newHomePageResponse(homePageList)
     }
 
 
@@ -110,11 +110,11 @@ class Anime4up : MainAPI() {
         val plot = animeDoc.selectFirst("p.anime-story")?.text()
         val tags = animeDoc.select("ul.anime-genres li a").map { it.text() }
         val year = animeDoc.select(".anime-info").firstOrNull {
-            it.text().contains("بداية العرض")
+            it.text().contains("Ø¨Ø¯Ø§ÙŠØ© Ø§Ù„Ø¹Ø±Ø¶")
         }?.text()?.filter { it.isDigit() }?.toIntOrNull()
 
         val typeText = animeDoc.select(".anime-info").text()
-        val type = if (typeText.contains("Movie", true) || typeText.contains("فيلم")) TvType.AnimeMovie else TvType.Anime
+        val type = if (typeText.contains("Movie", true) || typeText.contains("ÙÙŠÙ„Ù…")) TvType.AnimeMovie else TvType.Anime
 
         val episodes = mutableListOf<Episode>()
 
@@ -245,7 +245,7 @@ class Anime4up : MainAPI() {
 
         val seenLinks = mutableSetOf<String>()
 
-        doc.select("ul#episode-servers li[data-watch]").apmap { li ->
+        doc.select("ul#episode-servers li[data-watch]").amap { li ->
             val serverUrl = li.attr("data-watch")
 
             val linksToProcess = if (serverUrl.contains("share4max") || serverUrl.contains("megamax")) {
@@ -261,7 +261,7 @@ class Anime4up : MainAPI() {
             }
         }
 
-        doc.select("div.download-list table.table tbody tr").apmap { tr ->
+        doc.select("div.download-list table.table tbody tr").amap { tr ->
             val downloadLink = tr.selectFirst("td.td-link a")?.attr("href")
 
             if (!downloadLink.isNullOrBlank() && seenLinks.add(downloadLink)) {
@@ -273,3 +273,4 @@ class Anime4up : MainAPI() {
         return true
     }
 }
+

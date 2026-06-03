@@ -1,4 +1,4 @@
-package com.animeiat
+﻿package com.animeiat
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
@@ -6,7 +6,7 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.newExtractorLink
-import android.util.Base64 // <-- تم التصحيح: استخدام مكتبة أندرويد
+import android.util.Base64 // <-- ØªÙ… Ø§Ù„ØªØµØ­ÙŠØ­: Ø§Ø³ØªØ®Ø¯Ø§Ù… Ù…ÙƒØªØ¨Ø© Ø£Ù†Ø¯Ø±ÙˆÙŠØ¯
 import android.util.Log
 
 class AnimeiatProvider : MainAPI() {
@@ -57,10 +57,10 @@ class AnimeiatProvider : MainAPI() {
                 posterUrl = it.poster_path.toImgUrl()
             }
         }
-        lists.add(HomePageList("أنميات شائعة", popularAnimes, true))
+        lists.add(HomePageList("Ø£Ù†Ù…ÙŠØ§Øª Ø´Ø§Ø¦Ø¹Ø©", popularAnimes, true))
 
 
-        return HomePageResponse(lists)
+        return newHomePageResponse(lists)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -80,7 +80,7 @@ class AnimeiatProvider : MainAPI() {
         val details = detailsResponse.data
 
         val episodes = mutableListOf<Episode>()
-        var episodesUrl: String? = "$url/episodes" // الرابط الأول لصفحة الحلقات
+        var episodesUrl: String? = "$url/episodes" // Ø§Ù„Ø±Ø§Ø¨Ø· Ø§Ù„Ø£ÙˆÙ„ Ù„ØµÙØ­Ø© Ø§Ù„Ø­Ù„Ù‚Ø§Øª
 
         while (episodesUrl != null) {
             val response = app.get(episodesUrl).parsed<EpisodeListResponse>()
@@ -88,7 +88,7 @@ class AnimeiatProvider : MainAPI() {
             response.data.forEach { episodeInfo ->
                 episodes.add(
                     newEpisode(
-                        data = "$mainUrl/episode/${episodeInfo.slug}" // رابط الحلقة لـ loadLinks
+                        data = "$mainUrl/episode/${episodeInfo.slug}" // Ø±Ø§Ø¨Ø· Ø§Ù„Ø­Ù„Ù‚Ø© Ù„Ù€ loadLinks
                     ) {
                         name = episodeInfo.title
                         episode = episodeInfo.number.toInt()
@@ -104,7 +104,7 @@ class AnimeiatProvider : MainAPI() {
             details.anime_name,
             url,
             TvType.Anime,
-            episodes.reversed() // عكس ترتيب الحلقات لتبدأ من 1
+            episodes.reversed() // Ø¹ÙƒØ³ ØªØ±ØªÙŠØ¨ Ø§Ù„Ø­Ù„Ù‚Ø§Øª Ù„ØªØ¨Ø¯Ø£ Ù…Ù† 1
         ) {
 
             this.posterUrl = details.poster_path.toImgUrl()
@@ -117,7 +117,7 @@ class AnimeiatProvider : MainAPI() {
 
 
     override suspend fun loadLinks(
-        data: String, // رابط الحلقة
+        data: String, // Ø±Ø§Ø¨Ø· Ø§Ù„Ø­Ù„Ù‚Ø©
         isCasting: Boolean,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit

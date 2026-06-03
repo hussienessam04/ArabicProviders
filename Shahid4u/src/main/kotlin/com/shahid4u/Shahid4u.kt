@@ -1,4 +1,4 @@
-package com.shahid4u
+﻿package com.shahid4u
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -116,7 +116,7 @@ class Shahid4u : MainAPI() {
         if (posterUrl.isNullOrBlank()) posterUrl = element.selectFirst("img")?.attr("src")
         posterUrl = makeAbsoluteUrl(posterUrl) ?: TRANSPARENT_PNG_DATA_URI
 
-        val isTvSeries = element.selectFirst(".ep_num, .الحلقة") != null || href.contains("/episode/")
+        val isTvSeries = element.selectFirst(".ep_num, .Ø§Ù„Ø­Ù„Ù‚Ø©") != null || href.contains("/episode/")
 
         return if (isTvSeries) {
             newTvSeriesSearchResponse(title, href, TvType.TvSeries) {
@@ -151,26 +151,26 @@ class Shahid4u : MainAPI() {
                 parseCard(it)
             }
             if (sliderItems.isNotEmpty()) {
-                homePageList.add(HomePageList("أبرز العروض", sliderItems))
+                homePageList.add(HomePageList("Ø£Ø¨Ø±Ø² Ø§Ù„Ø¹Ø±ÙˆØ¶", sliderItems))
             }
         } catch (e: Exception) {
 
         }
 
         val categories = listOf(
-            "أفلام أجنبي" to "${mainUrl}category/افلام-اجنبي",
-            "أفلام عربي" to "${mainUrl}category/افلام-عربي",
-            "أفلام هندي" to "${mainUrl}category/افلام-هندي",
-            "أفلام تركية" to "${mainUrl}category/افلام-تركية",
-            "أفلام أسيوية" to "${mainUrl}category/افلام-اسيوية",
-            "أفلام انمي" to "${mainUrl}category/افلام-انمي",
-            "مسلسلات أجنبي" to "${mainUrl}category/مسلسلات-اجنبي",
-            "مسلسلات عربي" to "${mainUrl}category/مسلسلات-عربي",
-            "مسلسلات هندية" to "${mainUrl}category/مسلسلات-هندية",
-            "مسلسلات تركية" to "${mainUrl}category/مسلسلات-تركية",
-            "مسلسلات أسيوية" to "${mainUrl}category/مسلسلات-اسيوية",
-            "مسلسلات انمي" to "${mainUrl}category/مسلسلات-انمي",
-            "مسلسلات مدبلجة" to "${mainUrl}category/مسلسلات-مدبلجة"
+            "Ø£ÙÙ„Ø§Ù… Ø£Ø¬Ù†Ø¨ÙŠ" to "${mainUrl}category/Ø§ÙÙ„Ø§Ù…-Ø§Ø¬Ù†Ø¨ÙŠ",
+            "Ø£ÙÙ„Ø§Ù… Ø¹Ø±Ø¨ÙŠ" to "${mainUrl}category/Ø§ÙÙ„Ø§Ù…-Ø¹Ø±Ø¨ÙŠ",
+            "Ø£ÙÙ„Ø§Ù… Ù‡Ù†Ø¯ÙŠ" to "${mainUrl}category/Ø§ÙÙ„Ø§Ù…-Ù‡Ù†Ø¯ÙŠ",
+            "Ø£ÙÙ„Ø§Ù… ØªØ±ÙƒÙŠØ©" to "${mainUrl}category/Ø§ÙÙ„Ø§Ù…-ØªØ±ÙƒÙŠØ©",
+            "Ø£ÙÙ„Ø§Ù… Ø£Ø³ÙŠÙˆÙŠØ©" to "${mainUrl}category/Ø§ÙÙ„Ø§Ù…-Ø§Ø³ÙŠÙˆÙŠØ©",
+            "Ø£ÙÙ„Ø§Ù… Ø§Ù†Ù…ÙŠ" to "${mainUrl}category/Ø§ÙÙ„Ø§Ù…-Ø§Ù†Ù…ÙŠ",
+            "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø£Ø¬Ù†Ø¨ÙŠ" to "${mainUrl}category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø§Ø¬Ù†Ø¨ÙŠ",
+            "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¹Ø±Ø¨ÙŠ" to "${mainUrl}category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø¹Ø±Ø¨ÙŠ",
+            "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ù‡Ù†Ø¯ÙŠØ©" to "${mainUrl}category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ù‡Ù†Ø¯ÙŠØ©",
+            "Ù…Ø³Ù„Ø³Ù„Ø§Øª ØªØ±ÙƒÙŠØ©" to "${mainUrl}category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-ØªØ±ÙƒÙŠØ©",
+            "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø£Ø³ÙŠÙˆÙŠØ©" to "${mainUrl}category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø§Ø³ÙŠÙˆÙŠØ©",
+            "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø§Ù†Ù…ÙŠ" to "${mainUrl}category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø§Ù†Ù…ÙŠ",
+            "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ù…Ø¯Ø¨Ù„Ø¬Ø©" to "${mainUrl}category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ù…Ø¯Ø¨Ù„Ø¬Ø©"
         )
 
         for ((title, url) in categories) {
@@ -220,7 +220,7 @@ class Shahid4u : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
-        val title = document.selectFirst("span.title")?.text()?.trim() ?: "غير متوفر"
+        val title = document.selectFirst("span.title")?.text()?.trim() ?: "ØºÙŠØ± Ù…ØªÙˆÙØ±"
         val poster = document.selectFirst("div.poster-side img")?.attr("src")
             ?: document.selectFirst("meta[property='og:image']")?.attr("content")
         val plot = document.selectFirst("span.description")?.text()?.trim()
@@ -230,7 +230,7 @@ class Shahid4u : MainAPI() {
         val episodes = ArrayList<Episode>()
 
         if (seasons.isNotEmpty()) {
-            seasons.apmap { seasonElement ->
+            seasons.amap { seasonElement ->
                 val seasonUrl = seasonElement.attr("href")
                 val seasonDoc = app.get(seasonUrl).document
 
@@ -238,7 +238,7 @@ class Shahid4u : MainAPI() {
                     val epName = episodeElement.text().trim()
                     val epUrl = episodeElement.attr("href")
                     val episodeNumber = Regex("""\d+""").find(epName)?.value?.toIntOrNull()
-                    val seasonNumber = Regex("""الموسم\s*(\d+)""").find(seasonElement.text())?.groupValues?.get(1)?.toIntOrNull()
+                    val seasonNumber = Regex("""Ø§Ù„Ù…ÙˆØ³Ù…\s*(\d+)""").find(seasonElement.text())?.groupValues?.get(1)?.toIntOrNull()
 
                     episodes.add(newEpisode(epUrl) {
                         this.name = epName
@@ -342,5 +342,8 @@ class Shahid4u : MainAPI() {
         return true
     }
 }
+
+
+
 
 

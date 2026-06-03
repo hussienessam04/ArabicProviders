@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.arabseed.3isk-release-3:/layout-sw600dp-v13/design_layout_snackbar.xml",
+        "source": "com.arabseed.3isk-material-1.13.0-12:/layout-sw600dp-v13/design_layout_snackbar.xml"
+    },
+    {
+        "merged": "com.arabseed.3isk-release-3:/layout-sw600dp-v13/mtrl_layout_snackbar.xml",
+        "source": "com.arabseed.3isk-material-1.13.0-12:/layout-sw600dp-v13/mtrl_layout_snackbar.xml"
+    }
+]

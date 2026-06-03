@@ -1,4 +1,4 @@
-
+﻿
 package com.witanime
 
 import com.lagradost.cloudstream3.*
@@ -59,7 +59,7 @@ class WitAnime : MainAPI() {
             val title =
                 widget.selectFirst("div.main-didget-head h3")?.text()?.trim() ?: return@forEach
 
-            val isEpisodeList = title.contains("حلقات")
+            val isEpisodeList = title.contains("Ø­Ù„Ù‚Ø§Øª")
 
             val items =
                 widget.select(if (isEpisodeList) "div.episodes-card-container" else "div.anime-card-container")
@@ -88,7 +88,7 @@ class WitAnime : MainAPI() {
             if (items.isNotEmpty()) homePageList.add(HomePageList(title, items))
         }
 
-        return HomePageResponse(homePageList)
+        return newHomePageResponse(homePageList)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -127,11 +127,11 @@ class WitAnime : MainAPI() {
 
         document.select(".anime-info").forEach {
             val infoText = it.text()
-            if (infoText.startsWith("حالة الأنمي:")) {
+            if (infoText.startsWith("Ø­Ø§Ù„Ø© Ø§Ù„Ø£Ù†Ù…ÙŠ:")) {
                 status =
-                    if (infoText.contains("مكتمل")) ShowStatus.Completed else ShowStatus.Ongoing
+                    if (infoText.contains("Ù…ÙƒØªÙ…Ù„")) ShowStatus.Completed else ShowStatus.Ongoing
             }
-            if (infoText.startsWith("النوع:")) {
+            if (infoText.startsWith("Ø§Ù„Ù†ÙˆØ¹:")) {
                 tvType = if (infoText.contains("Movie")) TvType.AnimeMovie else TvType.Anime
             }
         }
@@ -164,7 +164,7 @@ class WitAnime : MainAPI() {
                         episodes = episodesList.mapNotNull { ep ->
                             val epUrl = ep["url"]?.toString() ?: return@mapNotNull null
                             val epName =
-                                ep["number"]?.toString() ?: ep["title"]?.toString() ?: "حلقة"
+                                ep["number"]?.toString() ?: ep["title"]?.toString() ?: "Ø­Ù„Ù‚Ø©"
                             newEpisode(epUrl) { this.name = epName }
                         }
                     }
@@ -497,7 +497,7 @@ class WitAnime : MainAPI() {
 
             val servers = findServerElements(html)
 
-            val PARALLELISM = 6 // عدّل هذا حسب حاجتك
+            val PARALLELISM = 6 // Ø¹Ø¯Ù‘Ù„ Ù‡Ø°Ø§ Ø­Ø³Ø¨ Ø­Ø§Ø¬ØªÙƒ
             val semaphore = Semaphore(PARALLELISM)
 
             fun lookupRegistry(reg: Any?, sid: String): Any? {
@@ -737,7 +737,7 @@ class WitAnime : MainAPI() {
                                     source = "Yonaplay",
                                     url = directUrl,
                                 ) {
-                                    referer = "https://drive.google.com/"  // هذا هو رابط preview الأصلي
+                                    referer = "https://drive.google.com/"  // Ù‡Ø°Ø§ Ù‡Ùˆ Ø±Ø§Ø¨Ø· preview Ø§Ù„Ø£ØµÙ„ÙŠ
                                     this.quality = Qualities.Unknown.value
                                     this.type = ExtractorLinkType.VIDEO
                                 }
@@ -758,3 +758,4 @@ class WitAnime : MainAPI() {
         }
     }
 }
+

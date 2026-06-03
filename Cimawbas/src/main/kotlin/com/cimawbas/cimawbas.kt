@@ -1,4 +1,4 @@
-package com.lagradost.cloudstream3.plugins
+﻿package com.lagradost.cloudstream3.plugins
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -17,11 +17,11 @@ class CimaWbas : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/movies/page/" to "أفلام",
-        "$mainUrl/series/page/" to "مسلسلات",
-        "$mainUrl/category/%d8%a7%d9%81%d9%84%d8%a7%d9%85-%d8%a7%d9%86%d9%85%d9%8a/page/" to "أفلام أنمي",
-        "$mainUrl/category/%d9%85%d8%b3%d9%84%d8%b3%d9%84%d8%a7%d8%aa-%d8%a7%d9%86%d9%85%d9%8a/page/" to "مسلسلات أنمي",
-        "$mainUrl/last/page/" to "أضيف حديثاً"
+        "$mainUrl/movies/page/" to "Ø£ÙÙ„Ø§Ù…",
+        "$mainUrl/series/page/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª",
+        "$mainUrl/category/%d8%a7%d9%81%d9%84%d8%a7%d9%85-%d8%a7%d9%86%d9%85%d9%8a/page/" to "Ø£ÙÙ„Ø§Ù… Ø£Ù†Ù…ÙŠ",
+        "$mainUrl/category/%d9%85%d8%b3%d9%84%d8%b3%d9%84%d8%a7%d8%aa-%d8%a7%d9%86%d9%85%d9%8a/page/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø£Ù†Ù…ÙŠ",
+        "$mainUrl/last/page/" to "Ø£Ø¶ÙŠÙ Ø­Ø¯ÙŠØ«Ø§Ù‹"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -64,7 +64,7 @@ class CimaWbas : MainAPI() {
         }
         val description = doc.select(".StoryArea p").text().trim()
         val year = doc.select(".TaxContent a[href*='release-year']").text().trim().toIntOrNull()
-        val rating = doc.select(".imdbR span").text().trim().toRatingInt()
+        val rating = doc.select(".imdbR span").text().trim().toIntOrNull()
         val tags = doc.select(".TaxContent .genre a").map { it.text() }
 
         val episodes = doc.select(".allepcont .row a")
@@ -87,7 +87,7 @@ class CimaWbas : MainAPI() {
                 this.year = year
                 this.plot = description
                 this.tags = tags
-                this.rating = rating
+        // rating = rating
             }
         } else {
             return newMovieLoadResponse(title, url, TvType.Movie, url) {
@@ -95,7 +95,7 @@ class CimaWbas : MainAPI() {
                 this.year = year
                 this.plot = description
                 this.tags = tags
-                this.rating = rating
+        // rating = rating
             }
         }
     }
@@ -130,3 +130,6 @@ class CimaWbas : MainAPI() {
         return true
     }
 }
+
+
+
