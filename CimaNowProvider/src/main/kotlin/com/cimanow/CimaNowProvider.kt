@@ -248,10 +248,16 @@ class CimaNow : MainAPI() {
                     watchUrl,
                     referer = "https://rm.freex2line.online/2020/02/blog-post.html/",
                     headers = mapOf("User-Agent" to "Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115 Mobile Safari/537.36"),
-                    interceptor = WebViewResolver(Regex("hide_my_HTML_")),
                     timeout = 60000
                 ).text
             }
+
+            Log.e(serverLogTag, "HTML DUMP 1: " + responseText.take(2500))
+            if (responseText.length > 2500) Log.e(serverLogTag, "HTML DUMP 2: " + responseText.substring(2500).take(2500))
+            if (responseText.length > 5000) Log.e(serverLogTag, "HTML DUMP 3: " + responseText.substring(5000).take(2500))
+            if (responseText.length > 7500) Log.e(serverLogTag, "HTML DUMP 4: " + responseText.substring(7500).take(2500))
+            if (responseText.length > 10000) Log.e(serverLogTag, "HTML DUMP 5: " + responseText.substring(10000).take(2500))
+
 
             val hideString = hideMyHtmlRegex.find(responseText)?.groups?.get(1)?.value
                 ?.let { rawGroup ->
