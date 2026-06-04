@@ -75,20 +75,16 @@ class CimaNow : MainAPI() {
 
 
     override val mainPage = mainPageOf(
-        mainUrl to "الرئيسية",
-        "$mainUrl/%D8%A7%D9%84%D8%A7%D8%AD%D8%AF%D8%AB/" to "الأحدث",
-        "$mainUrl/%D8%A7%D9%84%D8%A7%D9%83%D8%AB%D8%B1-%D9%85%D8%B4%D8%A7%D9%87%D8%AF%D8%A9/" to "الأكثر مشاهدة",
-        "$mainUrl/category/%D9%85%D8%B3%D9%84%D8%B3%D9%84%D8%A7%D8%AA-%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9/" to "مسلسلات عربية",
-        "$mainUrl/category/%D9%85%D8%B3%D9%84%D8%B3%D9%84%D8%A7%D8%AA-%D8%A7%D8%AC%D9%86%D8%A8%D9%8A%D8%A9/" to "مسلسلات اجنبية",
-        "$mainUrl/category/%D9%85%D8%B3%D9%84%D8%B3%D9%84%D8%A7%D8%AA-%D8%AA%D8%B1%D9%83%D9%8A%D8%A9/" to "مسلسلات تركية",
-        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9/" to "افلام عربية",
-        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D8%A7%D8%AC%D9%86%D8%A8%D9%8A%D8%A9/" to "افلام اجنبية",
-        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D8%AA%D8%B1%D9%83%D9%8A%D8%A9/" to "افلام تركية",
-        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D9%87%D9%86%D8%AF%D9%8A%D8%A9/" to "افلام هندية",
-        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D8%A7%D9%86%D9%8A%D9%85%D9%8A%D8%B4%D9%86/" to "افلام انيميشن",
-        "$mainUrl/category/%D8%A7%D9%84%D8%A8%D8%B1%D8%A7%D9%85%D8%AC-%D8%A7%D9%84%D8%AA%D9%84%D9%81%D8%B2%D9%8A%D9%88%D9%86%D9%8A%D8%A9/" to "البرامج التلفزيونية",
-        "$mainUrl/category/%D9%85%D8%B3%D8%B1%D8%AD%D9%8A%D8%A7%D8%AA/" to "مسرحيات",
-        "$mainUrl/category/%D8%AD%D9%81%D9%84%D8%A7%D8%AA/" to "حفلات"
+        "$mainUrl/الاحدث/" to "الاحدث",
+        "$mainUrl/category/الافلام/" to "الافلام",
+        "$mainUrl/category/افلام-عربية/" to "افلام عربي",
+        "$mainUrl/category/افلام-اجنبية/" to "افلام اجنبي",
+        "$mainUrl/category/افلام-انمي/" to "افلام انمي",
+        "$mainUrl/category/المسلسلات/" to "المسلسلات",
+        "$mainUrl/category/مسلسلات-عربية/" to "مسلسلات عربي",
+        "$mainUrl/category/مسلسلات-اجنبية/" to "مسلسلات اجنبي",
+        "$mainUrl/category/مسلسلات-انمي/" to "مسلسلات انمي",
+        "$mainUrl/category/برامج-تلفزيونية/" to "برامج"
     )
 
     private fun String.getIntFromText(): Int? {
@@ -104,17 +100,20 @@ class CimaNow : MainAPI() {
         val tvType = if (url.contains("فيلم|مسرحية|حفلات".toRegex())) TvType.Movie else TvType.TvSeries
 
         val dubEl = select("li[aria-label=\"ribbon\"]:nth-child(2)").isNotEmpty()
-        val dubStatus = if (dubEl) select("li[aria-label=\"ribbon\"]:nth-child(2)").text().contains("مدبلج")
-        else select("li[aria-label=\"ribbon\"]:nth-child(1)").text().contains("مدبلج")
-        if (dubStatus) title = "$title (مدبلج)"
+        val dubStatus = if (dubEl) select("li[aria-label=\"ribbon\"]:nth-child(2)").text().contains("مترجم")
+        else select("li[aria-label=\"ribbon\"]:nth-child(1)").text().contains("مترجم")
+        if (dubStatus) title = "$title (مترجم)"
 
-        return newMovieSearchResponse(
-            "$title ${select("li[aria-label=\"ribbon\"]:contains(الموسم)").text()}",
-            url,
-            tvType,
-        ) {
-            this.posterUrl = posterUrl
-            this.year = year
+        return if (tvType == TvType.TvSeries) {
+            newTvSeriesSearchResponse(title, url, TvType.TvSeries) {
+                this.posterUrl = posterUrl
+                this.year = year
+            }
+        } else {
+            newMovieSearchResponse(title, url, TvType.Movie) {
+                this.posterUrl = posterUrl
+                this.year = year
+            }
         }
     }
 
@@ -143,8 +142,7 @@ class CimaNow : MainAPI() {
 
                 if (list.isEmpty()) return@mapNotNull null
                 
-                // Set the URL so pagination works
-                HomePageList(name, list, isHorizontalImages = true, url = categoryUrl ?: "")
+                HomePageList(name, list, isHorizontalImages = true)
             }
             newHomePageResponse(pages.filter { it.list.isNotEmpty() })
         } else {
