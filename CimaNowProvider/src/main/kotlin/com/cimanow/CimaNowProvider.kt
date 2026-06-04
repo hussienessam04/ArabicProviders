@@ -268,15 +268,12 @@ class CimaNow : MainAPI() {
                 app.get(url2, referer = shineUrl, headers = HEADERS)
 
                 Log.i(serverLogTag, "3. Requesting blog-post.html...")
-                val url3 = "https://$redirectHost/2020/02/blog-post.html"
+                val url3 = "https://$redirectHost/2020/02/blog-post.html/"
                 val html = app.get(url3, referer = url2, headers = HEADERS).text
-                Log.i(serverLogTag, "Blogger HTML length: ${html.length}")
-                Log.i(serverLogTag, "Blogger HTML start: ${html.take(500)}")
-
                 Log.i(serverLogTag, "4. Parsing variables...")
                 val ptrRegex = Regex("""window\.ptr_\w+\s*=\s*['"](\w+)['"];""")
                 val ctxName = ptrRegex.find(html)?.groupValues?.get(1)
-                    ?: throw Exception("Failed to parse ctxName. HTML sample: " + html.take(1000))
+                    ?: throw Exception("Failed to parse ctxName")
 
                 val mapRegex = Regex("""(?s)window\.map_\w+\s*=\s*(\{[^\}]+});""")
                 val mapStr = mapRegex.find(html)?.groupValues?.get(1)
