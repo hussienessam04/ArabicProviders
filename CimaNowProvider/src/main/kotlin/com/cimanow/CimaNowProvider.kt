@@ -261,19 +261,26 @@ class CimaNow : MainAPI() {
                 } ?: "rm.freex2line.online"
 
                 Log.i(serverLogTag, "1. Requesting loadon redirect URL...")
-                app.get(shineUrl, referer = "https://cimanow.cc/", headers = HEADERS)
+                val res1 = app.get(shineUrl, referer = "https://cimanow.cc/", headers = HEADERS)
+                Log.i(serverLogTag, "res1 headers: " + res1.headers)
 
                 Log.i(serverLogTag, "2. Requesting redirectingfree...")
                 val url2 = "https://$redirectHost/redirectingfree/"
-                app.get(url2, referer = shineUrl, headers = HEADERS)
+                val res2 = app.get(url2, referer = shineUrl, headers = HEADERS)
+                Log.i(serverLogTag, "res2 headers: " + res2.headers)
 
                 Log.i(serverLogTag, "3. Requesting blog-post.html...")
                 val url3 = "https://$redirectHost/2020/02/blog-post.html/"
-                val html = app.get(url3, referer = url2, headers = HEADERS).text
+                val res3 = app.get(url3, referer = url2, headers = HEADERS)
+                val html = res3.text
+                Log.i(serverLogTag, "res3 URL: " + res3.url)
+                Log.i(serverLogTag, "res3 length: " + html.length)
+                Log.i(serverLogTag, "res3 start: " + html.take(400))
+
                 Log.i(serverLogTag, "4. Parsing variables...")
                 val ptrRegex = Regex("""window\.ptr_\w+\s*=\s*['"](\w+)['"];""")
                 val ctxName = ptrRegex.find(html)?.groupValues?.get(1)
-                    ?: throw Exception("Failed to parse ctxName")
+                    ?: throw Exception("Failed to parse ctxName. HTML sample: " + html.take(400))
 
                 val mapRegex = Regex("""(?s)window\.map_\w+\s*=\s*(\{[^\}]+});""")
                 val mapStr = mapRegex.find(html)?.groupValues?.get(1)
