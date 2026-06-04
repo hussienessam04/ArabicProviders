@@ -101,15 +101,15 @@ class CimaNow : MainAPI() {
         val posterUrl = select("img")?.attr("data-src")
         var title = select("li[aria-label=\"title\"]").html().replace(" <em>.*|\\\\n".toRegex(), "").replace("&nbsp;", "")
         val year = select("li[aria-label=\"year\"]").text().toIntOrNull()
-        val tvType = if (url.contains("ÙÙŠÙ„Ù…|Ù…Ø³Ø±Ø­ÙŠØ©|Ø­ÙÙ„Ø§Øª".toRegex())) TvType.Movie else TvType.TvSeries
+        val tvType = if (url.contains("فيلم|مسرحية|حفلات".toRegex())) TvType.Movie else TvType.TvSeries
 
         val dubEl = select("li[aria-label=\"ribbon\"]:nth-child(2)").isNotEmpty()
-        val dubStatus = if (dubEl) select("li[aria-label=\"ribbon\"]:nth-child(2)").text().contains("Ù…Ø¯Ø¨Ù„Ø¬")
-        else select("li[aria-label=\"ribbon\"]:nth-child(1)").text().contains("Ù…Ø¯Ø¨Ù„Ø¬")
-        if (dubStatus) title = "$title (Ù…Ø¯Ø¨Ù„Ø¬)"
+        val dubStatus = if (dubEl) select("li[aria-label=\"ribbon\"]:nth-child(2)").text().contains("مدبلج")
+        else select("li[aria-label=\"ribbon\"]:nth-child(1)").text().contains("مدبلج")
+        if (dubStatus) title = "$title (مدبلج)"
 
         return newMovieSearchResponse(
-            "$title ${select("li[aria-label=\"ribbon\"]:contains(Ø§Ù„Ù…ÙˆØ³Ù…)").text()}",
+            "$title ${select("li[aria-label=\"ribbon\"]:contains(الموسم)").text()}",
             url,
             tvType,
         ) {
@@ -135,7 +135,7 @@ class CimaNow : MainAPI() {
                 val name = nameElement.ownText().trim()
                 val categoryUrl = nameElement.selectFirst("a")?.attr("abs:href")
 
-                if (name.contains("Ø£Ø®ØªØ± ÙˆØ¬Ù‡ØªÙƒ Ø§Ù„Ù…ÙØ¶Ù„Ø©|ØªÙ… Ø§Ø¶Ø§ÙØªÙ‡ Ø­Ø¯ÙŠØ«Ø§Ù‹".toRegex())) return@mapNotNull null
+                if (name.contains("أختر وجهتك المفضلة|تم اضافته حديثاً".toRegex())) return@mapNotNull null
 
                 val list = section.select(".owl-body a").mapNotNull { element ->
                     element.toSearchResponse()
@@ -166,9 +166,9 @@ class CimaNow : MainAPI() {
         val posterUrl = doc.select("meta[property=\"og:image\"]").attr("content")
         val year = doc.select("article ul:nth-child(1) li a").last()?.text()?.toIntOrNull()
         val title = doc.select("title").text().split(" | ")[0]
-        val isMovie = title.contains("ÙÙŠÙ„Ù…|Ø­ÙÙ„Ø§Øª|Ù…Ø³Ø±Ø­ÙŠØ©".toRegex())
+        val isMovie = title.contains("فيلم|حفلات|مسرحية".toRegex())
         val youtubeTrailer = doc.select("iframe")?.attr("src")
-        val synopsis = doc.select("ul#details li:contains(Ù„Ù…Ø­Ø©) p").text()
+        val synopsis = doc.select("ul#details li:contains(لمحة) p").text()
         val tags = doc.select("article ul").first()?.select("li")?.map { it.text() }
         val recommendations = doc.select("ul#related li").mapNotNull { element ->
             newMovieSearchResponse(
