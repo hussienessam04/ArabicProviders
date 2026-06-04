@@ -75,16 +75,20 @@ class CimaNow : MainAPI() {
 
 
     override val mainPage = mainPageOf(
-        mainUrl to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©",
-        "$mainUrl/category/Ø§Ù„Ø§ÙÙ„Ø§Ù…/" to "Ø§Ù„Ø£ÙÙ„Ø§Ù…",
-        "$mainUrl/category/Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª/" to "Ø§Ù„Ù…Ø³Ù„Ø³Ù„Ø§Øª",
-        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø§Ø¬Ù†Ø¨ÙŠØ©/" to "Ø£ÙÙ„Ø§Ù… Ø£Ø¬Ù†Ø¨ÙŠØ©",
-        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø§Ø¬Ù†Ø¨ÙŠØ©/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø£Ø¬Ù†Ø¨ÙŠØ©",
-        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ø¹Ø±Ø¨ÙŠØ©/" to "Ø£ÙÙ„Ø§Ù… Ø¹Ø±Ø¨ÙŠØ©",
-        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-Ø¹Ø±Ø¨ÙŠØ©/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª Ø¹Ø±Ø¨ÙŠØ©",
-        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-Ù‡Ù†Ø¯ÙŠØ©/" to "Ø£ÙÙ„Ø§Ù… Ù‡Ù†Ø¯ÙŠØ©",
-        "$mainUrl/category/Ø§ÙÙ„Ø§Ù…-ØªØ±ÙƒÙŠØ©/" to "Ø£ÙÙ„Ø§Ù… ØªØ±ÙƒÙŠØ©",
-        "$mainUrl/category/Ù…Ø³Ù„Ø³Ù„Ø§Øª-ØªØ±ÙƒÙŠØ©/" to "Ù…Ø³Ù„Ø³Ù„Ø§Øª ØªØ±ÙƒÙŠØ©"
+        mainUrl to "الرئيسية",
+        "$mainUrl/%D8%A7%D9%84%D8%A7%D8%AD%D8%AF%D8%AB/" to "الأحدث",
+        "$mainUrl/%D8%A7%D9%84%D8%A7%D9%83%D8%AB%D8%B1-%D9%85%D8%B4%D8%A7%D9%87%D8%AF%D8%A9/" to "الأكثر مشاهدة",
+        "$mainUrl/category/%D9%85%D8%B3%D9%84%D8%B3%D9%84%D8%A7%D8%AA-%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9/" to "مسلسلات عربية",
+        "$mainUrl/category/%D9%85%D8%B3%D9%84%D8%B3%D9%84%D8%A7%D8%AA-%D8%A7%D8%AC%D9%86%D8%A8%D9%8A%D8%A9/" to "مسلسلات اجنبية",
+        "$mainUrl/category/%D9%85%D8%B3%D9%84%D8%B3%D9%84%D8%A7%D8%AA-%D8%AA%D8%B1%D9%83%D9%8A%D8%A9/" to "مسلسلات تركية",
+        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9/" to "افلام عربية",
+        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D8%A7%D8%AC%D9%86%D8%A8%D9%8A%D8%A9/" to "افلام اجنبية",
+        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D8%AA%D8%B1%D9%83%D9%8A%D8%A9/" to "افلام تركية",
+        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D9%87%D9%86%D8%AF%D9%8A%D8%A9/" to "افلام هندية",
+        "$mainUrl/category/%D8%A7%D9%81%D9%84%D8%A7%D9%85-%D8%A7%D9%86%D9%8A%D9%85%D9%8A%D8%B4%D9%86/" to "افلام انيميشن",
+        "$mainUrl/category/%D8%A7%D9%84%D8%A8%D8%B1%D8%A7%D9%85%D8%AC-%D8%A7%D9%84%D8%AA%D9%84%D9%81%D8%B2%D9%8A%D9%88%D9%86%D9%8A%D8%A9/" to "البرامج التلفزيونية",
+        "$mainUrl/category/%D9%85%D8%B3%D8%B1%D8%AD%D9%8A%D8%A7%D8%AA/" to "مسرحيات",
+        "$mainUrl/category/%D8%AD%D9%81%D9%84%D8%A7%D8%AA/" to "حفلات"
     )
 
     private fun String.getIntFromText(): Int? {
