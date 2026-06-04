@@ -319,7 +319,7 @@ class CimaNow : MainAPI() {
                 val ctxName = ptrRegex.find(html)?.groupValues?.get(1)
                     ?: throw Exception("Failed to parse ctxName. HTML sample: " + html.take(400))
 
-                val mapRegex = Regex("""(?s)window\.map_\w+\s*=\s*(\{[^\}]+});""")
+                val mapRegex = Regex("""(?s)window\.map_\w+\s*=\s*(\{[^}]+});""")
                 val mapStr = mapRegex.find(html)?.groupValues?.get(1)
                     ?: throw Exception("Failed to parse mapStr")
 
@@ -332,7 +332,7 @@ class CimaNow : MainAPI() {
                 val seKey = Regex("""se:\s*['"](\w+)['"]""").find(mapStr)?.groupValues?.get(1)
                     ?: throw Exception("Failed to parse seKey")
 
-                val ctxRegex = Regex("""(?s)window\['$ctxName'\]\s*=\s*(\{[^\}]+});""")
+                val ctxRegex = Regex("""(?s)window\['$ctxName'\]\s*=\s*(\{[^}]+});""")
                 val ctxStr = ctxRegex.find(html)?.groupValues?.get(1)
                     ?: throw Exception("Failed to parse ctxStr")
 
