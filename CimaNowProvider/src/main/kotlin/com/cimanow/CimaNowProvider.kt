@@ -444,7 +444,7 @@ class CimaNow : MainAPI() {
                             
                             if (rMatch != null) {
                                 val rExpr = rMatch.groupValues[1]
-                                val rVal = rExpr.split("+").map { it.trim().toInt() }.sum()
+                                val rVal = rExpr.split("+").filter { it.isNotBlank() }.map { it.trim().toInt() }.sum()
                                 
                                 val encName = encNameMatch.groupValues[1]
                                 val valMatch = Regex("var\\s+$encName\\s*=\\s*([\\s\\S]+?);").find(script)
@@ -459,7 +459,12 @@ class CimaNow : MainAPI() {
                                     encHtmlStr.split('~').forEach { part ->
                                         if (part.isNotEmpty()) {
                                             try {
-                                                val b64 = Base64.decode(part, Base64.DEFAULT)
+                                                var paddedPart = part
+                                                val missingPadding = paddedPart.length % 4
+                                                if (missingPadding > 0) {
+                                                    paddedPart += "=".repeat(4 - missingPadding)
+                                                }
+                                                val b64 = Base64.decode(paddedPart, Base64.DEFAULT)
                                                 numberBuilder.setLength(0)
                                                 for (byte in b64) {
                                                     val char = byte.toInt().toChar()
