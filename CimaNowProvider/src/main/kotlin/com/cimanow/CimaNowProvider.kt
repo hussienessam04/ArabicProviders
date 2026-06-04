@@ -242,33 +242,149 @@ class CimaNow : MainAPI() {
         val serverRegex = Regex("<li[^>]+data-index=\"(\\d+)\"[^>]+data-id=\"(\\d+)\"[^>]*>([^<]+)</li>")
         val iframeSrcRegex = Regex("<iframe[^>]+src=\"([^\"]+)\"")
 
-        // 1. Fetch details/episode page first to get the redirect/watching link
-        var redirectUrl = try {
-            val doc = app.get(data, headers = HEADERS).document
-            val shineUrl = doc.select("a.shine").attr("abs:href")
-            if (shineUrl.isNotEmpty()) shineUrl else null
+        // 1. Extract shineUrl and run token solver
+        val detailsUrl = if (data.contains("/watching")) data.substringBefore("/watching") else data
+        var shineUrl = try {
+            val doc = app.get(detailsUrl, headers = HEADERS).document
+            doc.select("a.shine").attr("abs:href")
         } catch (e: Exception) {
             Log.e(serverLogTag, "Failed to load details page to extract redirect URL", e)
-            null
+            ""
         }
 
-        // Fallback to simple watch URL if redirect URL is not found
-        val watchUrl = redirectUrl ?: (if (data.contains("/watching")) data else data.trimEnd('/') + "/watching/")
-        Log.i(serverLogTag, "Watch URL: $watchUrl")
+        val watchUrlResponseText = if (shineUrl.isNotEmpty()) {
+            try {
+                val redirectHost = try {
+                    java.net.URI(shineUrl).host
+                } catch (_: Exception) {
+                    null
+                } ?: "rm.freex2line.online"
+
+                Log.i(serverLogTag, "1. Requesting loadon redirect URL...")
+                app.get(shineUrl, referer = "https://cimanow.cc/", headers = HEADERS)
+
+                Log.i(serverLogTag, "2. Requesting redirectingfree...")
+                val url2 = "https://$redirectHost/redirectingfree/"
+                app.get(url2, referer = shineUrl, headers = HEADERS)
+
+                Log.i(serverLogTag, "3. Requesting blog-post.html...")
+                val url3 = "https://$redirectHost/2020/02/blog-post.html"
+                val html = app.get(url3, referer = url2, headers = HEADERS).text
+
+                Log.i(serverLogTag, "4. Parsing variables...")
+                val ptrRegex = Regex("""window\.ptr_\w+\s*=\s*['"](\w+)['"];""")
+                val ctxName = ptrRegex.find(html)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse ctxName")
+
+                val mapRegex = Regex("""(?s)window\.map_\w+\s*=\s*(\{[^\}]+});""")
+                val mapStr = mapRegex.find(html)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse mapStr")
+
+                val chKey = Regex("""ch:\s*['"](\w+)['"]""").find(mapStr)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse chKey")
+                val riKey = Regex("""ri:\s*['"](\w+)['"]""").find(mapStr)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse riKey")
+                val keKey = Regex("""ke:\s*['"](\w+)['"]""").find(mapStr)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse keKey")
+                val seKey = Regex("""se:\s*['"](\w+)['"]""").find(mapStr)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse seKey")
+
+                val ctxRegex = Regex("""(?s)window\['$ctxName'\]\s*=\s*(\{[^\}]+});""")
+                val ctxStr = ctxRegex.find(html)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse ctxStr")
+
+                val chVal = Regex("""['"]$chKey['"]:\s*['"]([^'"]*)['"]""").find(ctxStr)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse chVal")
+                val riVal = Regex("""['"]$riKey['"]:\s*['"]([^'"]*)['"]""").find(ctxStr)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse riVal")
+                val keVal = Regex("""['"]$keKey['"]:\s*['"]([^'"]*)['"]""").find(ctxStr)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse keVal")
+                val seVal = Regex("""['"]$seKey['"]:\s*['"]([^'"]*)['"]""").find(ctxStr)?.groupValues?.get(1)
+                    ?: throw Exception("Failed to parse seVal")
+
+                Log.i(serverLogTag, "5. XOR Decrypting HMAC key...")
+                val decodedKeBytes = Base64.decode(keVal, Base64.DEFAULT)
+                val seBytes = seVal.toByteArray(Charsets.ISO_8859_1)
+                val hmacKeyBytes = ByteArray(decodedKeBytes.size)
+                for (i in decodedKeBytes.indices) {
+                    val decodedKeByte = decodedKeBytes[i].toInt() and 0xFF
+                    val seByte = seBytes[i % seBytes.size].toInt() and 0xFF
+                    hmacKeyBytes[i] = (decodedKeByte xor seByte).toByte()
+                }
+                val hmacKey = String(hmacKeyBytes, Charsets.UTF_8)
+
+                Log.i(serverLogTag, "6. Generating HMAC token...")
+                val fpPlain = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36/en-US"
+                val fpB64 = Base64.encodeToString(fpPlain.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+                val dataToSign = "$riVal$chVal$fpB64"
+
+                val mac = javax.crypto.Mac.getInstance("HmacSHA256")
+                val secretKey = javax.crypto.spec.SecretKeySpec(hmacKey.toByteArray(Charsets.UTF_8), "HmacSHA256")
+                mac.init(secretKey)
+                val sig = mac.doFinal(dataToSign.toByteArray(Charsets.UTF_8))
+                val hmacToken = Base64.encodeToString(sig, Base64.NO_WRAP)
+
+                Log.i(serverLogTag, "7. Sleeping 12 seconds to bypass countdown bot verification...")
+                delay(12000)
+
+                Log.i(serverLogTag, "8. Fetching final watch URL via get-link.php...")
+                val getLinkUrl = "https://$redirectHost/2020/02/blog-post.html/get-link.php"
+                val resFinal = app.get(
+                    getLinkUrl,
+                    params = mapOf(
+                        "request_id" to riVal,
+                        "hmac_token" to hmacToken,
+                        "ch" to chVal,
+                        "fp" to fpB64
+                    ),
+                    referer = "https://$redirectHost/2020/02/blog-post.html/",
+                    headers = HEADERS
+                )
+                var finalWatchUrl = resFinal.text
+                if (finalWatchUrl.startsWith("\uFEFF")) {
+                    finalWatchUrl = finalWatchUrl.substring(1)
+                }
+                finalWatchUrl = finalWatchUrl.trim()
+                Log.i(serverLogTag, "Resolved watch URL: $finalWatchUrl")
+
+                Log.i(serverLogTag, "9. Fetching resolved watch page...")
+                app.get(
+                    finalWatchUrl,
+                    referer = "https://$redirectHost/2020/02/blog-post.html/",
+                    headers = HEADERS
+                ).text
+
+            } catch (e: Exception) {
+                Log.e(serverLogTag, "Blogger redirection/token bypass failed", e)
+                ""
+            }
+        } else {
+            ""
+        }
+
+        // Fallback to simple watch URL and WebViewResolver if programmatic bypass failed or was not possible
+        val responseText = if (watchUrlResponseText.isNotEmpty() && watchUrlResponseText.contains("hide_my_HTML_")) {
+            watchUrlResponseText
+        } else {
+            Log.w(serverLogTag, "Falling back to WebViewResolver for watch page...")
+            val fallbackWatchUrl = if (data.contains("/watching")) data else data.trimEnd('/') + "/watching/"
+            try {
+                withContext(Dispatchers.IO) {
+                    app.get(
+                        fallbackWatchUrl,
+                        referer = "https://cimanow.cc/",
+                        headers = HEADERS,
+                        interceptor = WebViewResolver(Regex("hide_my_HTML_")),
+                        timeout = 60000
+                    ).text
+                }
+            } catch (e: Exception) {
+                Log.e(serverLogTag, "WebViewResolver fallback failed", e)
+                ""
+            }
+        }
 
         try {
-            // 2. Load the watch/redirect URL using WebViewResolver
-            val responseText = withContext(Dispatchers.IO) {
-                app.get(
-                    watchUrl,
-                    referer = "https://cimanow.cc/",
-                    headers = HEADERS,
-                    interceptor = WebViewResolver(Regex("hide_my_HTML_")),
-                    timeout = 60000
-                ).text
-            }
-
-            Log.e(serverLogTag, "HTML DUMP 1: " + responseText.take(2500))
 
             // 3. Extract the encrypted HTML string
             val hideString = hideMyHtmlRegex.find(responseText)?.groups?.get(1)?.value
