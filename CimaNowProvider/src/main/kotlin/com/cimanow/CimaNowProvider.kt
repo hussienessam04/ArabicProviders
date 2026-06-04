@@ -122,6 +122,8 @@ class CimaNow : MainAPI() {
                 val name = nameElement.ownText().trim()
                 val categoryUrl = nameElement.selectFirst("a")?.attr("abs:href")
 
+                // For testing: ONLY show "احدث الاضافات"
+                if (!name.contains("احدث الاضافات")) return@mapNotNull null
                 if (name.contains("أختر وجهتك المفضلة|تم اضافته حديثاً".toRegex())) return@mapNotNull null
 
                 val list = section.select(".owl-body a").mapNotNull { element ->
