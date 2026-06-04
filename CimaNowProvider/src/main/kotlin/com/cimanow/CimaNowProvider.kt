@@ -56,6 +56,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Headers
 
 import kotlin.text.RegexOption
 
@@ -262,18 +263,52 @@ class CimaNow : MainAPI() {
                     null
                 } ?: "rm.freex2line.online"
 
+                val cookiesMap = mutableMapOf<String, String>()
+
+                fun updateCookies(headers: okhttp3.Headers) {
+                    headers.values("Set-Cookie").forEach { cookieStr ->
+                        val pair = cookieStr.substringBefore(";").split("=", limit = 2)
+                        if (pair.size == 2) {
+                            cookiesMap[pair[0].trim()] = pair[1].trim()
+                        }
+                    }
+                }
+
+                fun getHeadersWithCookies(): Map<String, String> {
+                    if (cookiesMap.isEmpty()) return HEADERS
+                    val cookieHeaderValue = cookiesMap.entries.joinToString("; ") { "${it.key}=${it.value}" }
+                    return HEADERS + ("Cookie" to cookieHeaderValue)
+                }
+
                 Log.i(serverLogTag, "1. Requesting loadon redirect URL...")
                 val res1 = app.get(shineUrl, referer = "https://cimanow.cc/", headers = HEADERS)
                 Log.i(serverLogTag, "res1 headers: " + res1.headers)
+                updateCookies(res1.headers)
 
                 Log.i(serverLogTag, "2. Requesting redirectingfree...")
                 val url2 = "https://$redirectHost/redirectingfree/"
-                val res2 = app.get(url2, referer = shineUrl, headers = HEADERS)
+                val res2 = app.get(url2, referer = shineUrl, headers = getHeadersWithCookies())
                 Log.i(serverLogTag, "res2 headers: " + res2.headers)
+                updateCookies(res2.headers)
 
                 Log.i(serverLogTag, "3. Requesting blog-post.html...")
                 val url3 = "https://$redirectHost/2020/02/blog-post.html"
-                val res3 = app.get(url3, referer = url2, headers = HEADERS)
+                var res3 = app.get(url3, referer = url2, headers = getHeadersWithCookies(), allowRedirects = false)
+                var redirectCount = 0
+                while ((res3.code == 301 || res3.code == 302 || res3.code == 303 || res3.code == 307 || res3.code == 308) && redirectCount < 5) {
+                    val location = res3.headers["Location"] ?: break
+                    val nextUrl = if (location.startsWith("/")) {
+                        "https://$redirectHost$location"
+                    } else if (!location.startsWith("http")) {
+                        "https://$redirectHost/2020/02/$location"
+                    } else {
+                        location
+                    }
+                    updateCookies(res3.headers)
+                    res3 = app.get(nextUrl, referer = res3.url, headers = getHeadersWithCookies(), allowRedirects = false)
+                    redirectCount++
+                }
+                updateCookies(res3.headers)
                 val html = res3.text
                 Log.i(serverLogTag, "res3 URL: " + res3.url)
                 Log.i(serverLogTag, "res3 length: " + html.length)
@@ -332,7 +367,7 @@ class CimaNow : MainAPI() {
                 val sig = mac.doFinal(dataToSign.toByteArray(Charsets.UTF_8))
                 val hmacToken = Base64.encodeToString(sig, Base64.NO_WRAP)
 
-                Log.i(serverLogTag, "7. Sleeping 12 seconds to bypass countdown bot verification...")
+                Log.i(serverLogTag, "7. Simulating countdown wait...")
                 delay(12000)
 
                 Log.i(serverLogTag, "8. Fetching final watch URL via get-link.php...")
@@ -346,7 +381,7 @@ class CimaNow : MainAPI() {
                         "fp" to fpB64
                     ),
                     referer = "https://$redirectHost/2020/02/blog-post.html/",
-                    headers = HEADERS
+                    headers = getHeadersWithCookies()
                 )
                 var finalWatchUrl = resFinal.text
                 if (finalWatchUrl.startsWith("\uFEFF")) {
@@ -400,7 +435,7 @@ class CimaNow : MainAPI() {
             for (script in scripts) {
                 if (script.contains("atob") && script.contains(".split") && script.length > 5000) {
                     try {
-                        val subMatch = Regex("parseInt\\([^)]+\\)[^)]*\\)-\\s*([a-zA-Z0-9_]+)").find(script)
+                        val subMatch = Regex("parseInt\\([\\s\\S]+?\\)-\\s*([a-zA-Z0-9_]+)").find(script)
                         val encNameMatch = Regex("([a-zA-Z0-9_]+)\\.split\\(").find(script)
                         
                         if (subMatch != null && encNameMatch != null) {
