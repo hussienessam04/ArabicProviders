@@ -272,7 +272,7 @@ class CimaNow : MainAPI() {
                 Log.i(serverLogTag, "res2 headers: " + res2.headers)
 
                 Log.i(serverLogTag, "3. Requesting blog-post.html...")
-                val url3 = "https://$redirectHost/2020/02/blog-post.html/"
+                val url3 = "https://$redirectHost/2020/02/blog-post.html"
                 val res3 = app.get(url3, referer = url2, headers = HEADERS)
                 val html = res3.text
                 Log.i(serverLogTag, "res3 URL: " + res3.url)
