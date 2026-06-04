@@ -548,13 +548,6 @@ class CimaNow : MainAPI() {
                                         }
                                     } catch (ex: Exception) {}
                                 }
-                            } else {
-                                val iframeUrl = iframeSrcRegex.find(serverResponse)?.groupValues?.get(1)
-                                if (!iframeUrl.isNullOrEmpty()) {
-                                    val finalUrl = if (iframeUrl.startsWith("//")) "https:$iframeUrl" else iframeUrl
-                                    Log.i(serverLogTag, "[$name] -> iframe: $finalUrl")
-                                    loadExtractor(finalUrl, "https://cimanow.cc/", subtitleCallback, callback)
-                                }
                             }
                         } catch (e: Exception) {}
                     }
