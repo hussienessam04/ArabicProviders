@@ -241,8 +241,6 @@ class CimaNow : MainAPI() {
     ): Boolean = coroutineScope {
         val serverLogTag = "CimaNowDecode"
 
-        val hideMyHtmlRegex = Regex("hide_my_HTML_\\s*=\\s*\"([^\"]+)\"")
-        val quoteExtractRegex = Regex("'([^']*)'|\"([^\"]*)\"")
         val serverRegex = Regex("<li[^>]+data-index=\"(\\d+)\"[^>]+data-id=\"(\\d+)\"[^>]*>([^<]+)</li>")
         val iframeSrcRegex = Regex("<iframe[^>]+src=\"([^\"]+)\"")
 
@@ -373,7 +371,7 @@ class CimaNow : MainAPI() {
         }
 
         // Fallback to simple watch URL and WebViewResolver if programmatic bypass failed or was not possible
-        val responseText = if (watchUrlResponseText.isNotEmpty() && watchUrlResponseText.contains("hide_my_HTML_")) {
+        val responseText = if (watchUrlResponseText.isNotEmpty() && (watchUrlResponseText.contains("hide_my_HTML_") || watchUrlResponseText.contains("atob"))) {
             watchUrlResponseText
         } else {
             Log.w(serverLogTag, "Falling back to WebViewResolver for watch page...")
@@ -384,7 +382,7 @@ class CimaNow : MainAPI() {
                         fallbackWatchUrl,
                         referer = "https://cimanow.cc/",
                         headers = HEADERS,
-                        interceptor = WebViewResolver(Regex("hide_my_HTML_")),
+                        interceptor = WebViewResolver(Regex("hide_my_HTML_|atob")),
                         timeout = 60000
                     ).text
                 }
@@ -394,44 +392,70 @@ class CimaNow : MainAPI() {
             }
         }
 
+        var decryptedHtml = ""
         try {
-
-            // 3. Extract the encrypted HTML string
-            val hideString = hideMyHtmlRegex.find(responseText)?.groups?.get(1)?.value
-                ?.let { rawGroup ->
-                    quoteExtractRegex.findAll(rawGroup)
-                        .map { it.groups[1]?.value ?: it.groups[2]?.value ?: "" }
-                        .joinToString("")
+            val scriptRegex = Regex("<script[^>]*>([\\s\\S]*?)</script>")
+            val scripts = scriptRegex.findAll(responseText).map { it.groupValues[1] }
+            
+            for (script in scripts) {
+                if (script.contains("atob") && script.contains(".split") && script.length > 5000) {
+                    try {
+                        val subMatch = Regex("parseInt\\([^)]+\\)[^)]*\\)-\\s*([a-zA-Z0-9_]+)").find(script)
+                        val encNameMatch = Regex("([a-zA-Z0-9_]+)\\.split\\(").find(script)
+                        
+                        if (subMatch != null && encNameMatch != null) {
+                            val rVarName = subMatch.groupValues[1]
+                            val rMatch = Regex("var\\s+$rVarName\\s*=\\s*([\\d\\+\\-\\s]+)\\s*;").find(script)
+                            
+                            if (rMatch != null) {
+                                val rExpr = rMatch.groupValues[1]
+                                val rVal = rExpr.split("+").map { it.trim().toInt() }.sum()
+                                
+                                val encName = encNameMatch.groupValues[1]
+                                val valMatch = Regex("var\\s+$encName\\s*=\\s*([\\s\\S]+?);").find(script)
+                                
+                                if (valMatch != null) {
+                                    val valExpr = valMatch.groupValues[1]
+                                    val quotedRegex = Regex("['\"](.*?)['\"]")
+                                    val encHtmlStr = quotedRegex.findAll(valExpr).map { it.groupValues[1] }.joinToString("")
+                                    
+                                    val decoded = StringBuilder()
+                                    val numberBuilder = StringBuilder(10)
+                                    encHtmlStr.split('~').forEach { part ->
+                                        if (part.isNotEmpty()) {
+                                            try {
+                                                val b64 = Base64.decode(part, Base64.DEFAULT)
+                                                numberBuilder.setLength(0)
+                                                for (byte in b64) {
+                                                    val char = byte.toInt().toChar()
+                                                    if (char.isDigit()) numberBuilder.append(char)
+                                                }
+                                                if (numberBuilder.isNotEmpty()) {
+                                                    val digits = numberBuilder.toString()
+                                                    val codePoint = digits.toInt() - rVal
+                                                    if (codePoint in 0..0x10FFFF) decoded.append(codePoint.toChar())
+                                                }
+                                            } catch (_: Exception) {}
+                                        }
+                                    }
+                                    decryptedHtml = decoded.toString()
+                                    break
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(serverLogTag, "Dynamic decryption failed", e)
+                    }
                 }
+            }
 
-            if (hideString.isNullOrEmpty()) {
-                Log.e(serverLogTag, "❌ Failed to extract hide_my_HTML_")
+            if (decryptedHtml.isEmpty()) {
+                Log.e(serverLogTag, "❌ Failed to decrypt watch page HTML")
                 return@coroutineScope false
             }
 
-            // 4. Decrypt the string
-            val decoded = StringBuilder()
-            val numberBuilder = StringBuilder(10)
-            hideString.splitToSequence('.').forEach { part ->
-                if (part.isNotEmpty()) {
-                    try {
-                        val b64 = Base64.decode(part, Base64.DEFAULT)
-                        numberBuilder.clear()
-                        for (byte in b64) {
-                            val char = byte.toInt().toChar()
-                            if (char.isDigit()) numberBuilder.append(char)
-                        }
-                        if (numberBuilder.isNotEmpty()) {
-                            val digits = numberBuilder.toString()
-                            val codePoint = digits.toInt() - 87653
-                            if (codePoint in 0..0x10FFFF) decoded.append(codePoint.toChar())
-                        }
-                    } catch (_: Exception) { }
-                }
-            }
-
             // 5. Parse servers
-            val servers = serverRegex.findAll(decoded.toString())
+            val servers = serverRegex.findAll(decryptedHtml)
                 .mapNotNull { match ->
                     val (index, id, name) = match.destructured
                     Triple(index, id, name.trim())
