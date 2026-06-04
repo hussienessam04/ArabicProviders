@@ -1,4 +1,4 @@
-﻿package com.faselhd
+package com.faselhd
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -229,7 +229,7 @@ class FASELHD(private val context: Context) : MainAPI() {
         }
     }
     override val mainPage = mainPageOf(
-        "$mainUrl/main" to "Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©" // ØªØ­Ø¯ÙŠØ« Ø§Ù„Ø±Ø§Ø¨Ø· Ù„ÙŠÙƒÙˆÙ† /main
+        "$mainUrl/main" to "الرئيسية" // تحديث الرابط ليكون /main
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -258,7 +258,7 @@ class FASELHD(private val context: Context) : MainAPI() {
                 }
             }
             if (sliderItems.isNotEmpty()) {
-                lists.add(HomePageList("Ø£Ø­Ø¯Ø« Ø§Ù„Ø¥Ø¶Ø§ÙØ§Øª", sliderItems, isHorizontalImages = true))
+                lists.add(HomePageList("أحدث الإضافات", sliderItems, isHorizontalImages = true))
             }
 
             document.select("section#blockList").forEach { block ->
@@ -271,9 +271,9 @@ class FASELHD(private val context: Context) : MainAPI() {
             }
 
             document.select("div.slider")
-                .firstOrNull { it.selectFirst(".h4")?.text()?.contains("Ù…Ø´Ø§Ù‡Ø¯Ø©") == true }
+                .firstOrNull { it.selectFirst(".h4")?.text()?.contains("مشاهدة") == true }
                 ?.let { mostWatchedBlock ->
-                    val title = mostWatchedBlock.selectFirst(".h4")?.text()?.trim() ?: "Ø§Ù„Ø£ÙƒØ«Ø± Ù…Ø´Ø§Ù‡Ø¯Ø©"
+                    val title = mostWatchedBlock.selectFirst(".h4")?.text()?.trim() ?: "الأكثر مشاهدة"
                     val items = mostWatchedBlock.select(".itemviews .postDiv").mapNotNull { it.toSearchResult() }
                     if (items.isNotEmpty()) {
                         lists.add(HomePageList(title, items, isHorizontalImages = true))
