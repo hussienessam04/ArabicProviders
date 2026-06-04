@@ -1,6 +1,6 @@
 
 
-version = 4
+version = 5
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
