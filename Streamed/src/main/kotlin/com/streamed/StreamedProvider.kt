@@ -41,7 +41,8 @@ class StreamedProvider : MainAPI() {
 
         sportPriority.forEach { sport ->
             val matches = runCatching {
-                app.get("$mainUrl/api/matches/$sport").parsedSafe<List<MatchItem>>().orEmpty()
+                val res = app.get("$mainUrl/api/matches/$sport").text
+                parseJson<List<MatchItem>>(res)
             }.getOrDefault(emptyList())
 
             val responses = matches.mapNotNull { match ->
@@ -98,9 +99,8 @@ class StreamedProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val payload = parseJson<LoadData>(data)
-        val streams = app.get("$mainUrl/api/stream/${payload.source}/${payload.matchId}")
-            .parsedSafe<List<StreamItem>>()
-            .orEmpty()
+        val streamsRes = app.get("$mainUrl/api/stream/${payload.source}/${payload.matchId}").text
+        val streams = runCatching { parseJson<List<StreamItem>>(streamsRes) }.getOrDefault(emptyList())
 
         streams.forEachIndexed { index, stream ->
             val embedUrl = stream.embedUrl ?: return@forEachIndexed
