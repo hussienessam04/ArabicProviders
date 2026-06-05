@@ -26,6 +26,7 @@ class StreamedProvider : MainAPI() {
     override val supportedTypes = setOf(TvType.Live)
 
     private val sportPriority = listOf(
+        "live",
         "football",
         "basketball",
         "american-football",
@@ -42,7 +43,7 @@ class StreamedProvider : MainAPI() {
         sportPriority.forEach { sport ->
             val matches = runCatching {
                 val res = app.get("$mainUrl/api/matches/$sport").text
-                parseJson<List<MatchItem>>(res)
+                parseJson<Array<MatchItem>>(res).toList()
             }.getOrDefault(emptyList())
 
             val responses = matches.mapNotNull { match ->
@@ -100,7 +101,7 @@ class StreamedProvider : MainAPI() {
     ): Boolean {
         val payload = parseJson<LoadData>(data)
         val streamsRes = app.get("$mainUrl/api/stream/${payload.source}/${payload.matchId}").text
-        val streams = runCatching { parseJson<List<StreamItem>>(streamsRes) }.getOrDefault(emptyList())
+        val streams = runCatching { parseJson<Array<StreamItem>>(streamsRes).toList() }.getOrDefault(emptyList())
 
         streams.forEachIndexed { index, stream ->
             val embedUrl = stream.embedUrl ?: return@forEachIndexed
@@ -135,7 +136,7 @@ class StreamedProvider : MainAPI() {
             matchId = matchId,
             source = sourceInfo.source ?: return null,
             title = titleText,
-            posterUrl = category?.let { "$mainUrl/api/images/$it/$matchId" }
+            posterUrl = "$mainUrl/api/images/poster/fallback.webp"
         )
 
         return newLiveSearchResponse(
