@@ -73,15 +73,15 @@ class FootybiteProvider(private val context: Context) : MainAPI() {
 
         val streamTable = document.select("table tr").mapNotNull { row ->
             val columns = row.select("td")
-            if (columns.size < 4) return@mapNotNull null
+            if (columns.size < 7) return@mapNotNull null
             
-            val streamLink = columns.select("a[href]").attr("href")
+            val streamLink = row.selectFirst("input[type=hidden]")?.attr("value") ?: ""
             if (streamLink.isBlank()) return@mapNotNull null
 
-            val language = columns[3].text()
-            val quality = columns[2].text()
-            val channelName = columns[0].text()
-            val isArabic = language.contains("AR", ignoreCase = true)
+            val language = columns[4].text().trim()
+            val quality = columns[3].text().trim()
+            val channelName = columns[1].text().trim()
+            val isArabic = language.contains("ar", ignoreCase = true) || language.contains("arabic", ignoreCase = true)
 
             val finalName = if (isArabic) "ARABIC - $channelName ($quality)" else "$language - $channelName ($quality)"
 
