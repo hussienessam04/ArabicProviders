@@ -8,6 +8,7 @@ import com.lagradost.cloudstream3.MainPageRequest
 import com.lagradost.cloudstream3.SearchResponse
 import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.TvType
+import com.lagradost.cloudstream3.utils.loadExtractor
 import com.lagradost.cloudstream3.newHomePageResponse
 import com.lagradost.cloudstream3.newLiveSearchResponse
 import com.lagradost.cloudstream3.newLiveStreamLoadResponse
@@ -114,21 +115,30 @@ class StreamedProvider : MainAPI() {
         streams.forEachIndexed { index, stream ->
             val embedUrl = stream.embedUrl ?: return@forEachIndexed
 
-            callback(
-                newExtractorLink(
-                    source = name,
-                    name = buildString {
-                        append(name)
-                        append(" - ")
-                        append(stream.language ?: "Stream ${index + 1}")
-                        if (stream.hd == true) append(" HD")
-                    },
-                    url = embedUrl
-                ) {
-                    this.referer = "$mainUrl/"
-                    this.quality = if (stream.hd == true) Qualities.P1080.value else Qualities.Unknown.value
-                }
-            )
+            if (embedUrl.contains(".m3u8")) {
+                callback(
+                    newExtractorLink(
+                        source = name,
+                        name = buildString {
+                            append(name)
+                            append(" - ")
+                            append(stream.language ?: "Stream ${index + 1}")
+                            if (stream.hd == true) append(" HD")
+                        },
+                        url = embedUrl
+                    ) {
+                        this.referer = "$mainUrl/"
+                        this.quality = if (stream.hd == true) Qualities.P1080.value else Qualities.Unknown.value
+                    }
+                )
+            } else {
+                loadExtractor(
+                    embedUrl,
+                    "$mainUrl/",
+                    subtitleCallback,
+                    callback
+                )
+            }
         }
 
         return streams.isNotEmpty()
@@ -142,7 +152,8 @@ class StreamedProvider : MainAPI() {
         val homeBadge = teams?.home?.badge
         val awayBadge = teams?.away?.badge
         val posterUrl = if (poster != null) {
-            "$mainUrl/api/images/proxy/$poster.webp"
+            val suffix = if (poster.endsWith(".webp")) "" else ".webp"
+            "$mainUrl$poster$suffix"
         } else if (homeBadge != null && awayBadge != null) {
             "$mainUrl/api/images/poster/$homeBadge/$awayBadge.webp"
         } else if (homeBadge != null) {
