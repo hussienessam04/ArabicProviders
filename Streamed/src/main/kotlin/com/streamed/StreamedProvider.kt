@@ -139,11 +139,25 @@ class StreamedProvider : MainAPI() {
         val titleText = title ?: listOfNotNull(teams?.home?.name, teams?.away?.name).joinToString(" vs ")
             .ifBlank { return null }
 
+        val homeBadge = teams?.home?.badge
+        val awayBadge = teams?.away?.badge
+        val posterUrl = if (poster != null) {
+            "$mainUrl/api/images/proxy/$poster.webp"
+        } else if (homeBadge != null && awayBadge != null) {
+            "$mainUrl/api/images/poster/$homeBadge/$awayBadge.webp"
+        } else if (homeBadge != null) {
+            "$mainUrl/api/images/badge/$homeBadge.webp"
+        } else if (awayBadge != null) {
+            "$mainUrl/api/images/badge/$awayBadge.webp"
+        } else {
+            null
+        }
+
         val payload = LoadData(
             matchId = sourceInfo.id ?: return null,
             source = sourceInfo.source ?: return null,
             title = titleText,
-            posterUrl = null,
+            posterUrl = posterUrl,
             allSources = sources
         )
 
@@ -171,7 +185,8 @@ class StreamedProvider : MainAPI() {
         val title: String? = null,
         val category: String? = null,
         val teams: Teams? = null,
-        val sources: List<MatchSource>? = null
+        val sources: List<MatchSource>? = null,
+        val poster: String? = null
     )
 
     data class Teams(
@@ -180,7 +195,8 @@ class StreamedProvider : MainAPI() {
     )
 
     data class Team(
-        val name: String? = null
+        val name: String? = null,
+        val badge: String? = null
     )
 
     data class MatchSource(
