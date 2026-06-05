@@ -136,6 +136,11 @@ class StreamedProvider(private val context: Context) : MainAPI() {
             val embedUrl = stream.embedUrl ?: return@forEachIndexed
 
             if (embedUrl.contains(".m3u8")) {
+                val refererUrl = try { 
+                    java.net.URI(embedUrl).let { "${it.scheme}://${it.host}/" } 
+                } catch (e: Exception) { 
+                    "https://embedsports.top/" 
+                }
                 callback(
                     newExtractorLink(
                         source = name,
@@ -147,7 +152,7 @@ class StreamedProvider(private val context: Context) : MainAPI() {
                         },
                         url = embedUrl
                     ) {
-                        this.referer = "$mainUrl/"
+                        this.referer = refererUrl
                         this.quality = if (stream.hd == true) Qualities.P1080.value else Qualities.Unknown.value
                     }
                 )
@@ -155,6 +160,11 @@ class StreamedProvider(private val context: Context) : MainAPI() {
                 val m3u8Url = resolveWithWebView(embedUrl, "$mainUrl/") ?: ""
                 
                 if (m3u8Url.contains(".m3u8")) {
+                    val refererUrl = try { 
+                        java.net.URI(embedUrl).let { "${it.scheme}://${it.host}/" } 
+                    } catch (e: Exception) { 
+                        "https://embedsports.top/" 
+                    }
                     callback(
                         newExtractorLink(
                             source = name,
@@ -166,7 +176,7 @@ class StreamedProvider(private val context: Context) : MainAPI() {
                             },
                             url = m3u8Url
                         ) {
-                            this.referer = "$mainUrl/"
+                            this.referer = refererUrl
                             this.quality = if (stream.hd == true) Qualities.P1080.value else Qualities.Unknown.value
                         }
                     )
@@ -259,11 +269,13 @@ class StreamedProvider(private val context: Context) : MainAPI() {
             var timeoutRunnable: Runnable? = null
 
             fun cleanup() {
-                try { timeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
-                try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) {}
-                try { webView.stopLoading() } catch (_: Exception) {}
-                try { webView.destroy() } catch (_: Exception) {}
-                try { if (dialog.isShowing) dialog.dismiss() } catch (_: Exception) {}
+                activity.runOnUiThread {
+                    try { timeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
+                    try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) {}
+                    try { webView.stopLoading() } catch (_: Exception) {}
+                    try { webView.destroy() } catch (_: Exception) {}
+                    try { if (dialog.isShowing) dialog.dismiss() } catch (_: Exception) {}
+                }
             }
 
             fun safeFinish(result: String?) {
