@@ -64,7 +64,8 @@ class StreamedProvider : MainAPI() {
 
         return sportPriority.flatMap { sport ->
             runCatching {
-                app.get("$mainUrl/api/matches/$sport").parsedSafe<List<MatchItem>>().orEmpty()
+                val res = app.get("$mainUrl/api/matches/$sport").text
+                parseJson<Array<MatchItem>>(res).toList()
             }.getOrDefault(emptyList())
         }.filter { match ->
             buildString {
@@ -127,16 +128,15 @@ class StreamedProvider : MainAPI() {
     }
 
     private fun MatchItem.toSearchResponse(): SearchResponse? {
-        val matchId = id ?: return null
         val sourceInfo = sources?.firstOrNull() ?: return null
         val titleText = title ?: listOfNotNull(teams?.home?.name, teams?.away?.name).joinToString(" vs ")
             .ifBlank { return null }
 
         val payload = LoadData(
-            matchId = matchId,
+            matchId = sourceInfo.id ?: return null,
             source = sourceInfo.source ?: return null,
             title = titleText,
-            posterUrl = "$mainUrl/api/images/poster/fallback.webp"
+            posterUrl = null
         )
 
         return newLiveSearchResponse(
