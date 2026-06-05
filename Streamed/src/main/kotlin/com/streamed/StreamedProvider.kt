@@ -9,6 +9,7 @@ import com.lagradost.cloudstream3.SearchResponse
 import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.TvType
 import com.lagradost.cloudstream3.utils.loadExtractor
+import com.lagradost.cloudstream3.network.WebViewResolver
 import com.lagradost.cloudstream3.newHomePageResponse
 import com.lagradost.cloudstream3.newLiveSearchResponse
 import com.lagradost.cloudstream3.newLiveStreamLoadResponse
@@ -132,12 +133,40 @@ class StreamedProvider : MainAPI() {
                     }
                 )
             } else {
-                loadExtractor(
-                    embedUrl,
-                    "$mainUrl/",
-                    subtitleCallback,
-                    callback
-                )
+                val m3u8Url = try {
+                    app.get(
+                        embedUrl,
+                        interceptor = WebViewResolver(Regex(""".*\.m3u8.*""")),
+                        timeout = 15000
+                    ).url
+                } catch (e: Exception) {
+                    ""
+                }
+                
+                if (m3u8Url.contains(".m3u8")) {
+                    callback(
+                        newExtractorLink(
+                            source = name,
+                            name = buildString {
+                                append(name)
+                                append(" - ")
+                                append(stream.language ?: "Stream ${index + 1}")
+                                if (stream.hd == true) append(" HD")
+                            },
+                            url = m3u8Url
+                        ) {
+                            this.referer = "$mainUrl/"
+                            this.quality = if (stream.hd == true) Qualities.P1080.value else Qualities.Unknown.value
+                        }
+                    )
+                } else {
+                    loadExtractor(
+                        embedUrl,
+                        "$mainUrl/",
+                        subtitleCallback,
+                        callback
+                    )
+                }
             }
         }
 
