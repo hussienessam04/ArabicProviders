@@ -7,6 +7,6 @@ import com.lagradost.cloudstream3.plugins.Plugin
 @CloudstreamPlugin
 class StreamedPlugin : Plugin() {
     override fun load(context: Context) {
-        registerMainAPI(StreamedProvider())
+        registerMainAPI(StreamedProvider(context))
     }
 }
