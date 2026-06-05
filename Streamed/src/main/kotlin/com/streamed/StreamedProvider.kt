@@ -101,8 +101,15 @@ class StreamedProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val payload = parseJson<LoadData>(data)
-        val streamsRes = app.get("$mainUrl/api/stream/${payload.source}/${payload.matchId}").text
-        val streams = runCatching { parseJson<Array<StreamItem>>(streamsRes).toList() }.getOrDefault(emptyList())
+        
+        val sourcesToTry = payload.allSources ?: listOf(MatchSource(payload.source, payload.matchId))
+        
+        val streams = sourcesToTry.flatMap { src ->
+            val srcId = src.id ?: return@flatMap emptyList()
+            val srcName = src.source ?: return@flatMap emptyList()
+            val streamsRes = app.get("$mainUrl/api/stream/$srcName/$srcId").text
+            runCatching { parseJson<Array<StreamItem>>(streamsRes).toList() }.getOrDefault(emptyList())
+        }
 
         streams.forEachIndexed { index, stream ->
             val embedUrl = stream.embedUrl ?: return@forEachIndexed
@@ -136,7 +143,8 @@ class StreamedProvider : MainAPI() {
             matchId = sourceInfo.id ?: return null,
             source = sourceInfo.source ?: return null,
             title = titleText,
-            posterUrl = null
+            posterUrl = null,
+            allSources = sources
         )
 
         return newLiveSearchResponse(
@@ -194,6 +202,7 @@ class StreamedProvider : MainAPI() {
         val matchId: String,
         val source: String,
         val title: String,
-        val posterUrl: String? = null
+        val posterUrl: String? = null,
+        val allSources: List<MatchSource>? = null
     )
 }
