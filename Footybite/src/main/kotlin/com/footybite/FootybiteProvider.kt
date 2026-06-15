@@ -23,6 +23,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
+import com.lagradost.cloudstream3.network.WebViewResolver
 
 class FootybiteProvider(private val context: Context) : MainAPI() {
     override var mainUrl = "https://live.footybite.to"
@@ -138,7 +139,17 @@ class FootybiteProvider(private val context: Context) : MainAPI() {
                     }
                 )
             } else {
-                val m3u8Url = resolveWithWebView(embedUrl, "") ?: ""
+                var m3u8Url = resolveWithWebView(embedUrl, "") ?: ""
+                if (!m3u8Url.contains(".m3u8")) {
+                    m3u8Url = try {
+                        val interceptor = WebViewResolver(Regex(".*\\.m3u8.*"))
+                        val res = app.get(embedUrl, interceptor = interceptor)
+                        if (res.url.contains(".m3u8")) res.url else ""
+                    } catch (e: Exception) {
+                        ""
+                    }
+                }
+                
                 if (m3u8Url.isNotBlank()) {
                     val refererUrl = try { java.net.URI(embedUrl).let { "${it.scheme}://${it.host}/" } } catch (e: Exception) { "" }
                     callback(
@@ -201,7 +212,7 @@ class FootybiteProvider(private val context: Context) : MainAPI() {
             }
 
             val webView = WebView(webViewContext).apply {
-                layoutParams = ViewGroup.LayoutParams(1, 1)
+                layoutParams = ViewGroup.LayoutParams(1920, 1080)
                 visibility = View.INVISIBLE
                 isHorizontalScrollBarEnabled = false
                 isVerticalScrollBarEnabled = false
@@ -209,15 +220,26 @@ class FootybiteProvider(private val context: Context) : MainAPI() {
 
             if (dialog != null) {
                 try {
-                    dialog.setContentView(webView, ViewGroup.LayoutParams(1, 1))
+                    dialog.setContentView(webView, ViewGroup.LayoutParams(1920, 1080))
                     dialog.show()
                 } catch (e: Exception) {
                     try {
                         val decor = activity?.window?.decorView as? ViewGroup
-                        decor?.addView(webView, FrameLayout.LayoutParams(1, 1, Gravity.START or Gravity.TOP))
+                        decor?.addView(webView, FrameLayout.LayoutParams(1920, 1080, Gravity.START or Gravity.TOP))
                     } catch (_: Exception) {}
                 }
             }
+
+            // Always call layout and measure to ensure WebKit engine initializes properly and executes JS headlessly/without attachment
+            try {
+                webView.measure(
+                    View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
+                )
+                webView.layout(0, 0, 1920, 1080)
+                webView.onResume()
+                webView.resumeTimers()
+            } catch (_: Exception) {}
 
             webView.settings.apply {
                 javaScriptEnabled = true

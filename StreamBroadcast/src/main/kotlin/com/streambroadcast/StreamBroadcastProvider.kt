@@ -337,7 +337,16 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
                     } else {
                         if (linksFoundCount == 0 && webViewCallsCount < maxWebViewCalls) {
                             webViewCallsCount++
-                            val resolvedWv = resolveWithWebView(embedUrl, "https://newsport-tv.com/")
+                            var resolvedWv = resolveWithWebView(embedUrl, "https://newsport-tv.com/")
+                            if (resolvedWv == null || !resolvedWv.contains(".m3u8")) {
+                                resolvedWv = try {
+                                    val interceptor = WebViewResolver(Regex(".*\\.m3u8.*"))
+                                    val res = app.get(embedUrl, referer = "https://newsport-tv.com/", interceptor = interceptor)
+                                    if (res.url.contains(".m3u8")) res.url else null
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            }
                             if (resolvedWv != null && resolvedWv.contains(".m3u8")) {
                                 callback(
                                     newExtractorLink(
@@ -356,7 +365,16 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
                 } else {
                     if (linksFoundCount < 2 && webViewCallsCount < maxWebViewCalls) {
                         webViewCallsCount++
-                        val resolvedWv = resolveWithWebView(embedUrl, "https://newsport-tv.com/")
+                        var resolvedWv = resolveWithWebView(embedUrl, "https://newsport-tv.com/")
+                        if (resolvedWv == null || !resolvedWv.contains(".m3u8")) {
+                            resolvedWv = try {
+                                val interceptor = WebViewResolver(Regex(".*\\.m3u8.*"))
+                                val res = app.get(embedUrl, referer = "https://newsport-tv.com/", interceptor = interceptor)
+                                if (res.url.contains(".m3u8")) res.url else null
+                            } catch (e: Exception) {
+                                null
+                            }
+                        }
                         if (resolvedWv != null && resolvedWv.contains(".m3u8")) {
                             callback(
                                 newExtractorLink(
@@ -412,7 +430,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             val albaMatch = albaRegex.find(responseText)
             if (albaMatch != null) {
                 val base64Str = albaMatch.groupValues[1]
-                val decodedBytes = java.util.Base64.getDecoder().decode(base64Str)
+                val decodedBytes = android.util.Base64.decode(base64Str, android.util.Base64.DEFAULT)
                 return String(decodedBytes, Charsets.UTF_8).trim()
             }
 
@@ -563,7 +581,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             }
 
             val webView = WebView(webViewContext).apply {
-                layoutParams = ViewGroup.LayoutParams(1, 1)
+                layoutParams = ViewGroup.LayoutParams(1920, 1080)
                 visibility = View.INVISIBLE
                 isHorizontalScrollBarEnabled = false
                 isVerticalScrollBarEnabled = false
@@ -571,15 +589,26 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
 
             if (dialog != null) {
                 try {
-                    dialog.setContentView(webView, ViewGroup.LayoutParams(1, 1))
+                    dialog.setContentView(webView, ViewGroup.LayoutParams(1920, 1080))
                     dialog.show()
                 } catch (e: Exception) {
                     try {
                         val decor = activity?.window?.decorView as? ViewGroup
-                        decor?.addView(webView, FrameLayout.LayoutParams(1, 1, Gravity.START or Gravity.TOP))
+                        decor?.addView(webView, FrameLayout.LayoutParams(1920, 1080, Gravity.START or Gravity.TOP))
                     } catch (_: Exception) {}
                 }
             }
+
+            // Always call layout and measure to ensure WebKit engine initializes properly and executes JS headlessly/without attachment
+            try {
+                webView.measure(
+                    View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
+                )
+                webView.layout(0, 0, 1920, 1080)
+                webView.onResume()
+                webView.resumeTimers()
+            } catch (_: Exception) {}
 
             webView.settings.apply {
                 javaScriptEnabled = true
@@ -628,7 +657,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             }
 
             timeoutRunnable = Runnable { safeFinish(null) }
-            handler.postDelayed(timeoutRunnable!!, 12000)
+            handler.postDelayed(timeoutRunnable!!, 30000)
 
             webView.webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {

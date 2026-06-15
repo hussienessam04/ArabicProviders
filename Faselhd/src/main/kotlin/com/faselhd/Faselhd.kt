@@ -38,6 +38,7 @@ import kotlin.coroutines.suspendCoroutine
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.graphics.Color
+import com.lagradost.cloudstream3.network.WebViewResolver
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.net.Uri
@@ -644,7 +645,7 @@ class FASELHD(private val context: Context) : MainAPI() {
             }
 
             val webView = WebView(webViewContext).apply {
-                layoutParams = ViewGroup.LayoutParams(1, 1)
+                layoutParams = ViewGroup.LayoutParams(1920, 1080)
                 visibility = View.INVISIBLE // إخفاء إضافي للعنصر نفسه
                 isHorizontalScrollBarEnabled = false
                 isVerticalScrollBarEnabled = false
@@ -652,15 +653,26 @@ class FASELHD(private val context: Context) : MainAPI() {
 
             if (dialog != null) {
                 try {
-                    dialog.setContentView(webView, ViewGroup.LayoutParams(1, 1))
+                    dialog.setContentView(webView, ViewGroup.LayoutParams(1920, 1080))
                     dialog.show()
                 } catch (e: Exception) {
                     try {
                         val decor = activity?.window?.decorView as? ViewGroup
-                        decor?.addView(webView, FrameLayout.LayoutParams(1, 1, Gravity.START or Gravity.TOP))
+                        decor?.addView(webView, FrameLayout.LayoutParams(1920, 1080, Gravity.START or Gravity.TOP))
                     } catch (_: Exception) {}
                 }
             }
+
+            // Always call layout and measure to ensure WebKit engine initializes properly and executes JS headlessly/without attachment
+            try {
+                webView.measure(
+                    View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
+                )
+                webView.layout(0, 0, 1920, 1080)
+                webView.onResume()
+                webView.resumeTimers()
+            } catch (_: Exception) {}
 
             webView.settings.apply {
                 javaScriptEnabled = true
@@ -1074,7 +1086,16 @@ class FASELHD(private val context: Context) : MainAPI() {
         iframeUrls.distinct().forEach { iframeUrl ->
             if (foundLink) return@forEach // Ø¥Ø°Ø§ ÙˆØ¬Ø¯Ù†Ø§ Ø±Ø§Ø¨Ø· ÙˆØªÙˆÙ‚ÙÙ†Ø§
 
-            val m3u8 = resolveWithWebView(iframeUrl, data)
+            var m3u8 = resolveWithWebView(iframeUrl, data)
+            if (m3u8.isNullOrBlank()) {
+                m3u8 = try {
+                    val interceptor = WebViewResolver(Regex(".*\\.m3u8.*"))
+                    val res = app.get(iframeUrl, referer = data, interceptor = interceptor)
+                    if (res.url.contains(".m3u8")) res.url else null
+                } catch (e: Exception) {
+                    null
+                }
+            }
 
             if (!m3u8.isNullOrBlank()) {
                 foundLink = true

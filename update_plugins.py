@@ -19,7 +19,7 @@ footybite = {
     "tvTypes": [
       "Live"
     ],
-    "version": 1,
+    "version": 2,
     "internalName": "Footybite",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/Footybite.cs3",
     "name": "Footybite"
@@ -39,24 +39,34 @@ streambroadcast = {
     "tvTypes": [
       "Live"
     ],
-    "version": 1,
+    "version": 2,
     "internalName": "StreamBroadcast",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/StreamBroadcast.cs3",
     "name": "StreamBroadcast"
 }
 
-# Update or Add Streamed version 10
+# Update or Add Streamed version 11
 streamed = next((p for p in plugins if p["internalName"] == "Streamed"), None)
 if streamed:
-    streamed["version"] = 10
+    streamed["version"] = 11
 
 # Add Footybite if not exists
 if not any(p["internalName"] == "Footybite" for p in plugins):
     plugins.append(footybite)
+else:
+    # Update version if exists
+    for p in plugins:
+        if p["internalName"] == "Footybite":
+            p["version"] = 2
 
 # Add StreamBroadcast if not exists
 if not any(p["internalName"] == "StreamBroadcast" for p in plugins):
     plugins.append(streambroadcast)
+else:
+    # Update version if exists
+    for p in plugins:
+        if p["internalName"] == "StreamBroadcast":
+            p["version"] = 2
 
 with open(plugins_file, 'w', encoding='utf-8') as f:
     json.dump(plugins, f, indent=2, ensure_ascii=False)

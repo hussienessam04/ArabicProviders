@@ -791,7 +791,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 10,
+    "version": 11,
     "internalName": "Streamed",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/Streamed.cs3",
     "name": "Streamed"
@@ -809,7 +809,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 1,
+    "version": 2,
     "internalName": "Footybite",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/Footybite.cs3",
     "name": "Footybite"
@@ -827,7 +827,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 1,
+    "version": 2,
     "internalName": "StreamBroadcast",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/StreamBroadcast.cs3",
     "name": "StreamBroadcast"
