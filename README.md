@@ -14,7 +14,7 @@
 <h2>â¬‡ï¸ Ø§Ù†Ø³Ø® Ø§Ù„Ø±Ø§Ø¨Ø· ÙˆØ§Ù„ØµÙ‚Ù‡ ÙÙŠ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø£Ùˆ Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ Ø§Ù„ØµÙˆØ±Ø© Ù„ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø¥Ø¶Ø§ÙØ§Øª</h2>
 
 <p align="left">
-https://raw.githubusercontent.com/flavasava2022/re-3arabi/refs/heads/main/repo
+https://raw.githubusercontent.com/hussienessam04/ArabicProviders/refs/heads/main/repo
 </p>
 <p align="left">
 <a href="https://flavasava2022.github.io/testpage/">

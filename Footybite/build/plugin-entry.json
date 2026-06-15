@@ -1,0 +1,14 @@
+{
+    "fileHash": "sha256-93e89c7730881bfee079266e8b3e5b69e8aac03db2530c335469433851cf1e30",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
+    "fileSize": 17267,
+    "status": 3,
+    "authors": [
+        "flavasava2022"
+    ],
+    "version": 1,
+    "internalName": "Footybite",
+    "url": "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/builds/Footybite.cs3",
+    "name": "Footybite"
+}

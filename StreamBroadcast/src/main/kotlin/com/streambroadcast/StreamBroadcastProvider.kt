@@ -61,7 +61,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
                 val homeName = match.home_en ?: match.home ?: "Home Team"
                 val awayName = match.away_en ?: match.away ?: "Away Team"
                 val titleText = "$homeName vs $awayName"
-                val posterUrl = match.home_logo?.let { "https://ws.kora-api.space/uploads/logos/$it" } ?: "https://raw.githubusercontent.com/flavasava2022/re-3arabi/main/Streamed/icon.png"
+                val posterUrl = match.home_logo?.let { "https://ws.kora-api.space/uploads/logos/$it" } ?: "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/main/Streamed/icon.png"
 
                 val payload = LoadData(
                     title = titleText,
@@ -119,7 +119,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
                 m.id?.let { matchedIds.add(it) }
                 val titleText = m.name ?: m.game_name ?: "Match"
                 val parsedStreams = parseStreams(m.streams)
-                val posterUrl = m.logo_team1 ?: m.category?.image ?: "https://raw.githubusercontent.com/flavasava2022/re-3arabi/main/Streamed/icon.png"
+                val posterUrl = m.logo_team1 ?: m.category?.image ?: "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/main/Streamed/icon.png"
 
                 val payload = LoadData(
                     title = titleText,
@@ -160,7 +160,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             val leagueName = match.league_en ?: match.league.orEmpty()
 
             if (titleText.lowercase().contains(normalizedQuery) || leagueName.lowercase().contains(normalizedQuery)) {
-                val posterUrl = match.home_logo?.let { "https://ws.kora-api.space/uploads/logos/$it" } ?: "https://raw.githubusercontent.com/flavasava2022/re-3arabi/main/Streamed/icon.png"
+                val posterUrl = match.home_logo?.let { "https://ws.kora-api.space/uploads/logos/$it" } ?: "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/main/Streamed/icon.png"
                 val payload = LoadData(
                     title = titleText,
                     posterUrl = posterUrl,
@@ -193,7 +193,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
 
             if (titleText.lowercase().contains(normalizedQuery) || catName.lowercase().contains(normalizedQuery)) {
                 val parsedStreams = parseStreams(m.streams)
-                val posterUrl = m.logo_team1 ?: m.category?.image ?: "https://raw.githubusercontent.com/flavasava2022/re-3arabi/main/Streamed/icon.png"
+                val posterUrl = m.logo_team1 ?: m.category?.image ?: "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/main/Streamed/icon.png"
                 val payload = LoadData(
                     title = titleText,
                     posterUrl = posterUrl,

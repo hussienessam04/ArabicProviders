@@ -1,0 +1,12 @@
+يلا شوت | Yalla Shoot | مباريات اليوم | بث مباشر | كورة ستار | يلا شوت الجديد | يلا شوت 
+
+/ : Yalla Shoot
+/type/National%20Basketball%20Association : National Basketball Association
+/type/Club%20Friendship : Club Friendship
+/type/Japanese%20J1%20League : Japanese J1 League
+/type/Vietnam%20National%20First%20Class%20League : Vietnam National First Class League
+/type/all : All Matches
+/type/202 : Football
+/type/201 : Basketball
+/livepage/202/5040543 : Watch Live
+/livepage/202/5438214 : Watch Live

@@ -1,0 +1,6 @@
+AS Goal | مباريات اليوم نتائج مباشرة
+
+todays-match-commentators02/ : جدول المعلقين
+competition/international-friendly-matches-2026/ : 
+category/koora-news/match-scores/ : نتائج المباريات
+todays-match-commentators02/ : المعلقين

@@ -9,7 +9,7 @@ with open(plugins_file, 'r', encoding='utf-8') as f:
 footybite = {
     "iconUrl": "https://www.google.com/s2/favicons?domain=live.footybite.to&sz=256",
     "apiVersion": 1,
-    "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
+    "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
     "fileSize": 18000,
     "status": 1,
     "language": "en",
@@ -21,7 +21,7 @@ footybite = {
     ],
     "version": 1,
     "internalName": "Footybite",
-    "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Footybite.cs3",
+    "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/Footybite.cs3",
     "name": "Footybite"
 }
 
@@ -29,7 +29,7 @@ footybite = {
 streambroadcast = {
     "iconUrl": "https://www.google.com/s2/favicons?domain=streambroadcast.net&sz=256",
     "apiVersion": 1,
-    "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
+    "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
     "fileSize": 18000,
     "status": 1,
     "language": "en",
@@ -41,7 +41,7 @@ streambroadcast = {
     ],
     "version": 1,
     "internalName": "StreamBroadcast",
-    "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/StreamBroadcast.cs3",
+    "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/StreamBroadcast.cs3",
     "name": "StreamBroadcast"
 }
 

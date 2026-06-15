@@ -1,0 +1,22 @@
+<div class="anwp-b-wrap match-list__outer-wrapper anwp-fl-live-games-shortcode">
+<div class="d-none anwp-fl-live-games-shortcode__empty">
+<div class="anwp-b-wrap anwp-fl-nodata anwp-text-base anwp-text-center anwp-bg-light py-3">
+<span class="anwp-opacity-70">لا توجد أحداث مباشرة حالياً</span>
+</div>
+</div>
+<div class="match-list match-list--shortcode match-list--live-shortcode" data-args='{"show_club_logos":1,"competition_logo":1}'></div>
+</div>
+
+<div class="match-list match-list--shortcode match-list--live-shortcode" data-args='{"show_club_logos":1,"competition_logo":1}'></div>
+
+<div class="match-list match-list--widget layout--slim">
+<div class="list-group" id="anwp-modaal-games-list__matches"></div>
+<div class="anwp-matches-loading anwp-text-center my-3 d-none d-print-none" id="anwp-modaal-games-list__loader">
+<img alt="spinner" src="https://kooora365.co/wp-admin/images/spinner.gif"/>
+</div>
+</div>
+
+<div class="anwp-matches-loading anwp-text-center my-3 d-none d-print-none" id="anwp-modaal-games-list__loader">
+<img alt="spinner" src="https://kooora365.co/wp-admin/images/spinner.gif"/>
+</div>
+

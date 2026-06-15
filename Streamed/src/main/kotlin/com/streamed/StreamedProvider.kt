@@ -353,7 +353,7 @@ class StreamedProvider(private val context: Context) : MainAPI() {
         } else if (awayBadge != null) {
             "$mainUrl/api/images/badge/$awayBadge.webp"
         } else {
-            "https://raw.githubusercontent.com/flavasava2022/re-3arabi/main/Streamed/icon.png"
+            "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/main/Streamed/icon.png"
         }
 
         val payload = LoadData(
