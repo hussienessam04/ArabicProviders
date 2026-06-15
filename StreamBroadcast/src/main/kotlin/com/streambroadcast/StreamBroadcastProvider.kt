@@ -242,7 +242,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             val soccerMatchId = payload.soccerMatchId ?: return false
             val detailUrl = "https://ws.kora-api.top/api/matche/$soccerMatchId/en?t=${System.currentTimeMillis()}"
             try {
-                val res = app.get(detailUrl, headers = mapOf("Referer" to "https://strm01.app/")).text
+                val res = app.get(detailUrl, headers = mapOf("Referer" to "https://strm01.app/"), timeout = 8000L).text
                 val details = parseJson<SoccerMatchDetail>(res)
                 details.channels?.forEachIndexed { index, channel ->
                     val name = channel.server_name ?: "Server ${index + 1}"
@@ -277,90 +277,101 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             payload.streams?.let { sources.addAll(it) }
         }
 
-        coroutineScope {
-            sources.map { src ->
-                async {
-                    val embedUrl = src.url
-                    if (embedUrl.contains(".m3u8")) {
-                        val refererUrl = try { java.net.URI(embedUrl).let { "${it.scheme}://${it.host}/" } } catch (e: Exception) { "" }
+        var linksFoundCount = 0
+        var webViewCallsCount = 0
+        val maxWebViewCalls = 3
+
+        for (src in sources.take(6)) {
+            val embedUrl = src.url
+            if (embedUrl.contains(".m3u8")) {
+                val refererUrl = try { java.net.URI(embedUrl).let { "${it.scheme}://${it.host}/" } } catch (e: Exception) { "" }
+                callback(
+                    newExtractorLink(
+                        source = this.name,
+                        name = src.name,
+                        url = embedUrl
+                    ) {
+                        this.referer = refererUrl
+                        this.quality = Qualities.Unknown.value
+                    }
+                )
+                linksFoundCount++
+            } else {
+                val resolved = resolveDirectStream(embedUrl)
+                if (resolved != null) {
+                    val refererUrl = try { java.net.URI(resolved).let { "${it.scheme}://${it.host}/" } } catch (e: Exception) { "" }
+                    callback(
+                        newExtractorLink(
+                            source = this.name,
+                            name = src.name,
+                            url = resolved
+                        ) {
+                            this.referer = refererUrl
+                            this.quality = Qualities.Unknown.value
+                        }
+                    )
+                    linksFoundCount++
+                } else if (embedUrl.contains("streams.center/embed")) {
+                    val m3u8Url = resolveStreamCenterLink(embedUrl)
+                    if (m3u8Url != null && m3u8Url.contains(".m3u8")) {
+                        val refererUrl = try { java.net.URI(m3u8Url).let { "${it.scheme}://${it.host}/" } } catch (e: Exception) { "" }
                         callback(
                             newExtractorLink(
-                                source = this@StreamBroadcastProvider.name,
+                                source = this.name,
                                 name = src.name,
-                                url = embedUrl
+                                url = m3u8Url
                             ) {
                                 this.referer = refererUrl
                                 this.quality = Qualities.Unknown.value
                             }
                         )
+                        linksFoundCount++
                     } else {
-                        val resolved = resolveDirectStream(embedUrl)
-                        if (resolved != null) {
-                            val refererUrl = try { java.net.URI(resolved).let { "${it.scheme}://${it.host}/" } } catch (e: Exception) { "" }
-                            callback(
-                                newExtractorLink(
-                                    source = this@StreamBroadcastProvider.name,
-                                    name = src.name,
-                                    url = resolved
-                                ) {
-                                    this.referer = refererUrl
-                                    this.quality = Qualities.Unknown.value
-                                }
-                            )
-                        } else if (embedUrl.contains("streams.center/embed")) {
-                            val m3u8Url = resolveStreamCenterLink(embedUrl)
-                            if (m3u8Url != null && m3u8Url.contains(".m3u8")) {
-                                val refererUrl = try { java.net.URI(m3u8Url).let { "${it.scheme}://${it.host}/" } } catch (e: Exception) { "" }
-                                callback(
-                                    newExtractorLink(
-                                        source = this@StreamBroadcastProvider.name,
-                                        name = src.name,
-                                        url = m3u8Url
-                                    ) {
-                                        this.referer = refererUrl
-                                        this.quality = Qualities.Unknown.value
-                                    }
-                                )
-                            } else {
-                                val resolvedWv = resolveWithWebView(embedUrl, "https://newsport-tv.com/")
-                                if (resolvedWv != null && resolvedWv.contains(".m3u8")) {
-                                    callback(
-                                        newExtractorLink(
-                                            source = this@StreamBroadcastProvider.name,
-                                            name = src.name,
-                                            url = resolvedWv
-                                        ) {
-                                            this.referer = "https://streams.center/"
-                                            this.quality = Qualities.Unknown.value
-                                        }
-                                    )
-                                }
-                            }
-                        } else {
+                        if (linksFoundCount == 0 && webViewCallsCount < maxWebViewCalls) {
+                            webViewCallsCount++
                             val resolvedWv = resolveWithWebView(embedUrl, "https://newsport-tv.com/")
                             if (resolvedWv != null && resolvedWv.contains(".m3u8")) {
                                 callback(
                                     newExtractorLink(
-                                        source = this@StreamBroadcastProvider.name,
+                                        source = this.name,
                                         name = src.name,
                                         url = resolvedWv
                                     ) {
-                                        this.referer = ""
+                                        this.referer = "https://streams.center/"
                                         this.quality = Qualities.Unknown.value
                                     }
                                 )
-                            } else {
-                                loadExtractor(
-                                    embedUrl,
-                                    "https://newsport-tv.com/",
-                                    subtitleCallback,
-                                    callback
-                                )
+                                linksFoundCount++
                             }
                         }
                     }
+                } else {
+                    if (linksFoundCount < 2 && webViewCallsCount < maxWebViewCalls) {
+                        webViewCallsCount++
+                        val resolvedWv = resolveWithWebView(embedUrl, "https://newsport-tv.com/")
+                        if (resolvedWv != null && resolvedWv.contains(".m3u8")) {
+                            callback(
+                                newExtractorLink(
+                                    source = this.name,
+                                    name = src.name,
+                                    url = resolvedWv
+                                ) {
+                                    this.referer = ""
+                                    this.quality = Qualities.Unknown.value
+                                }
+                            )
+                            linksFoundCount++
+                        } else {
+                            loadExtractor(
+                                embedUrl,
+                                "https://newsport-tv.com/",
+                                subtitleCallback,
+                                callback
+                            )
+                        }
+                    }
                 }
-            }.awaitAll()
+            }
         }
 
         return true
@@ -386,7 +397,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             val headersMap = mapOf(
                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             )
-            val responseText = app.get(url, headers = headersMap).text
+            val responseText = app.get(url, headers = headersMap, timeout = 6000L).text
 
             // 1. Check for AlbaPlayerControl base64 pattern
             val albaRegex = """AlbaPlayerControl\(\s*['"]([^'"]+)['"]""".toRegex()
@@ -601,7 +612,7 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             }
 
             timeoutRunnable = Runnable { safeFinish(null) }
-            handler.postDelayed(timeoutRunnable!!, 30000)
+            handler.postDelayed(timeoutRunnable!!, 12000)
 
             webView.webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
