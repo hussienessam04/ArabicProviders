@@ -51,7 +51,8 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
 
     private val headers = mapOf(
         "Origin" to "https://streambroadcast.net",
-        "Referer" to "https://streambroadcast.net/"
+        "Referer" to "https://streambroadcast.net/",
+        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -242,7 +243,14 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
             val soccerMatchId = payload.soccerMatchId ?: return false
             val detailUrl = "https://ws.kora-api.top/api/matche/$soccerMatchId/en?t=${System.currentTimeMillis()}"
             try {
-                val res = app.get(detailUrl, headers = mapOf("Referer" to "https://strm01.app/"), timeout = 8000L).text
+                val res = app.get(
+                    detailUrl,
+                    headers = mapOf(
+                        "Referer" to "https://strm01.app/",
+                        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+                    ),
+                    timeout = 8000L
+                ).text
                 val details = parseJson<SoccerMatchDetail>(res)
                 details.channels?.forEachIndexed { index, channel ->
                     val name = channel.server_name ?: "Server ${index + 1}"
@@ -523,50 +531,54 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
         iframeUrl: String,
         referer: String
     ): String? = suspendCancellableCoroutine { cont ->
-        val activity = context as? Activity
-        if (activity == null || activity.isFinishing) {
-            cont.resume(null)
-            return@suspendCancellableCoroutine
-        }
+        val activity = getActivity(context)
+        val mainLooper = Looper.getMainLooper()
+        val handler = Handler(mainLooper)
 
-        activity.runOnUiThread {
-            val dialog = Dialog(activity)
-            dialog.setCancelable(false)
-            dialog.setCanceledOnTouchOutside(false)
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        handler.post {
+            val webViewContext = activity ?: context
+            val dialog = if (activity != null && !activity.isFinishing) Dialog(activity) else null
 
-            dialog.window?.apply {
-                setBackgroundDrawableResource(android.R.color.transparent)
-                setDimAmount(0f)
-                clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                addFlags(
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                )
-                attributes = attributes?.apply {
-                    width = 1
-                    height = 1
-                    x = -10000
-                    y = -10000
-                    gravity = Gravity.START or Gravity.TOP
+            if (dialog != null) {
+                dialog.setCancelable(false)
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+
+                dialog.window?.apply {
+                    setBackgroundDrawableResource(android.R.color.transparent)
+                    setDimAmount(0f)
+                    clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                    addFlags(
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    )
+                    attributes = attributes?.apply {
+                        width = 1
+                        height = 1
+                        x = -10000
+                        y = -10000
+                        gravity = Gravity.START or Gravity.TOP
+                    }
                 }
             }
 
-            val webView = WebView(activity).apply {
+            val webView = WebView(webViewContext).apply {
                 layoutParams = ViewGroup.LayoutParams(1, 1)
                 visibility = View.INVISIBLE
                 isHorizontalScrollBarEnabled = false
                 isVerticalScrollBarEnabled = false
             }
 
-            try {
-                dialog.setContentView(webView, ViewGroup.LayoutParams(1, 1))
-                dialog.show()
-            } catch (e: Exception) {
+            if (dialog != null) {
                 try {
-                    val decor = activity.window?.decorView as? ViewGroup
-                    decor?.addView(webView, FrameLayout.LayoutParams(1, 1, Gravity.START or Gravity.TOP))
-                } catch (_: Exception) {}
+                    dialog.setContentView(webView, ViewGroup.LayoutParams(1, 1))
+                    dialog.show()
+                } catch (e: Exception) {
+                    try {
+                        val decor = activity?.window?.decorView as? ViewGroup
+                        decor?.addView(webView, FrameLayout.LayoutParams(1, 1, Gravity.START or Gravity.TOP))
+                    } catch (_: Exception) {}
+                }
             }
 
             webView.settings.apply {
@@ -589,16 +601,20 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
 
             var finished = false
             val finishLock = Any()
-            val handler = Handler(Looper.getMainLooper())
             var timeoutRunnable: Runnable? = null
 
             fun cleanup() {
-                activity.runOnUiThread {
+                val runCleanup = {
                     try { timeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
                     try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) {}
                     try { webView.stopLoading() } catch (_: Exception) {}
                     try { webView.destroy() } catch (_: Exception) {}
-                    try { if (dialog.isShowing) dialog.dismiss() } catch (_: Exception) {}
+                    try { if (dialog?.isShowing == true) dialog.dismiss() } catch (_: Exception) {}
+                }
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    runCleanup()
+                } else {
+                    handler.post(runCleanup)
                 }
             }
 
@@ -745,4 +761,15 @@ class StreamBroadcastProvider(private val context: Context) : MainAPI() {
         val name: String,
         val keywords: List<String>
     )
+
+    private fun getActivity(context: Context): Activity? {
+        var currentContext = context
+        while (currentContext is android.content.ContextWrapper) {
+            if (currentContext is Activity) {
+                return currentContext
+            }
+            currentContext = currentContext.baseContext
+        }
+        return null
+    }
 }

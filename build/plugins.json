@@ -1,9 +1,9 @@
 [
     {
-        "fileHash": "sha256-93e89c7730881bfee079266e8b3e5b69e8aac03db2530c335469433851cf1e30",
+        "fileHash": "sha256-af805e2fcbdfb50c024687eeab48a0ca674761989302c7a3550253b593017998",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 17267,
+        "fileSize": 17784,
         "status": 3,
         "authors": [
             "flavasava2022"
@@ -15,10 +15,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=streambroadcast.net&sz=256",
-        "fileHash": "sha256-b0a80526eeb4459e009ecfb81fe47d35e5c8091e510dfe408e95346eb39d3351",
+        "fileHash": "sha256-973e01e9da627934f7c8fe1d983510a22d5b428f632a9af95f32a1df602569d8",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 35901,
+        "fileSize": 39610,
         "status": 1,
         "language": "en",
         "authors": [
@@ -34,10 +34,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=streamed.pk&sz=256",
-        "fileHash": "sha256-4b0dd8a80618f440ef3127a014c89c3d68902b07709f2f2887c1c010d7877226",
+        "fileHash": "sha256-74394e9291fbcef36f1ab2754074034a74618ab9ad7b089e096a01e47a6e2e8b",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 26025,
+        "fileSize": 26605,
         "status": 1,
         "language": "en",
         "authors": [

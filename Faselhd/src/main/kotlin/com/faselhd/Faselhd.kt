@@ -599,70 +599,67 @@ class FASELHD(private val context: Context) : MainAPI() {
 
         }
 
-
         return results.toList()
     }
-
 
     @SuppressLint("SetJavaScriptEnabled")
     private suspend fun resolveWithWebView(
         iframeUrl: String,
         referer: String
     ): String? = suspendCancellableCoroutine { cont ->
-
-        val activity = context as? Activity
-        if (activity == null || activity.isFinishing) {
-            cont.resume(null)
-            return@suspendCancellableCoroutine
-        }
+        val activity = getActivity(context)
+        val mainLooper = Looper.getMainLooper()
+        val handler = Handler(mainLooper)
 
         val finalUrl = iframeUrl.replace("&amp;", "&").trim()
         val originalHost = try { Uri.parse(finalUrl).host?.replace("www.", "") ?: "" } catch (e: Exception) { "" }
 
-        activity.runOnUiThread {
+        handler.post {
+            val webViewContext = activity ?: context
+            val dialog = if (activity != null && !activity.isFinishing) Dialog(activity) else null
 
-            val dialog = Dialog(activity)
+            if (dialog != null) {
+                dialog.setCancelable(false)
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
 
-            dialog.setCancelable(false)
-            dialog.setCanceledOnTouchOutside(false)
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(false) // ØºÙŠØ± Ù‚Ø§Ø¨Ù„ Ù„Ù„Ø¥Ù„ØºØ§Ø¡ Ù„Ø£Ù†Ù‡ Ù…Ø®ÙÙŠ
+                dialog.window?.apply {
+                    setBackgroundDrawableResource(android.R.color.transparent)
+                    setDimAmount(0f) // بدون تعتيم
+                    clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
 
-            dialog.window?.apply {
-                setBackgroundDrawableResource(android.R.color.transparent)
-                setDimAmount(0f) // Ø¨Ø¯ÙˆÙ† ØªØ¹ØªÙŠÙ…
-                clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                    addFlags(
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    )
 
-                addFlags(
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                )
-
-                attributes = attributes?.apply {
-                    width = 1
-                    height = 1
-                    x = -10000
-                    y = -10000
-                    gravity = Gravity.START or Gravity.TOP
+                    attributes = attributes?.apply {
+                        width = 1
+                        height = 1
+                        x = -10000
+                        y = -10000
+                        gravity = Gravity.START or Gravity.TOP
+                    }
                 }
             }
 
-            val webView = WebView(activity).apply {
+            val webView = WebView(webViewContext).apply {
                 layoutParams = ViewGroup.LayoutParams(1, 1)
-                visibility = View.INVISIBLE // Ø¥Ø®ÙØ§Ø¡ Ø¥Ø¶Ø§ÙÙŠ Ù„Ù„Ø¹Ù†ØµØ± Ù†ÙØ³Ù‡
+                visibility = View.INVISIBLE // إخفاء إضافي للعنصر نفسه
                 isHorizontalScrollBarEnabled = false
                 isVerticalScrollBarEnabled = false
             }
 
-            try {
-                dialog.setContentView(webView, ViewGroup.LayoutParams(1, 1))
-                dialog.show()
-            } catch (e: Exception) {
-
+            if (dialog != null) {
                 try {
-                    val decor = activity.window?.decorView as? ViewGroup
-                    decor?.addView(webView, FrameLayout.LayoutParams(1, 1, Gravity.START or Gravity.TOP))
-                } catch (_: Exception) {}
+                    dialog.setContentView(webView, ViewGroup.LayoutParams(1, 1))
+                    dialog.show()
+                } catch (e: Exception) {
+                    try {
+                        val decor = activity?.window?.decorView as? ViewGroup
+                        decor?.addView(webView, FrameLayout.LayoutParams(1, 1, Gravity.START or Gravity.TOP))
+                    } catch (_: Exception) {}
+                }
             }
 
             webView.settings.apply {
@@ -705,23 +702,29 @@ class FASELHD(private val context: Context) : MainAPI() {
             val foundM3u8 = linkedSetOf<String>()
             var finished = false
             val finishLock = Any()
-            val handler = Handler(Looper.getMainLooper())
             var finishRunnable: Runnable? = null
 
             var currentAttempt = 0
             val maxAttempts = 2
             val attemptTimeoutMs = 12_000L
             var attemptTimeoutRunnable: Runnable? = null
-            var autoTouchRunnable: Runnable? = null // Ø³Ù†Ø³ØªØ®Ø¯Ù…Ù‡ Ù„ØªÙƒØ±Ø§Ø± ØªØ´ØºÙŠÙ„ Ø§Ù„Ù€ JS Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©
+            var autoTouchRunnable: Runnable? = null // سنستخدمه لتكرار تشغيل الـ JS داخل المحاولة
 
             fun cleanup() {
-                try { attemptTimeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
-                try { autoTouchRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
-                try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) {}
-                try { webView.stopLoading() } catch (_: Exception) {}
-                try { webView.destroy() } catch (_: Exception) {}
-                try { cookieManager.flush() } catch (_: Exception) {}
-                try { if (dialog.isShowing) dialog.dismiss() } catch (_: Exception) {}
+                val runCleanup = {
+                    try { attemptTimeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
+                    try { autoTouchRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
+                    try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) {}
+                    try { webView.stopLoading() } catch (_: Exception) {}
+                    try { webView.destroy() } catch (_: Exception) {}
+                    try { cookieManager.flush() } catch (_: Exception) {}
+                    try { if (dialog?.isShowing == true) dialog.dismiss() } catch (_: Exception) {}
+                }
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    runCleanup()
+                } else {
+                    handler.post(runCleanup)
+                }
             }
 
             fun safeFinish(result: String?) {
@@ -767,7 +770,6 @@ class FASELHD(private val context: Context) : MainAPI() {
                 synchronized(finishLock) { if (finished) return }
 
                 if (currentAttempt >= maxAttempts) {
-
                     chooseAndFinish()
                     return
                 }
@@ -776,9 +778,8 @@ class FASELHD(private val context: Context) : MainAPI() {
                 attemptTimeoutRunnable = Runnable {
                     synchronized(foundM3u8) {
                         if (foundM3u8.isEmpty()) {
-
                             currentAttempt++
-                            startNextAttempt() // Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ø§Ù„ØªØ§Ù„ÙŠØ©
+                            startNextAttempt() // ابدأ المحاولة التالية
                         } else {
                             chooseAndFinish()
                         }
@@ -786,15 +787,20 @@ class FASELHD(private val context: Context) : MainAPI() {
                 }
                 handler.postDelayed(attemptTimeoutRunnable!!, attemptTimeoutMs)
 
-                activity.runOnUiThread {
+                val runLoad = {
                     try { webView.loadUrl(finalUrl, mapOf("Referer" to referer)) } catch (_: Exception) {}
+                }
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    runLoad()
+                } else {
+                    handler.post(runLoad)
                 }
             }
 
             fun getStrategyJs(attempt: Int): String {
                 return """
                 (function() {
-                    const strategy = $attempt;
+                    const strategy = ${"$"}{attempt};
 
                     Object.defineProperty(navigator, 'userActivation', { get: () => ({ hasBeenActive: true, isActive: true }) });
 
@@ -869,7 +875,7 @@ class FASELHD(private val context: Context) : MainAPI() {
            
                     } catch(e) {}
                 })();
-            """.trimIndent()
+                """.trimIndent()
             }
 
             val fastSnifferJs = """
@@ -1010,7 +1016,7 @@ class FASELHD(private val context: Context) : MainAPI() {
                     try {
                         val transport = resultMsg?.obj as? WebView.WebViewTransport
 
-                        val adWebView = WebView(activity).apply {
+                        val adWebView = WebView(webViewContext).apply {
                             layoutParams = FrameLayout.LayoutParams(1, 1, Gravity.START or Gravity.TOP)
                             visibility = View.INVISIBLE
                         }
@@ -1020,7 +1026,9 @@ class FASELHD(private val context: Context) : MainAPI() {
                             userAgentString = lastValidUserAgent
                         }
 
-                        try { (activity.window?.decorView as? ViewGroup)?.addView(adWebView) } catch (_: Exception) {}
+                        if (activity != null) {
+                            try { (activity.window?.decorView as? ViewGroup)?.addView(adWebView) } catch (_: Exception) {}
+                        }
 
                         adWebView.webViewClient = sharedWebViewClient
                         transport?.webView = adWebView
@@ -1043,6 +1051,7 @@ class FASELHD(private val context: Context) : MainAPI() {
             cont.invokeOnCancellation { handler.post { safeFinish(null) } }
         }
     }
+
 
     override suspend fun loadLinks(
         data: String,
@@ -1083,6 +1092,17 @@ class FASELHD(private val context: Context) : MainAPI() {
         }
 
         return foundLink
+    }
+
+    private fun getActivity(context: Context): Activity? {
+        var currentContext = context
+        while (currentContext is android.content.ContextWrapper) {
+            if (currentContext is Activity) {
+                return currentContext
+            }
+            currentContext = currentContext.baseContext
+        }
+        return null
     }
 }
 
