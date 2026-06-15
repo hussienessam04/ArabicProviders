@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml:2:13-83
+INJECTED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml:2:13-83
+	package
+		INJECTED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml
+	xmlns:android
+		ADDED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml:2:23-81
+uses-sdk
+INJECTED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml reason: use-sdk injection requested
+INJECTED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml
+INJECTED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml
+	android:targetSdkVersion
+		INJECTED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\Hussien Essam\.gemini\antigravity-ide\scratch\re-3arabi\StreamBroadcast\build\intermediates\tmp\ProcessLibraryManifest\debug\tempAndroidManifest8040891046870339524.xml

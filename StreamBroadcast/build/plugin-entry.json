@@ -1,0 +1,19 @@
+{
+    "iconUrl": "https://www.google.com/s2/favicons?domain=streambroadcast.net&sz=256",
+    "fileHash": "sha256-b0a80526eeb4459e009ecfb81fe47d35e5c8091e510dfe408e95346eb39d3351",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
+    "fileSize": 35901,
+    "status": 1,
+    "language": "en",
+    "authors": [
+        "flavasava2022"
+    ],
+    "tvTypes": [
+        "Live"
+    ],
+    "version": 1,
+    "internalName": "StreamBroadcast",
+    "url": "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/builds/StreamBroadcast.cs3",
+    "name": "StreamBroadcast"
+}

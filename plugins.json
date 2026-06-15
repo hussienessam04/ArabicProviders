@@ -813,5 +813,23 @@
     "internalName": "Footybite",
     "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/Footybite.cs3",
     "name": "Footybite"
+  },
+  {
+    "iconUrl": "https://www.google.com/s2/favicons?domain=streambroadcast.net&sz=256",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/flavasava2022/re-3arabi",
+    "fileSize": 18000,
+    "status": 1,
+    "language": "en",
+    "authors": [
+      "flavasava2022"
+    ],
+    "tvTypes": [
+      "Live"
+    ],
+    "version": 1,
+    "internalName": "StreamBroadcast",
+    "url": "https://github.com/flavasava2022/re-3arabi/raw/refs/heads/main/build/StreamBroadcast.cs3",
+    "name": "StreamBroadcast"
   }
 ]
