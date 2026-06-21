@@ -331,29 +331,45 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                 "User-Agent" to (commonHeaders["User-Agent"] ?: ""),
                 "Referer" to "https://yacinetv.watch/"
             ),
-            timeout = 6000L
+            timeout = 8000L
         ).text
 
+        // Pattern 1: CONFIG.token = "urlSafeBase64String" (kora-plus.app edge URLs)
+        // The frame.php page encodes the m3u8 URL as URL-safe Base64 in CONFIG.token.
+        val configTokenMatch = Regex("""token\s*[:=]\s*"([A-Za-z0-9_-]+)"""").find(text)
+        if (configTokenMatch != null) {
+            val decoded = urlSafeBase64Decode(configTokenMatch.groupValues[1])
+            if (decoded != null && decoded.contains(".m3u8")) return@runCatching decoded
+        }
+
+        // Pattern 2: AlbaPlayerControl('base64String') 
         val albaMatch = Regex("""AlbaPlayerControl\(\s*['"]([^'"]+)['"]""").find(text)
         if (albaMatch != null) {
             val decoded = String(Base64.decode(albaMatch.groupValues[1], Base64.DEFAULT), Charsets.UTF_8).trim()
             if (decoded.contains(".m3u8")) return@runCatching decoded
         }
 
+        // Pattern 3: source = "url" (direct m3u8 or PHP wrapper)
         val sourceMatch = Regex("""source\s*[:=]\s*["']([^"']+)["']""").find(text)
         val rawSource = sourceMatch?.groupValues?.get(1)?.trim()
         if (!rawSource.isNullOrBlank()) {
-            if (rawSource.endsWith(".m3u8", ignoreCase = true) || rawSource.endsWith(".mp4", ignoreCase = true)) {
-                return@runCatching rawSource
-            }
+            if (rawSource.endsWith(".m3u8", ignoreCase = true)) return@runCatching rawSource
             val resolved = resolvePhpWrapperToM3u8(rawSource, referer = url)
             if (resolved != null) return@runCatching resolved
         }
 
+        // Pattern 4: raw .m3u8 URL in the text
         val m3u8Match = Regex("""(https?://[^\s"'<>]+\.m3u8[^\s"'<>]*)""").find(text)
         if (m3u8Match != null) return@runCatching m3u8Match.groupValues[1]
 
         null
+    }.getOrNull()
+
+    private fun urlSafeBase64Decode(str: String): String? = runCatching {
+        var base64 = str.replace("-", "+").replace("_", "/")
+        val padding = base64.length % 4
+        if (padding != 0) base64 += "=".repeat(4 - padding)
+        String(Base64.decode(base64, Base64.DEFAULT), Charsets.UTF_8)
     }.getOrNull()
 
     private suspend fun resolvePhpWrapperToM3u8(url: String, referer: String): String? = runCatching {
