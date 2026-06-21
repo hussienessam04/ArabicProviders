@@ -177,7 +177,8 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         if (channels.isEmpty()) return false
 
         var linksFound = 0
-        var webViewUsed = false
+        var webViewAttempts = 0
+        val maxWebViewAttempts = 3
 
         // Sort: prefer channels whose hosts are known to work (score808, soccerball)
         // over the dead reddit-soccer-streams mirrors.
@@ -197,27 +198,37 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
 
             val candidates = mutableListOf<String>()
 
-            // Detect known-dead hosts so we can skip wasting time on them.
-            val linkHost = runCatching { java.net.URI(channel.link ?: "").host ?: "" }.getOrDefault("")
-            val linkIsDeadHost = linkHost.contains("reddit-soccer-streams", ignoreCase = true)
-
-            // For dead-host channels, probe known-working AlbaPlayer iframe hosts
-            // FIRST (before the dead link), using both the channel.ch field and
-            // the ?ch= param extracted from the link URL.
+            // Extract channel key from both channel.ch field and ?ch= URL param.
             val chKeys = mutableSetOf<String>()
             channel.ch?.takeIf { it.isNotBlank() }?.let { chKeys.add(it) }
             channel.link?.let { lnk ->
                 Regex("""[?&]ch=([^&]+)""").find(lnk)?.groupValues?.get(1)?.let { chKeys.add(it) }
             }
-            if (chKeys.isNotEmpty()) {
+
+            // PRIMARY: Build edge URLs from match.edges + match.edge_domain.
+            // These are the URLs the website itself uses. They may work from
+            // the user's phone even if they don't resolve from a server.
+            // Format: https://{edge}.{edge_domain}/frame.php?ch={ch}&p=12&token={uuid}&kt={ts}
+            val ts = System.currentTimeMillis() / 1000
+            val uuid = java.util.UUID.randomUUID().toString()
+            val edges = detail.edges ?: emptyList()
+            val edgeDomain = detail.edge_domain
+            if (edges.isNotEmpty() && !edgeDomain.isNullOrBlank()) {
                 for (ck in chKeys) {
-                    candidates.add("https://new.poiy.online/albaplayer/$ck/")
-                    candidates.add("https://26.streemach.site/albaplayer/$ck/")
-                    candidates.add("https://17.livekoora.blog/albaplayer/$ck/")
+                    for (edge in edges.take(3)) {
+                        candidates.add("https://$edge.$edgeDomain/frame.php?ch=$ck&p=12&token=$uuid&kt=$ts")
+                    }
                 }
             }
 
-            // Standard candidates: mobile_link, decoded token, link itself.
+            // SECONDARY: Known-working AlbaPlayer iframe hosts (poiy.online etc.)
+            for (ck in chKeys) {
+                candidates.add("https://new.poiy.online/albaplayer/$ck/")
+                candidates.add("https://26.streemach.site/albaplayer/$ck/")
+                candidates.add("https://17.livekoora.blog/albaplayer/$ck/")
+            }
+
+            // STANDARD: mobile_link, decoded token, link itself.
             channel.mobile_link?.takeIf { it.isNotBlank() && it != "0" }?.let { candidates.add(it) }
             val decoded = channel.link?.let { decodeTokenFromLink(it) }
             if (decoded != null) candidates.add(decoded)
@@ -251,8 +262,8 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                     continue
                 }
 
-                if (!webViewUsed && !linkIsDeadHost && !isDeadIframeHost(url)) {
-                    webViewUsed = true
+                if (webViewAttempts < maxWebViewAttempts && !isDeadIframeHost(url)) {
+                    webViewAttempts++
                     val wv = resolveWithWebView(url)
                     if (wv != null && wv.contains(".m3u8")) {
                         pushLink(callback, displayName, wv, channel.quality)
@@ -281,9 +292,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
 
     private fun isDeadIframeHost(url: String): Boolean {
         val host = runCatching { java.net.URI(url).host ?: "" }.getOrDefault("")
-        return host.contains("reddit-soccer-streams", ignoreCase = true) ||
-               host.contains("kora-plus.app", ignoreCase = true) ||
-               host.contains("kora-top.mov", ignoreCase = true)
+        return host.contains("reddit-soccer-streams", ignoreCase = true)
     }
 
     private fun formatChannelName(ch: Channel, index: Int): String {
@@ -537,7 +546,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             }
 
             timeoutRunnable = Runnable { safeFinish(null) }
-            handler.postDelayed(timeoutRunnable!!, 15000)
+            handler.postDelayed(timeoutRunnable!!, 30000)
 
             webView.webViewClient = object : WebViewClient() {
                 override fun onReceivedError(
@@ -646,6 +655,8 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         val desc: String? = null,
         val active: String? = null,
         val has_channels: Int? = null,
+        val edges: List<String>? = null,
+        val edge_domain: String? = null,
         val channels: List<Channel>? = null
     )
 
