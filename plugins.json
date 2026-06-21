@@ -836,7 +836,7 @@
     "iconUrl": "https://www.google.com/s2/favicons?domain=yacinetv.watch&sz=256",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
-    "fileSize": 38280,
+    "fileSize": 38984,
     "status": 1,
     "language": "ar",
     "authors": [
@@ -845,7 +845,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 7,
+    "version": 8,
     "internalName": "YacineTV",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/YacineTV.cs3",
     "name": "YacineTV"

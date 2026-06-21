@@ -178,7 +178,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
 
         var linksFound = 0
         var webViewAttempts = 0
-        val maxWebViewAttempts = 3
+        val maxWebViewAttempts = 6
 
         // Sort: prefer channels whose hosts are known to work (score808, soccerball)
         // over the dead reddit-soccer-streams mirrors.
@@ -240,6 +240,22 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                 if (url.contains(".m3u8", ignoreCase = true)) {
                     pushLink(callback, displayName, url, channel.quality)
                     linksFound++
+                    continue
+                }
+
+                // Edge URLs (kora-plus.app) need a real browser to render.
+                // app.get() gets bot-detected and returns Google HTML.
+                // Skip resolveDirectStream + loadExtractor and go directly to WebView.
+                val isEdgeUrl = url.contains("kora-plus.app") || url.contains("kora-top.mov")
+                if (isEdgeUrl) {
+                    if (webViewAttempts < maxWebViewAttempts) {
+                        webViewAttempts++
+                        val wv = resolveWithWebView(url)
+                        if (wv != null && wv.contains(".m3u8")) {
+                            pushLink(callback, displayName, wv, channel.quality)
+                            linksFound++
+                        }
+                    }
                     continue
                 }
 
