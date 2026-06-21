@@ -196,22 +196,32 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             val displayName = formatChannelName(channel, idx)
 
             val candidates = mutableListOf<String>()
-            channel.mobile_link?.takeIf { it.isNotBlank() && it != "0" }?.let { candidates.add(it) }
 
+            // Detect known-dead hosts so we can skip wasting time on them.
+            val linkHost = runCatching { java.net.URI(channel.link ?: "").host ?: "" }.getOrDefault("")
+            val linkIsDeadHost = linkHost.contains("reddit-soccer-streams", ignoreCase = true)
+
+            // For dead-host channels, probe known-working AlbaPlayer iframe hosts
+            // FIRST (before the dead link), using both the channel.ch field and
+            // the ?ch= param extracted from the link URL.
+            val chKeys = mutableSetOf<String>()
+            channel.ch?.takeIf { it.isNotBlank() }?.let { chKeys.add(it) }
+            channel.link?.let { lnk ->
+                Regex("""[?&]ch=([^&]+)""").find(lnk)?.groupValues?.get(1)?.let { chKeys.add(it) }
+            }
+            if (chKeys.isNotEmpty()) {
+                for (ck in chKeys) {
+                    candidates.add("https://new.poiy.online/albaplayer/$ck/")
+                    candidates.add("https://26.streemach.site/albaplayer/$ck/")
+                    candidates.add("https://17.livekoora.blog/albaplayer/$ck/")
+                }
+            }
+
+            // Standard candidates: mobile_link, decoded token, link itself.
+            channel.mobile_link?.takeIf { it.isNotBlank() && it != "0" }?.let { candidates.add(it) }
             val decoded = channel.link?.let { decodeTokenFromLink(it) }
             if (decoded != null) candidates.add(decoded)
-
             if (channel.link != null && !channel.link!!.contains("token=")) candidates.add(channel.link!!)
-
-            // Fallback: many Arabic channels (beIN MAX 1, etc.) point to dead
-            // reddit-soccer-streams.online. Probe known third-party iframe hosts
-            // using the channel key as a fallback candidate.
-            val chKey = channel.ch?.takeIf { it.isNotBlank() }
-            if (chKey != null) {
-                candidates.add("https://new.poiy.online/albaplayer/$chKey/")
-                candidates.add("https://26.streemach.site/albaplayer/$chKey/")
-                candidates.add("https://17.livekoora.blog/albaplayer/$chKey/")
-            }
 
             for (url in candidates.distinct()) {
                 if (linksFound >= 6) break
@@ -241,7 +251,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                     continue
                 }
 
-                if (!webViewUsed) {
+                if (!webViewUsed && !linkIsDeadHost && !isDeadIframeHost(url)) {
                     webViewUsed = true
                     val wv = resolveWithWebView(url)
                     if (wv != null && wv.contains(".m3u8")) {
@@ -267,6 +277,13 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                 this.quality = qualityFrom(qualityLabel)
             }
         )
+    }
+
+    private fun isDeadIframeHost(url: String): Boolean {
+        val host = runCatching { java.net.URI(url).host ?: "" }.getOrDefault("")
+        return host.contains("reddit-soccer-streams", ignoreCase = true) ||
+               host.contains("kora-plus.app", ignoreCase = true) ||
+               host.contains("kora-top.mov", ignoreCase = true)
     }
 
     private fun formatChannelName(ch: Channel, index: Int): String {
