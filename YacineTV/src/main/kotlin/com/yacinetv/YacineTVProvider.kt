@@ -243,18 +243,14 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                     continue
                 }
 
-                // Edge URLs (kora-plus.app) need a real browser to render.
-                // app.get() gets bot-detected and returns Google HTML.
-                // Skip resolveDirectStream + loadExtractor and go directly to WebView.
+                // Edge URLs (kora-plus.app) need browser-like headers to avoid
+                // bot detection. app.get() with proper Sec-Fetch-* headers works.
                 val isEdgeUrl = url.contains("kora-plus.app") || url.contains("kora-top.mov")
                 if (isEdgeUrl) {
-                    if (webViewAttempts < maxWebViewAttempts) {
-                        webViewAttempts++
-                        val wv = resolveWithWebView(url)
-                        if (wv != null && wv.contains(".m3u8")) {
-                            pushLink(callback, displayName, wv, channel.quality)
-                            linksFound++
-                        }
+                    val direct = resolveEdgeStream(url)
+                    if (direct != null) {
+                        pushLink(callback, displayName, direct, channel.quality)
+                        linksFound++
                     }
                     continue
                 }
@@ -338,6 +334,34 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             i += 2
         }
         sb.toString()
+    }.getOrNull()
+
+    private suspend fun resolveEdgeStream(url: String): String? = runCatching {
+        val edgeHeaders = mapOf(
+            "User-Agent" to (commonHeaders["User-Agent"] ?: ""),
+            "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language" to "en-US,en;q=0.9",
+            "Sec-Fetch-Dest" to "iframe",
+            "Sec-Fetch-Mode" to "navigate",
+            "Sec-Fetch-Site" to "cross-site",
+            "Referer" to "https://blog.sports-arena.space/"
+        )
+        val text = app.get(url, headers = edgeHeaders, timeout = 8000L).text
+
+        // CONFIG.token = "urlSafeBase64String" — decode to get the m3u8 URL
+        val configTokenMatch = Regex("""token\s*[:=]\s*"([A-Za-z0-9_-]+)"""").find(text)
+        if (configTokenMatch != null) {
+            val decoded = urlSafeBase64Decode(configTokenMatch.groupValues[1])
+            if (decoded != null && decoded.contains(".m3u8")) return@runCatching decoded
+        }
+
+        // Fallback: try other patterns
+        val sourceMatch = Regex("""source\s*[:=]\s*["']([^"']+)["']""").find(text)
+        if (sourceMatch != null && sourceMatch.groupValues[1].contains(".m3u8")) {
+            return@runCatching sourceMatch.groupValues[1]
+        }
+
+        null
     }.getOrNull()
 
     private suspend fun resolveDirectStream(url: String): String? = runCatching {
