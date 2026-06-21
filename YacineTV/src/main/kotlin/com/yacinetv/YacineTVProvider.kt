@@ -191,30 +191,40 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             }
         }
 
-        for ((idx, ch) in sorted.take(12).withIndex()) {
+        for ((idx, channel) in sorted.take(12).withIndex()) {
             if (linksFound >= 6) break
-            val displayName = formatChannelName(ch, idx)
+            val displayName = formatChannelName(channel, idx)
 
             val candidates = mutableListOf<String>()
-            ch.mobile_link?.takeIf { it.isNotBlank() && it != "0" }?.let { candidates.add(it) }
+            channel.mobile_link?.takeIf { it.isNotBlank() && it != "0" }?.let { candidates.add(it) }
 
-            val decoded = ch.link?.let { decodeTokenFromLink(it) }
+            val decoded = channel.link?.let { decodeTokenFromLink(it) }
             if (decoded != null) candidates.add(decoded)
 
-            if (ch.link != null && !ch.link!!.contains("token=")) candidates.add(ch.link!!)
+            if (channel.link != null && !channel.link!!.contains("token=")) candidates.add(channel.link!!)
+
+            // Fallback: many Arabic channels (beIN MAX 1, etc.) point to dead
+            // reddit-soccer-streams.online. Probe known third-party iframe hosts
+            // using the channel key as a fallback candidate.
+            val chKey = channel.ch?.takeIf { it.isNotBlank() }
+            if (chKey != null) {
+                candidates.add("https://new.poiy.online/albaplayer/$chKey/")
+                candidates.add("https://26.streemach.site/albaplayer/$chKey/")
+                candidates.add("https://17.livekoora.blog/albaplayer/$chKey/")
+            }
 
             for (url in candidates.distinct()) {
                 if (linksFound >= 6) break
 
                 if (url.contains(".m3u8", ignoreCase = true)) {
-                    pushLink(callback, displayName, url, ch.quality)
+                    pushLink(callback, displayName, url, channel.quality)
                     linksFound++
                     continue
                 }
 
                 val direct = resolveDirectStream(url)
                 if (direct != null) {
-                    pushLink(callback, displayName, direct, ch.quality)
+                    pushLink(callback, displayName, direct, channel.quality)
                     linksFound++
                     continue
                 }
@@ -235,7 +245,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                     webViewUsed = true
                     val wv = resolveWithWebView(url)
                     if (wv != null && wv.contains(".m3u8")) {
-                        pushLink(callback, displayName, wv, ch.quality)
+                        pushLink(callback, displayName, wv, channel.quality)
                         linksFound++
                     }
                 }
@@ -629,6 +639,9 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         val link: String? = null,
         val mobile_link: String? = null,
         val type: String? = null,
+        val ch: String? = null,
+        val key: String? = null,
+        val edge: String? = null,
         val quality: String? = null,
         val language: String? = null
     )
