@@ -249,7 +249,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                 if (isEdgeUrl) {
                     val direct = resolveEdgeStream(url)
                     if (direct != null) {
-                        pushLink(callback, displayName, direct, channel.quality)
+                        pushEdgeLink(callback, displayName, direct, channel.quality)
                         linksFound++
                     }
                     continue
@@ -298,6 +298,30 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             newExtractorLink(source = name, name = displayName, url = url) {
                 this.referer = refererFor(url)
                 this.quality = qualityFrom(qualityLabel)
+            }
+        )
+    }
+
+    private suspend fun pushEdgeLink(
+        callback: (ExtractorLink) -> Unit,
+        displayName: String,
+        url: String,
+        qualityLabel: String?
+    ) {
+        val edgeHost = runCatching { java.net.URI(url).host ?: "" }.getOrDefault("")
+        callback(
+            newExtractorLink(source = name, name = displayName, url = url) {
+                this.referer = "https://$edgeHost/"
+                this.quality = qualityFrom(qualityLabel)
+                this.headers = mapOf(
+                    "User-Agent" to (commonHeaders["User-Agent"] ?: ""),
+                    "Accept" to "*/*",
+                    "Accept-Language" to "en-US,en;q=0.9",
+                    "Sec-Fetch-Dest" to "empty",
+                    "Sec-Fetch-Mode" to "cors",
+                    "Sec-Fetch-Site" to "same-origin",
+                    "Referer" to "https://$edgeHost/"
+                )
             }
         )
     }
