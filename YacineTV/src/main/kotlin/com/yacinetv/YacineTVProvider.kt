@@ -292,13 +292,53 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             if (decoded.contains(".m3u8")) return@runCatching decoded
         }
 
-        val sourceMatch = Regex("""source\s*[:=]\s*["']([^"']+\.m3u8[^"']*)["']""").find(text)
-        if (sourceMatch != null) return@runCatching sourceMatch.groupValues[1].trim()
+        val sourceMatch = Regex("""source\s*[:=]\s*["']([^"']+)["']""").find(text)
+        val rawSource = sourceMatch?.groupValues?.get(1)?.trim()
+        if (!rawSource.isNullOrBlank()) {
+            if (rawSource.endsWith(".m3u8", ignoreCase = true) || rawSource.endsWith(".mp4", ignoreCase = true)) {
+                return@runCatching rawSource
+            }
+            val resolved = resolvePhpWrapperToM3u8(rawSource, referer = url)
+            if (resolved != null) return@runCatching resolved
+        }
 
         val m3u8Match = Regex("""(https?://[^\s"'<>]+\.m3u8[^\s"'<>]*)""").find(text)
         if (m3u8Match != null) return@runCatching m3u8Match.groupValues[1]
 
         null
+    }.getOrNull()
+
+    private suspend fun resolvePhpWrapperToM3u8(url: String, referer: String): String? = runCatching {
+        val body = app.get(
+            url,
+            headers = mapOf(
+                "User-Agent" to (commonHeaders["User-Agent"] ?: ""),
+                "Referer" to referer
+            ),
+            timeout = 6000L
+        ).text
+
+        if (!body.trimStart().startsWith("#EXTM3U")) return@runCatching null
+
+        // Master playlist: parse variants and pick the highest bandwidth.
+        var bestUrl: String? = null
+        var bestBw = -1L
+        body.lineSequence().forEachIndexed { idx, line ->
+            if (line.startsWith("#EXT-X-STREAM-INF")) {
+                val bw = Regex("""BANDWIDTH=(\d+)""").find(line)
+                    ?.groupValues?.get(1)?.toLongOrNull() ?: 0L
+                // Next non-empty, non-comment line is the variant URL.
+                for (i in (idx + 1) until body.lineSequence().count()) {
+                    val candidate = body.lineSequence().toList().getOrNull(i)?.trim().orEmpty()
+                    if (candidate.isBlank() || candidate.startsWith("#")) continue
+                    if (candidate.endsWith(".m3u8", ignoreCase = true)) {
+                        if (bw >= bestBw) { bestBw = bw; bestUrl = candidate }
+                    }
+                    break
+                }
+            }
+        }
+        bestUrl
     }.getOrNull()
 
     private fun refererFor(url: String): String = runCatching {
