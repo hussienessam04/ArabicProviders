@@ -34,6 +34,7 @@ import com.lagradost.cloudstream3.newLiveStreamLoadResponse
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.loadExtractor
 import com.lagradost.cloudstream3.utils.newExtractorLink
@@ -309,20 +310,25 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         qualityLabel: String?
     ) {
         val edgeHost = runCatching { java.net.URI(url).host ?: "" }.getOrDefault("")
+        val browserHeaders = mapOf(
+            "User-Agent" to (commonHeaders["User-Agent"] ?: ""),
+            "Accept" to "*/*",
+            "Accept-Language" to "en-US,en;q=0.9",
+            "Sec-Fetch-Dest" to "empty",
+            "Sec-Fetch-Mode" to "cors",
+            "Sec-Fetch-Site" to "same-origin",
+            "Referer" to "https://$edgeHost/"
+        )
         callback(
-            newExtractorLink(source = name, name = displayName, url = url) {
-                this.referer = "https://$edgeHost/"
-                this.quality = qualityFrom(qualityLabel)
-                this.headers = mapOf(
-                    "User-Agent" to (commonHeaders["User-Agent"] ?: ""),
-                    "Accept" to "*/*",
-                    "Accept-Language" to "en-US,en;q=0.9",
-                    "Sec-Fetch-Dest" to "empty",
-                    "Sec-Fetch-Mode" to "cors",
-                    "Sec-Fetch-Site" to "same-origin",
-                    "Referer" to "https://$edgeHost/"
-                )
-            }
+            ExtractorLink(
+                source = name,
+                name = displayName,
+                url = url,
+                referer = "https://$edgeHost/",
+                quality = qualityFrom(qualityLabel),
+                type = ExtractorLinkType.M3U8,
+                headers = browserHeaders
+            )
         )
     }
 
