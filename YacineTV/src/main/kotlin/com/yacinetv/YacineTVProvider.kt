@@ -179,7 +179,19 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         var linksFound = 0
         var webViewUsed = false
 
-        for ((idx, ch) in channels.take(8).withIndex()) {
+        // Sort: prefer channels whose hosts are known to work (score808, soccerball)
+        // over the dead reddit-soccer-streams mirrors.
+        val sorted = channels.sortedBy { ch ->
+            val host = runCatching { java.net.URI(ch.link ?: ch.mobile_link ?: "").host ?: "" }.getOrDefault("")
+            when {
+                host.contains("score808", ignoreCase = true) -> 0
+                host.contains("soccerball", ignoreCase = true) -> 1
+                host.contains("reddit-soccer-streams", ignoreCase = true) -> 9
+                else -> 5
+            }
+        }
+
+        for ((idx, ch) in sorted.take(12).withIndex()) {
             if (linksFound >= 6) break
             val displayName = formatChannelName(ch, idx)
 
@@ -501,6 +513,17 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             handler.postDelayed(timeoutRunnable!!, 15000)
 
             webView.webViewClient = object : WebViewClient() {
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: android.webkit.WebResourceError?
+                ) {
+                    if (request?.isForMainFrame == true) {
+                        safeFinish(null)
+                    }
+                    super.onReceivedError(view, request, error)
+                }
+
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     val js = """
