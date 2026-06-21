@@ -207,16 +207,21 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             }
 
             // PRIMARY: Build edge URLs from match.edges + match.edge_domain.
-            // These are the URLs the website itself uses. They may work from
-            // the user's phone even if they don't resolve from a server.
-            // Format: https://{edge}.{edge_domain}/frame.php?ch={ch}&p=12&token={uuid}&kt={ts}
+            // Try ALL edges (a5 through a15+), starting from the highest number
+            // since lower-numbered edges (a5-a10) are often bot-detected/dead.
             val ts = System.currentTimeMillis() / 1000
             val uuid = java.util.UUID.randomUUID().toString()
             val edges = detail.edges ?: emptyList()
             val edgeDomain = detail.edge_domain
             if (edges.isNotEmpty() && !edgeDomain.isNullOrBlank()) {
+                // Also add common edges a11-a15 that the blog JS uses
+                val allEdges = (edges + listOf("a11", "a12", "a13", "a14", "a15")).distinct()
+                // Sort by edge number descending (try highest first)
+                val sortedEdges = allEdges.sortedByDescending { edge ->
+                    Regex("""a(\d+)""").find(edge)?.groupValues?.get(1)?.toIntOrNull() ?: 0
+                }
                 for (ck in chKeys) {
-                    for (edge in edges.take(3)) {
+                    for (edge in sortedEdges.take(5)) {
                         candidates.add("https://$edge.$edgeDomain/frame.php?ch=$ck&p=12&token=$uuid&kt=$ts")
                     }
                 }
