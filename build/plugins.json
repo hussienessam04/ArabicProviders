@@ -2,7 +2,7 @@
     {
         "fileHash": "sha256-9373ec0d221598f81f391dbf9ee748c5f57921e5f53075f14ea20f49055ea4d4",
         "apiVersion": 1,
-        "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
+        "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
         "fileSize": 18768,
         "status": 3,
         "authors": [
@@ -10,14 +10,29 @@
         ],
         "version": 1,
         "internalName": "Footybite",
-        "url": "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/builds/Footybite.cs3",
+        "url": "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/builds/Footybite.cs3",
         "name": "Footybite"
+    },
+    {
+        "fileHash": "sha256-a025c2dd4a5ac0b17eee6c72eb3261c4efc21cd14987ff3b301d085cb9b4bf17",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
+        "fileSize": 17975,
+        "status": 3,
+        "authors": [
+            "hussienessam04",
+            "hes-Goals"
+        ],
+        "version": 1,
+        "internalName": "SiiiiirTV",
+        "url": "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/builds/SiiiiirTV.cs3",
+        "name": "SiiiiirTV"
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=streambroadcast.net&sz=256",
         "fileHash": "sha256-cdb00e9808343173fc679716f4bf9692b33d72c335112da50e01af5cfb979e97",
         "apiVersion": 1,
-        "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
+        "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
         "fileSize": 40684,
         "status": 1,
         "language": "en",
@@ -29,14 +44,14 @@
         ],
         "version": 1,
         "internalName": "StreamBroadcast",
-        "url": "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/builds/StreamBroadcast.cs3",
+        "url": "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/builds/StreamBroadcast.cs3",
         "name": "StreamBroadcast"
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=streamed.pk&sz=256",
         "fileHash": "sha256-7fb2ef5a6e795a74e5ba16e001a2f12cb6bf74ddf26e17b8a94533543bf6932a",
         "apiVersion": 1,
-        "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
+        "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
         "fileSize": 27557,
         "status": 1,
         "language": "en",
@@ -48,15 +63,15 @@
         ],
         "version": 10,
         "internalName": "Streamed",
-        "url": "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/builds/Streamed.cs3",
+        "url": "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/builds/Streamed.cs3",
         "name": "Streamed"
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=yacinetv.watch&sz=256",
-        "fileHash": "sha256-b8792550fadf19453bb5cd6ba5ab3f53ae4c2c6916b22609b9f4562ce34ef521",
+        "fileHash": "sha256-1ea08838ced75ad0389d9366b12ab60d946e2100d8c31423325883a4f1a9bf22",
         "apiVersion": 1,
-        "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 37366,
+        "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
+        "fileSize": 37771,
         "status": 1,
         "language": "ar",
         "authors": [
@@ -65,28 +80,9 @@
         "tvTypes": [
             "Live"
         ],
-        "version": 14,
+        "version": 15,
         "internalName": "YacineTV",
-        "url": "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/builds/YacineTV.cs3",
+        "url": "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/builds/YacineTV.cs3",
         "name": "YacineTV"
-    },
-    {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=siiiiir.tv&sz=256",
-        "fileHash": "sha256-327a53ed25cae1e801b6203be4d3f81a66cf2e3fd398f76e343792725035ef8b",
-        "apiVersion": 1,
-        "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 15736,
-        "status": 1,
-        "language": "ar",
-        "authors": [
-            "flavasava2022"
-        ],
-        "tvTypes": [
-            "Live"
-        ],
-        "version": 2,
-        "internalName": "SiiiiirTV",
-        "url": "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/main/build/SiiiiirTV.cs3",
-        "name": "Siiiiir TV"
     }
 ]

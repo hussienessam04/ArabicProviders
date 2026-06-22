@@ -3,6 +3,12 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+version = 1
+
+cloudstream {
+    authors = listOf("hussienessam04", "hes-Goals")
+}
+
 repositories {
     mavenCentral()
     maven { url = uri("https://jitpack.io") }

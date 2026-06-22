@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.util.Base64
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -120,40 +119,8 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
             val doc = resp.document
             val finalUrl = resp.url
 
-            val iframeSrc = doc.selectFirst("iframe#player")?.attr("src")
-                ?: doc.selectFirst("iframe[src*='liveonlinesports']")?.attr("src")
-                ?: doc.selectFirst(".entry-content iframe")?.attr("src")
-                ?: doc.selectFirst(".player-wrapper iframe")?.attr("src")
-
-            if (!iframeSrc.isNullOrBlank()) {
-                val playerUrl = fixUrl(iframeSrc)
-                found = resolvePlayer(playerUrl, finalUrl, callback) || found
-            }
-
-            if (!found && finalUrl.contains("liveonlinesports")) {
-                found = resolvePlayer(finalUrl, finalUrl, callback) || found
-            }
-
-            // ponytail: HTTP extraction first, WebView fallback
-            if (!found && !iframeSrc.isNullOrBlank()) {
-                val m3u8 = resolveWithWebView(fixUrl(iframeSrc), finalUrl)
-                if (m3u8 != null) {
-                    val referer = runCatching { java.net.URI(m3u8).let { "${it.scheme}://${it.host}/" } }.getOrDefault(finalUrl)
-                    M3u8Helper.generateM3u8(name, m3u8, referer = referer)
-                        .forEach { callback(it); found = true }
-                }
-            }
-
-            if (!found && finalUrl.contains("liveonlinesports")) {
-                val m3u8 = resolveWithWebView(finalUrl, finalUrl)
-                if (m3u8 != null) {
-                    val referer = runCatching { java.net.URI(m3u8).let { "${it.scheme}://${it.host}/" } }.getOrDefault(finalUrl)
-                    M3u8Helper.generateM3u8(name, m3u8, referer = referer)
-                        .forEach { callback(it); found = true }
-                }
-            }
-
-            doc.select(".video-serv a, [href*='.m3u8']").forEach { btn ->
+            // Try direct links in the page
+            doc.select("a[href*='.m3u8'], .video-serv a").forEach { btn ->
                 val href = btn.attr("href")
                 if (href.isNotBlank()) {
                     if (href.contains(".m3u8")) {
@@ -166,72 +133,21 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                 }
             }
 
-        } catch (_: Exception) { }
-
-        return found
-    }
-
-    private suspend fun resolvePlayer(
-        playerUrl: String,
-        referer: String,
-        callback: (ExtractorLink) -> Unit
-    ): Boolean {
-        var found = false
-        try {
-            val text = app.get(playerUrl, headers = headers + ("Referer" to referer)).text
-
-            val tokenMatch = Regex("""["']token["']\s*[:=]\s*["']([A-Za-z0-9_\-+/=]+)["']""").find(text)
-            if (tokenMatch != null) {
-                val decoded = urlSafeDecode(tokenMatch.groupValues[1])
-                if (decoded?.contains(".m3u8") == true) {
-                    M3u8Helper.generateM3u8(name, decoded, referer = playerUrl)
-                        .forEach { callback(it); found = true }
-                }
-            }
-
+            // ponytail: iframe created by JS, HTTP extraction won't find it
+            // Use WebView on the match page directly to let JS create the iframe and load the player
             if (!found) {
-                val b64Match = Regex("""AlbaPlayerControl\(\s*['"]([^'"]+)['"]""").find(text)
-                if (b64Match != null) {
-                    val decoded = try {
-                        String(Base64.decode(b64Match.groupValues[1], Base64.DEFAULT))
-                    } catch (_: Exception) { null }
-                    if (decoded?.contains(".m3u8") == true) {
-                        M3u8Helper.generateM3u8(name, decoded, referer = playerUrl)
-                            .forEach { callback(it); found = true }
-                    }
-                }
-            }
-
-            if (!found) {
-                val srcMatch = Regex("""source\s*[:=]\s*['"]([^'"]+)['"]""").find(text)
-                if (srcMatch != null) {
-                    val src = srcMatch.groupValues[1]
-                    if (src.contains(".m3u8")) {
-                        M3u8Helper.generateM3u8(name, src, referer = playerUrl)
-                            .forEach { callback(it); found = true }
-                    } else {
-                        found = loadExtractor(src, playerUrl, {}, callback)
-                    }
-                }
-            }
-
-            if (!found) {
-                val raw = Regex("""(https?://[^\s"'<>]+\.m3u8[^\s"'<>]*)""").find(text)
-                if (raw != null) {
-                    M3u8Helper.generateM3u8(name, raw.groupValues[1], referer = playerUrl)
+                val m3u8 = resolveWithWebView(finalUrl, finalUrl)
+                if (m3u8 != null) {
+                    val referer = runCatching { java.net.URI(m3u8).let { "${it.scheme}://${it.host}/" } }.getOrDefault(finalUrl)
+                    M3u8Helper.generateM3u8(name, m3u8, referer = referer)
                         .forEach { callback(it); found = true }
                 }
             }
 
         } catch (_: Exception) { }
+
         return found
     }
-
-    private fun urlSafeDecode(str: String): String? = runCatching {
-        val b64 = str.replace("-", "+").replace("_", "/")
-            .let { it + "=".repeat((4 - it.length % 4) % 4) }
-        String(Base64.decode(b64, Base64.DEFAULT))
-    }.getOrNull()
 
     @SuppressLint("SetJavaScriptEnabled")
     private suspend fun resolveWithWebView(
@@ -369,11 +285,9 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                     request: WebResourceRequest?
                 ): WebResourceResponse? {
                     val reqUrl = request?.url?.toString() ?: ""
-                    if (reqUrl.contains(".m3u8")) {
-                        val clean = reqUrl.substringBefore("?")
-                        if (clean.endsWith(".m3u8")) {
-                            safeFinish(reqUrl)
-                        }
+                    // ponytail: streams served from foozlive.co/foot-foot.com with no .m3u8 in URL
+                    if (reqUrl.contains(".m3u8") || reqUrl.contains("foozlive.co") || reqUrl.contains("foot-foot.com")) {
+                        safeFinish(reqUrl)
                     }
                     return super.shouldInterceptRequest(view, request)
                 }
