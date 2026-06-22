@@ -72,10 +72,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=siiiiir.tv&sz=256",
-        "fileHash": "sha256-c6ae7811deaab8df2e7b70df8c865922f1e4a426392f5dbdfe0d92d002e0a836",
+        "fileHash": "sha256-327a53ed25cae1e801b6203be4d3f81a66cf2e3fd398f76e343792725035ef8b",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 32056,
+        "fileSize": 15736,
         "status": 1,
         "language": "ar",
         "authors": [
