@@ -1,9 +1,9 @@
 [
     {
-        "fileHash": "sha256-af805e2fcbdfb50c024687eeab48a0ca674761989302c7a3550253b593017998",
+        "fileHash": "sha256-9373ec0d221598f81f391dbf9ee748c5f57921e5f53075f14ea20f49055ea4d4",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 17784,
+        "fileSize": 18768,
         "status": 3,
         "authors": [
             "flavasava2022"
@@ -15,10 +15,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=streambroadcast.net&sz=256",
-        "fileHash": "sha256-973e01e9da627934f7c8fe1d983510a22d5b428f632a9af95f32a1df602569d8",
+        "fileHash": "sha256-cdb00e9808343173fc679716f4bf9692b33d72c335112da50e01af5cfb979e97",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 39610,
+        "fileSize": 40684,
         "status": 1,
         "language": "en",
         "authors": [
@@ -34,10 +34,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=streamed.pk&sz=256",
-        "fileHash": "sha256-74394e9291fbcef36f1ab2754074034a74618ab9ad7b089e096a01e47a6e2e8b",
+        "fileHash": "sha256-7fb2ef5a6e795a74e5ba16e001a2f12cb6bf74ddf26e17b8a94533543bf6932a",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
-        "fileSize": 26605,
+        "fileSize": 27557,
         "status": 1,
         "language": "en",
         "authors": [
@@ -50,5 +50,24 @@
         "internalName": "Streamed",
         "url": "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/builds/Streamed.cs3",
         "name": "Streamed"
+    },
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=yacinetv.watch&sz=256",
+        "fileHash": "sha256-b8792550fadf19453bb5cd6ba5ab3f53ae4c2c6916b22609b9f4562ce34ef521",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/phisher98/cloudstream-extensions-phisher",
+        "fileSize": 37366,
+        "status": 1,
+        "language": "ar",
+        "authors": [
+            "flavasava2022"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 14,
+        "internalName": "YacineTV",
+        "url": "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/builds/YacineTV.cs3",
+        "name": "YacineTV"
     }
 ]

@@ -7,6 +7,6 @@ import android.content.Context
 @CloudstreamPlugin
 class SiiiiirTVPlugin : Plugin() {
     override fun load(context: Context) {
-        registerMainAPI(SiiiiirTVProvider())
+        registerMainAPI(SiiiiirTVProvider(context))
     }
 }

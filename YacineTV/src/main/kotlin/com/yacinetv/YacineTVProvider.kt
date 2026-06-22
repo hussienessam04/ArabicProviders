@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
@@ -37,6 +39,8 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.io.File
+import java.net.URI
 
 class YacineTVProvider(private val context: Context) : MainAPI() {
 

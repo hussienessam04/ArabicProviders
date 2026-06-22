@@ -1,0 +1,7 @@
+com.siiiirtv.SiiiiirTV-pngs-0 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\SiiiiirTV\build\generated\res\pngs\release
+com.siiiirtv.SiiiiirTV-resValues-1 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\SiiiiirTV\build\generated\res\resValues\release
+com.siiiirtv.SiiiiirTV-mergeReleaseResources-2 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\SiiiiirTV\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.siiiirtv.SiiiiirTV-mergeReleaseResources-3 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\SiiiiirTV\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.siiiirtv.SiiiiirTV-release-4 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\SiiiiirTV\build\intermediates\merged_res\release\mergeReleaseResources
+com.siiiirtv.SiiiiirTV-main-5 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\SiiiiirTV\src\main\res
+com.siiiirtv.SiiiiirTV-release-6 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\SiiiiirTV\src\release\res

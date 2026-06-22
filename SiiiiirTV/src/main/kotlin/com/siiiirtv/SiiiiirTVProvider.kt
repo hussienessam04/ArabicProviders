@@ -1,10 +1,28 @@
 package com.siiiirtv
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.util.Base64
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
-import android.util.Base64
+import kotlinx.coroutines.suspendCancellableCoroutine
 
-class SiiiiirTVProvider : MainAPI() {
+class SiiiiirTVProvider(private val context: Context) : MainAPI() {
     override var mainUrl = "https://www.siiiiir.tv"
     override var name = "Siiiiir TV"
     override val hasMainPage = true
@@ -116,6 +134,25 @@ class SiiiiirTVProvider : MainAPI() {
                 found = resolvePlayer(finalUrl, finalUrl, callback) || found
             }
 
+            // ponytail: HTTP extraction first, WebView fallback
+            if (!found && !iframeSrc.isNullOrBlank()) {
+                val m3u8 = resolveWithWebView(fixUrl(iframeSrc), finalUrl)
+                if (m3u8 != null) {
+                    val referer = runCatching { java.net.URI(m3u8).let { "${it.scheme}://${it.host}/" } }.getOrDefault(finalUrl)
+                    M3u8Helper.generateM3u8(name, m3u8, referer = referer)
+                        .forEach { callback(it); found = true }
+                }
+            }
+
+            if (!found && finalUrl.contains("liveonlinesports")) {
+                val m3u8 = resolveWithWebView(finalUrl, finalUrl)
+                if (m3u8 != null) {
+                    val referer = runCatching { java.net.URI(m3u8).let { "${it.scheme}://${it.host}/" } }.getOrDefault(finalUrl)
+                    M3u8Helper.generateM3u8(name, m3u8, referer = referer)
+                        .forEach { callback(it); found = true }
+                }
+            }
+
             doc.select(".video-serv a, [href*='.m3u8']").forEach { btn ->
                 val href = btn.attr("href")
                 if (href.isNotBlank()) {
@@ -195,4 +232,167 @@ class SiiiiirTVProvider : MainAPI() {
             .let { it + "=".repeat((4 - it.length % 4) % 4) }
         String(Base64.decode(b64, Base64.DEFAULT))
     }.getOrNull()
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private suspend fun resolveWithWebView(
+        iframeUrl: String,
+        referer: String
+    ): String? = suspendCancellableCoroutine { cont ->
+        val activity = getActivity(context)
+        val mainLooper = Looper.getMainLooper()
+        val handler = Handler(mainLooper)
+
+        handler.post {
+            val webViewContext = activity ?: context
+            val dialog = if (activity != null && !activity.isFinishing) Dialog(activity) else null
+
+            if (dialog != null) {
+                dialog.setCancelable(false)
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.window?.apply {
+                    setBackgroundDrawableResource(android.R.color.transparent)
+                    setDimAmount(0f)
+                    clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                    addFlags(
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    )
+                    attributes = attributes?.apply {
+                        width = 1
+                        height = 1
+                        x = -10000
+                        y = -10000
+                        gravity = Gravity.START or Gravity.TOP
+                    }
+                }
+            }
+
+            val webView = WebView(webViewContext).apply {
+                layoutParams = ViewGroup.LayoutParams(1920, 1080)
+                visibility = View.INVISIBLE
+                isHorizontalScrollBarEnabled = false
+                isVerticalScrollBarEnabled = false
+            }
+
+            if (dialog != null) {
+                try {
+                    dialog.setContentView(webView, ViewGroup.LayoutParams(1920, 1080))
+                    dialog.show()
+                } catch (e: Exception) {
+                    try {
+                        val decor = activity?.window?.decorView as? ViewGroup
+                        decor?.addView(webView, FrameLayout.LayoutParams(1920, 1080, Gravity.START or Gravity.TOP))
+                    } catch (_: Exception) {}
+                }
+            }
+
+            try {
+                webView.measure(
+                    View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
+                )
+                webView.layout(0, 0, 1920, 1080)
+                webView.onResume()
+                webView.resumeTimers()
+            } catch (_: Exception) {}
+
+            webView.settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                databaseEnabled = true
+                allowContentAccess = true
+                mediaPlaybackRequiresUserGesture = false
+                loadWithOverviewMode = true
+                useWideViewPort = true
+                builtInZoomControls = true
+                displayZoomControls = false
+                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                cacheMode = WebSettings.LOAD_DEFAULT
+                userAgentString = ua
+                blockNetworkImage = true
+            }
+
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+
+            var finished = false
+            val finishLock = Any()
+            var timeoutRunnable: Runnable? = null
+
+            fun cleanup() {
+                val runCleanup = {
+                    try { timeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
+                    try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) {}
+                    try { webView.stopLoading() } catch (_: Exception) {}
+                    try { webView.destroy() } catch (_: Exception) {}
+                    try { if (dialog?.isShowing == true) dialog.dismiss() } catch (_: Exception) {}
+                }
+                if (Looper.myLooper() == mainLooper) runCleanup() else handler.post(runCleanup)
+            }
+
+            fun safeFinish(result: String?) {
+                synchronized(finishLock) {
+                    if (finished) return
+                    finished = true
+                }
+                try { if (cont.isActive) cont.resume(result, onCancellation = null) } catch (_: Exception) {}
+                cleanup()
+            }
+
+            timeoutRunnable = Runnable { safeFinish(null) }
+            handler.postDelayed(timeoutRunnable!!, 30000)
+
+            webView.webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    val js = """
+                        (function() {
+                            setInterval(function() {
+                                try {
+                                    document.querySelectorAll('video').forEach(function(v) {
+                                        v.muted = true;
+                                        if (v.paused) v.play();
+                                    });
+                                    if (typeof Clappr !== 'undefined' && window.player) {
+                                        window.player.mute();
+                                        window.player.play();
+                                    }
+                                } catch(e) {}
+                            }, 1000);
+                        })();
+                    """.trimIndent()
+                    view?.evaluateJavascript(js, null)
+                }
+
+                override fun shouldInterceptRequest(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): WebResourceResponse? {
+                    val reqUrl = request?.url?.toString() ?: ""
+                    if (reqUrl.contains(".m3u8")) {
+                        val clean = reqUrl.substringBefore("?")
+                        if (clean.endsWith(".m3u8")) {
+                            safeFinish(reqUrl)
+                        }
+                    }
+                    return super.shouldInterceptRequest(view, request)
+                }
+            }
+
+            try {
+                webView.loadUrl(iframeUrl, mapOf("Referer" to referer))
+            } catch (e: Exception) {
+                safeFinish(null)
+            }
+        }
+    }
+
+    private fun getActivity(context: Context): Activity? {
+        var current = context
+        while (current is android.content.ContextWrapper) {
+            if (current is Activity) return current
+            current = current.baseContext
+        }
+        return null
+    }
 }
