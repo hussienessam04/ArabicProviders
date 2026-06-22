@@ -1,8 +1,24 @@
 package com.yacinetv
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
 import android.content.Context
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
+import android.util.Log
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import com.lagradost.cloudstream3.HomePageList
 import com.lagradost.cloudstream3.HomePageResponse
 import com.lagradost.cloudstream3.LoadResponse
@@ -12,7 +28,6 @@ import com.lagradost.cloudstream3.SearchResponse
 import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.TvType
 import com.lagradost.cloudstream3.app
-import com.lagradost.cloudstream3.network.WebViewResolver
 import com.lagradost.cloudstream3.newHomePageResponse
 import com.lagradost.cloudstream3.newLiveSearchResponse
 import com.lagradost.cloudstream3.newLiveStreamLoadResponse
@@ -21,6 +36,7 @@ import com.lagradost.cloudstream3.utils.AppUtils.toJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class YacineTVProvider(private val context: Context) : MainAPI() {
 
@@ -161,16 +177,12 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         if (channels.isEmpty()) return false.also { Log.d("YacineTV", "loadLinks: channels empty") }
         Log.d("YacineTV", "loadLinks: ${channels.size} channels, edges=${detail.edges}, edge_domain=${detail.edge_domain}")
 
-        var linksFound = 0
-        val now = System.currentTimeMillis() / 1000
-        val visitorId = java.util.UUID.randomUUID().toString()
-        val edges = detail.edges ?: emptyList()
-        val edgeDomain = detail.edge_domain
-        val edgeCounter = java.util.concurrent.atomic.AtomicInteger(0)
+        val chByKey: Map<String, Channel> = channels.mapNotNull { ch -> ch.ch?.lowercase()?.let { it to ch } }.toMap()
+        val pushedM3u8s = mutableSetOf<String>()
+        val arabicChHints = setOf("max1", "max11", "alwan1")
 
         // Sort: Arabic-language channels first, then push dead reddit-soccer-streams
         // mirrors last. Mirrors the order the website (strm01.app) shows servers.
-        val arabicChHints = setOf("max1", "max11", "alwan1")
         val sorted = channels.sortedWith(
             compareBy<Channel> {
                 val isArabic = it.language.equals("Ar", ignoreCase = true) ||
@@ -182,55 +194,47 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             }
         )
 
-        for ((idx, channel) in sorted.take(12).withIndex()) {
-            if (linksFound >= 8) break
-            val displayName = formatChannelName(channel, idx)
-            Log.d("YacineTV", "channel[${idx}]: server_name=${channel.server_name} ch=${channel.ch} link=${channel.link} lang=${channel.language} quality=${channel.quality}")
-
-            // ----- Direct iframe URL (edge=0 score808 / soccerball / poiy) -----
+        // ----- Pass 1: Direct HTTP for score808/soccerball/poiy/livekoora -----
+        // These channels have mobile_link (AlbaPlayer host) or decodable hex token.
+        // They're not bot-blocked like kora-plus.app — just need the right regex.
+        for ((idx, channel) in sorted.withIndex()) {
+            if (channel.ch?.isNotBlank() == true) continue // edge channels handled via WebView
             val direct = channel.mobile_link?.takeIf { it.isNotBlank() && it != "0" }
                 ?: channel.link?.let { decodeTokenFromLink(it) }
+            if (direct.isNullOrBlank()) continue
 
-            if (!direct.isNullOrBlank()) {
-                val m3u8 = resolveAlbaPlayer(direct, referer = "https://strm01.app/")
-                if (m3u8 != null) {
-                    Log.d("YacineTV", "direct OK: $displayName -> $m3u8")
-                    pushLink(callback, displayName, m3u8, refererFor(direct), channel.quality)
-                    linksFound++
-                    continue
-                }
+            Log.d("YacineTV", "direct attempt[${idx}]: ${channel.server_name} via $direct")
+            val m3u8 = resolveAlbaPlayer(direct, referer = "https://strm01.app/")
+            if (m3u8 != null && pushedM3u8s.add(m3u8)) {
+                val name = formatChannelName(channel, pushedM3u8s.size - 1)
+                Log.d("YacineTV", "direct OK: $name -> $m3u8")
+                pushLink(callback, name, m3u8, refererFor(direct), channel.quality)
+            } else {
+                Log.d("YacineTV", "direct FAILED: ${channel.server_name}")
             }
+        }
 
-            // ----- Edge iframe (kora-plus.{app,mov}) via WebViewResolver -----
-            // strm01.app builds: https://{edge}.{edge_domain}/frame.php?ch={ch}&p=12&token={visitorId}&kt={ts}
-            // The iframe page bot-blocks direct HTTP, so we MUST go through WebView.
-            val chKey = channel.ch?.takeIf { it.isNotBlank() }
-            if (chKey != null && !edgeDomain.isNullOrBlank() && edges.isNotEmpty()) {
-                val edge = edges[edgeCounter.getAndIncrement() % edges.size]
-                val edgeIframe = "https://$edge.$edgeDomain/frame.php?ch=$chKey&p=12&token=$visitorId&kt=$now"
-                Log.d("YacineTV", "webview attempt: $displayName via $edge")
-                val m3u8 = runCatching {
-                    val interceptor = WebViewResolver(Regex(".*\\.m3u8.*"))
-                    val res = app.get(
-                        edgeIframe,
-                        referer = "https://strm01.app/",
-                        interceptor = interceptor,
-                        timeout = 25000L
-                    )
-                    if (res.url.contains(".m3u8")) res.url else null
-                }.getOrNull()
-                if (m3u8 != null) {
-                    Log.d("YacineTV", "webview OK: $displayName -> $m3u8")
-                    pushLink(callback, displayName, m3u8, "https://$edge.$edgeDomain/", channel.quality)
-                    linksFound++
-                } else {
-                    Log.d("YacineTV", "webview FAILED: $displayName via $edge")
+        // ----- Pass 2: WebView via strm01.app for kora-plus.app edge channels -----
+        // kora-plus.app bot-blocks any direct WebView load (60s timeout, returns Google).
+        // The only working approach is to load strm01.app itself, which loads each
+        // server's iframe INSIDE its own context (where kora-plus.app serves the
+        // real stream page, not Google).
+        if (pushedM3u8s.size < 10) {
+            val strmUrl = "https://strm01.app/?m=${payload.matchId}&lang=ar"
+            Log.d("YacineTV", "strm01 webview: $strmUrl")
+            val captured = runCatching {
+                captureStrm01App(strmUrl, chByKey, maxCaptures = 10 - pushedM3u8s.size)
+            }.getOrDefault(emptyList())
+            for ((name, m3u8) in captured) {
+                if (pushedM3u8s.add(m3u8)) {
+                    Log.d("YacineTV", "strm01 OK: $name -> $m3u8")
+                    pushLink(callback, name, m3u8, "https://strm01.app/", null)
                 }
             }
         }
 
-        Log.d("YacineTV", "loadLinks done: $linksFound links found")
-        return linksFound > 0
+        Log.d("YacineTV", "loadLinks done: ${pushedM3u8s.size} links found")
+        return pushedM3u8s.isNotEmpty()
     }
 
     private suspend fun pushLink(
@@ -408,6 +412,199 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             this.type = TvType.Live
             this.posterUrl = posterUrl
         }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private suspend fun captureStrm01App(
+        strmUrl: String,
+        chByKey: Map<String, Channel>,
+        maxCaptures: Int
+    ): List<Pair<String, String>> = suspendCancellableCoroutine { cont ->
+        val activity = getActivity(context)
+        val mainLooper = Looper.getMainLooper()
+        val handler = Handler(mainLooper)
+
+        handler.post {
+            val webViewContext = activity ?: context
+            val dialog: Dialog? = if (activity != null && !activity.isFinishing) {
+                Dialog(activity).apply {
+                    setCancelable(false)
+                    setCanceledOnTouchOutside(false)
+                    requestWindowFeature(Window.FEATURE_NO_TITLE)
+                    window?.apply {
+                        setBackgroundDrawableResource(android.R.color.transparent)
+                        setDimAmount(0f)
+                        clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                        addFlags(
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        )
+                        attributes = attributes?.apply {
+                            width = 1
+                            height = 1
+                            x = -10000
+                            y = -10000
+                            gravity = Gravity.START or Gravity.TOP
+                        }
+                    }
+                }
+            } else null
+
+            val webView = WebView(webViewContext).apply {
+                layoutParams = ViewGroup.LayoutParams(1920, 1080)
+                visibility = View.INVISIBLE
+                isHorizontalScrollBarEnabled = false
+                isVerticalScrollBarEnabled = false
+            }
+
+            if (dialog != null) {
+                try {
+                    dialog.setContentView(webView, ViewGroup.LayoutParams(1920, 1080))
+                    dialog.show()
+                } catch (e: Exception) {
+                    try {
+                        val decor = activity?.window?.decorView as? ViewGroup
+                        decor?.addView(webView, FrameLayout.LayoutParams(1920, 1080, Gravity.START or Gravity.TOP))
+                    } catch (_: Exception) { }
+                }
+            } else if (activity != null) {
+                try {
+                    val decor = activity.window.decorView as? ViewGroup
+                    decor?.addView(webView, FrameLayout.LayoutParams(1920, 1080, Gravity.START or Gravity.TOP))
+                } catch (_: Exception) { }
+            }
+
+            try {
+                webView.measure(
+                    View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
+                )
+                webView.layout(0, 0, 1920, 1080)
+                webView.onResume()
+                webView.resumeTimers()
+            } catch (_: Exception) { }
+
+            webView.settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                databaseEnabled = true
+                allowContentAccess = true
+                mediaPlaybackRequiresUserGesture = false
+                loadWithOverviewMode = true
+                useWideViewPort = true
+                builtInZoomControls = true
+                displayZoomControls = false
+                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                cacheMode = WebSettings.LOAD_DEFAULT
+                userAgentString = commonHeaders["User-Agent"] ?: ""
+                blockNetworkImage = true
+            }
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+
+            val captured = mutableListOf<Pair<String, String>>()
+            val capturedM3u8s = mutableSetOf<String>()
+            var finished = false
+            val finishLock = Any()
+            var timeoutRunnable: Runnable? = null
+
+            fun cleanup() {
+                val runCleanup = {
+                    try { timeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) { }
+                    try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) { }
+                    try { webView.stopLoading() } catch (_: Exception) { }
+                    try { webView.destroy() } catch (_: Exception) { }
+                    try { if (dialog?.isShowing == true) dialog.dismiss() } catch (_: Exception) { }
+                }
+                if (Looper.myLooper() == mainLooper) runCleanup() else handler.post(runCleanup)
+            }
+
+            fun safeFinish(result: List<Pair<String, String>>) {
+                synchronized(finishLock) {
+                    if (finished) return
+                    finished = true
+                }
+                try { if (cont.isActive) cont.resume(result) {} } catch (_: Exception) { }
+                cleanup()
+            }
+
+            timeoutRunnable = Runnable {
+                Log.d("YacineTV", "strm01 webview timeout, captured ${captured.size}")
+                safeFinish(captured.toList())
+            }
+            handler.postDelayed(timeoutRunnable!!, 50000)
+
+            webView.webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    Log.d("YacineTV", "strm01 page finished, injecting click JS")
+                    val js = """
+                        (function() {
+                            setTimeout(function() {
+                                try {
+                                    var btns = document.querySelectorAll('.btn-server');
+                                    console.log('Found ' + btns.length + ' server buttons');
+                                    btns.forEach(function(btn, i) {
+                                        setTimeout(function() { try { btn.click(); } catch(e) {} }, i * 3500);
+                                    });
+                                } catch(e) {}
+                            }, 2000);
+                        })();
+                    """.trimIndent()
+                    view?.evaluateJavascript(js, null)
+                }
+
+                override fun shouldInterceptRequest(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): WebResourceResponse? {
+                    val reqUrl = request?.url?.toString() ?: ""
+                    val cleanUrl = reqUrl.substringBefore("?")
+                    if (cleanUrl.endsWith(".m3u8", ignoreCase = true)) {
+                        synchronized(captured) {
+                            if (capturedM3u8s.add(reqUrl)) {
+                                val name = extractChannelNameFromM3u8(reqUrl, chByKey, captured.size)
+                                captured.add(name to reqUrl)
+                                Log.d("YacineTV", "strm01 captured: $name -> $reqUrl")
+                                if (captured.size >= maxCaptures) {
+                                    handler.post { safeFinish(captured.toList()) }
+                                }
+                            }
+                        }
+                    }
+                    return super.shouldInterceptRequest(view, request)
+                }
+            }
+
+            try {
+                webView.loadUrl(strmUrl, mapOf("Referer" to "https://yacinetv.watch/"))
+            } catch (e: Exception) {
+                safeFinish(emptyList())
+            }
+        }
+    }
+
+    private fun extractChannelNameFromM3u8(
+        url: String,
+        chByKey: Map<String, Channel>,
+        index: Int
+    ): String {
+        // kora-plus.app m3u8 URL: https://aN.kora-plus.app/live/{chKey}.m3u8?...
+        val match = Regex("""/live/([^./?]+)\.m3u8""").find(url)
+        if (match != null) {
+            val chKey = match.groupValues[1].lowercase()
+            val channel = chByKey[chKey]
+            if (channel != null) return formatChannelName(channel, index)
+        }
+        return "Live ${index + 1}"
+    }
+
+    private fun getActivity(context: Context): Activity? {
+        var currentContext = context
+        while (currentContext is android.content.ContextWrapper) {
+            if (currentContext is Activity) return currentContext
+            currentContext = currentContext.baseContext
+        }
+        return null
     }
 
     data class LoadData(
