@@ -31,8 +31,7 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
 
     private val ua = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
     private val headers = mapOf("User-Agent" to ua)
-    private val playerKey = "9f39972b67d6ce22189507d008acwc26"
-    private val playerBase = "https://912acsss8af38.liveonlinesports.net/playerv00.php"
+    private val playerHost = "https://siiiiiiir.tv"
 
     private fun fixUrl(url: String): String {
         if (url.startsWith("//")) return "https:$url"
@@ -136,24 +135,23 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         }
         if (channelNames.isEmpty()) return false
 
-        val firstCh = channelNames.first().second
-        val iframeUrl = "$playerBase?match=$matchId&key=$playerKey" +
-            if (firstCh.isNotBlank()) "&ch=$firstCh" else ""
+        val playerPageUrl = "$playerHost/hard/2908c7d4425d87350.html?match=$matchId"
 
-        val resolvedM3u8 = resolveWithWebView(iframeUrl)
+        val resolvedM3u8 = resolveWithWebView(playerPageUrl)
             ?: runCatching {
-                app.get(iframeUrl, headers = headers).text
+                app.get(playerPageUrl, headers = headers).text
             }.getOrNull()?.let { html ->
                 Regex("""https?://[^\s"'<>]+\.m3u8[^\s"'<>]*""").find(html)?.value
             }
 
         if (resolvedM3u8 == null) return false
 
-        val referer = "$playerBase/"
+        val m3u8Referer = runCatching {
+            java.net.URI(resolvedM3u8).let { "${it.scheme}://${it.host}/" }
+        }.getOrDefault("https://912acsss8af38.liveonlinesports.net/")
         val linkHeaders = mapOf(
             "User-Agent" to ua,
-            "Referer" to referer,
-            "Origin" to "https://912acsss8af38.liveonlinesports.net"
+            "Referer" to m3u8Referer
         )
 
         var found = false
@@ -163,7 +161,7 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                 source = name,
                 name = displayName,
                 streamUrl = resolvedM3u8,
-                referer = referer,
+                referer = m3u8Referer,
                 headers = linkHeaders
             ).forEach { link ->
                 callback(link)
