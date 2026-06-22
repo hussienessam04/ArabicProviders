@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +32,6 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
 
     private val ua = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
     private val headers = mapOf("User-Agent" to ua)
-    private val playerHost = "https://siiiiiiir.tv"
 
     private fun fixUrl(url: String): String {
         if (url.startsWith("//")) return "https:$url"
@@ -135,34 +135,31 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         }
         if (channelNames.isEmpty()) return false
 
-        val playerPageUrl = "$playerHost/hard/2908c7d4425d87350.html?match=$matchId"
-
-        val resolvedM3u8 = resolveWithWebView(playerPageUrl)
-            ?: runCatching {
-                app.get(playerPageUrl, headers = headers).text
-            }.getOrNull()?.let { html ->
-                Regex("""https?://[^\s"'<>]+\.m3u8[^\s"'<>]*""").find(html)?.value
-            }
-
-        if (resolvedM3u8 == null) return false
+        val burnerUrl = "https://siiiir.hes-goals.mov/?m=$matchId&p=87350"
+        val streamUrl = resolveWithWebView(burnerUrl)
+        if (streamUrl == null) {
+            Log.d("SiiiiirTV", "no stream found")
+            return false
+        }
+        Log.d("SiiiiirTV", "got stream: $streamUrl")
 
         val streamReferer = runCatching {
-            java.net.URI(resolvedM3u8).let { "${it.scheme}://${it.host}/" }
+            java.net.URI(streamUrl).let { "${it.scheme}://${it.host}/" }
         }.getOrDefault("https://1rxolmirvosixpyfy.foozlive.co/")
-        val isM3u8 = resolvedM3u8.contains(".m3u8")
+        val isM3u8 = streamUrl.contains(".m3u8")
         val linkHeaders = mapOf(
             "User-Agent" to ua,
             "Referer" to streamReferer
         )
 
         var found = false
-        for ((serverName, chId) in channelNames) {
+        for ((serverName, _) in channelNames) {
             val displayName = "$name - $serverName"
             if (isM3u8) {
                 M3u8Helper.generateM3u8(
                     source = name,
                     name = displayName,
-                    streamUrl = resolvedM3u8,
+                    streamUrl = streamUrl,
                     referer = streamReferer,
                     headers = linkHeaders
                 ).forEach { link ->
@@ -170,7 +167,7 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                     found = true
                 }
             } else {
-                callback(newExtractorLink(name, displayName, resolvedM3u8) {
+                callback(newExtractorLink(name, displayName, streamUrl) {
                     this.referer = streamReferer
                     this.headers = linkHeaders
                 })
@@ -182,8 +179,8 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private suspend fun resolveWithWebView(
-        iframeUrl: String,
-        timeoutMs: Long = 25000
+        burnerUrl: String,
+        timeoutMs: Long = 50000
     ): String? = suspendCancellableCoroutine { cont ->
         val activity = getActivity(context)
         val mainLooper = Looper.getMainLooper()
@@ -191,29 +188,12 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
 
         handler.post {
             val webViewContext = activity ?: context
-            val dialog = if (activity != null && !activity.isFinishing) Dialog(activity) else null
-
-            if (dialog != null) {
-                dialog.setCancelable(false)
-                dialog.setCanceledOnTouchOutside(false)
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                dialog.window?.apply {
-                    setBackgroundDrawableResource(android.R.color.transparent)
-                    setDimAmount(0f)
-                    clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                    addFlags(
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                    )
-                    attributes = attributes?.apply {
-                        width = 1
-                        height = 1
-                        x = -10000
-                        y = -10000
-                        gravity = Gravity.START or Gravity.TOP
-                    }
+            val dialog: Dialog? = if (activity != null && !activity.isFinishing) {
+                Dialog(activity).apply {
+                    setCancelable(false)
+                    setCanceledOnTouchOutside(false)
                 }
-            }
+            } else null
 
             val webView = WebView(webViewContext).apply {
                 layoutParams = ViewGroup.LayoutParams(1920, 1080)
@@ -226,17 +206,17 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                 try {
                     dialog.setContentView(webView, ViewGroup.LayoutParams(1920, 1080))
                     dialog.show()
-                } catch (_: Exception) {
+                } catch (e: Exception) {
                     try {
                         val decor = activity?.window?.decorView as? ViewGroup
                         decor?.addView(webView, FrameLayout.LayoutParams(1920, 1080, Gravity.START or Gravity.TOP))
-                    } catch (_: Exception) {}
+                    } catch (_: Exception) { }
                 }
-            } else {
+            } else if (activity != null) {
                 try {
-                    val decor = (context as? Activity)?.window?.decorView as? ViewGroup
+                    val decor = activity.window.decorView as? ViewGroup
                     decor?.addView(webView, FrameLayout.LayoutParams(1920, 1080, Gravity.START or Gravity.TOP))
-                } catch (_: Exception) {}
+                } catch (_: Exception) { }
             }
 
             try {
@@ -247,7 +227,7 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                 webView.layout(0, 0, 1920, 1080)
                 webView.onResume()
                 webView.resumeTimers()
-            } catch (_: Exception) {}
+            } catch (_: Exception) { }
 
             webView.settings.apply {
                 javaScriptEnabled = true
@@ -266,15 +246,14 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
             webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
             var finished = false
-            var timeoutRunnable: Runnable? = null
 
             fun cleanup() {
                 val runCleanup = {
-                    try { timeoutRunnable?.let { handler.removeCallbacks(it) } } catch (_: Exception) {}
-                    try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) {}
-                    try { webView.stopLoading() } catch (_: Exception) {}
-                    try { webView.destroy() } catch (_: Exception) {}
-                    try { if (dialog?.isShowing == true) dialog.dismiss() } catch (_: Exception) {}
+                    try { handler.removeCallbacksAndMessages(null) } catch (_: Exception) { }
+                    try { (webView.parent as? ViewGroup)?.removeView(webView) } catch (_: Exception) { }
+                    try { webView.stopLoading() } catch (_: Exception) { }
+                    try { webView.destroy() } catch (_: Exception) { }
+                    try { if (dialog?.isShowing == true) dialog.dismiss() } catch (_: Exception) { }
                 }
                 if (Looper.myLooper() == mainLooper) runCleanup() else handler.post(runCleanup)
             }
@@ -282,12 +261,15 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
             fun safeFinish(result: String?) {
                 if (finished) return
                 finished = true
-                try { if (cont.isActive) cont.resume(result, onCancellation = null) } catch (_: Exception) {}
+                try { if (cont.isActive) cont.resume(result, onCancellation = null) } catch (_: Exception) { }
                 cleanup()
             }
 
-            timeoutRunnable = Runnable { safeFinish(null) }
-            handler.postDelayed(timeoutRunnable!!, timeoutMs)
+            val timeoutRunnable = Runnable {
+                Log.d("SiiiiirTV", "WebView timeout")
+                safeFinish(null)
+            }
+            handler.postDelayed(timeoutRunnable, timeoutMs)
 
             webView.webViewClient = object : WebViewClient() {
                 override fun shouldInterceptRequest(
@@ -295,16 +277,61 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                     request: WebResourceRequest?
                 ): WebResourceResponse? {
                     val reqUrl = request?.url?.toString() ?: ""
+                    Log.d("SiiiiirTV", "intercept: $reqUrl")
                     if (reqUrl.contains(".m3u8") || reqUrl.contains("/kooora/")) {
+                        Log.d("SiiiiirTV", "FOUND STREAM: $reqUrl")
                         safeFinish(reqUrl)
                     }
                     return super.shouldInterceptRequest(view, request)
                 }
+
+                override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                    Log.d("SiiiiirTV", "page started: $url")
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    Log.d("SiiiiirTV", "page finished: $url")
+                    // Fallback: try to find the stream URL in the DOM after the page loads
+                    view?.evaluateJavascript("""
+                        (function() {
+                            try {
+                                var scripts = document.querySelectorAll('script');
+                                for (var i = 0; i < scripts.length; i++) {
+                                    var m = scripts[i].textContent.match(/https?:\/\/[^\s"'<>]+\/kooora\/[^\s"'<>]+/);
+                                    if (m) return m[0];
+                                }
+                                var iframes = document.querySelectorAll('iframe');
+                                for (var j = 0; j < iframes.length; j++) {
+                                    try {
+                                        var idoc = iframes[j].contentDocument || iframes[j].contentWindow.document;
+                                        var iscripts = idoc.querySelectorAll('script');
+                                        for (var k = 0; k < iscripts.length; k++) {
+                                            var im = iscripts[k].textContent.match(/https?:\/\/[^\s"'<>]+\/kooora\/[^\s"'<>]+/);
+                                            if (im) return im[0];
+                                        }
+                                    } catch (e) {}
+                                }
+                                return '';
+                            } catch (e) {
+                                return '';
+                            }
+                        })()
+                    """.trimIndent()) { value ->
+                        Log.d("SiiiiirTV", "JS eval result: $value")
+                        val cleanUrl = value?.trim()?.removeSurrounding("\"") ?: ""
+                        if (cleanUrl.isNotBlank() && cleanUrl != "null") {
+                            safeFinish(cleanUrl)
+                        }
+                    }
+                }
             }
 
             try {
-                webView.loadUrl(iframeUrl, headers)
-            } catch (_: Exception) {
+                webView.loadUrl(burnerUrl, mapOf("Referer" to "https://www.siiiiir.tv/"))
+            } catch (e: Exception) {
+                Log.d("SiiiiirTV", "loadUrl failed: ${e.message}")
                 safeFinish(null)
             }
         }
