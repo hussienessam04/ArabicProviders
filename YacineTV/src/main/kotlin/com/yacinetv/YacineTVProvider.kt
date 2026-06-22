@@ -225,10 +225,10 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             val captured = runCatching {
                 captureStrm01App(strmUrl, chByKey, maxCaptures = 10 - pushedM3u8s.size)
             }.getOrDefault(emptyList())
-            for ((name, m3u8) in captured) {
+            for ((name, m3u8, chKey) in captured) {
                 if (pushedM3u8s.add(m3u8)) {
-                    Log.d("YacineTV", "strm01 OK: $name -> $m3u8")
-                    pushLink(callback, name, m3u8, "https://strm01.app/", null)
+                    Log.d("YacineTV", "strm01 OK: $name (ch=$chKey) -> $m3u8")
+                    pushLink(callback, name, m3u8, "https://strm01.app/", chKey, null)
                 }
             }
         }
@@ -242,21 +242,31 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         displayName: String,
         m3u8Url: String,
         referer: String,
-        qualityLabel: String?
+        channelKey: String? = null,
+        qualityLabel: String? = null
     ) {
         val host = runCatching { java.net.URI(m3u8Url).host ?: "" }.getOrDefault("")
+        // For kora-plus.app m3u8s, the server rejects requests with the wrong
+        // Referer (it returns an HTML error page instead of the m3u8 playlist).
+        // The browser's WebView sent Referer = https://{host}/frame.php?ch={ch}&p=12
+        // when loading the m3u8. We need to replicate that exactly.
+        val effectiveReferer = if (channelKey != null && host.isNotBlank()) {
+            "https://$host/frame.php?ch=$channelKey&p=12"
+        } else {
+            referer
+        }
         val headers = mapOf(
             "User-Agent" to (commonHeaders["User-Agent"] ?: ""),
             "Accept" to "*/*",
             "Accept-Language" to "en-US,en;q=0.9",
             "Origin" to if (host.isNotBlank()) "https://$host" else referer,
-            "Referer" to referer
+            "Referer" to effectiveReferer
         )
         M3u8Helper.generateM3u8(
             source = name,
             name = displayName,
             streamUrl = m3u8Url,
-            referer = referer,
+            referer = effectiveReferer,
             headers = headers
         ).forEach { link ->
             callback(link)
@@ -419,7 +429,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         strmUrl: String,
         chByKey: Map<String, Channel>,
         maxCaptures: Int
-    ): List<Pair<String, String>> = suspendCancellableCoroutine { cont ->
+    ): List<Triple<String, String, String?>> = suspendCancellableCoroutine { cont ->
         val activity = getActivity(context)
         val mainLooper = Looper.getMainLooper()
         val handler = Handler(mainLooper)
@@ -501,7 +511,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
             }
             webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
-            val captured = mutableListOf<Pair<String, String>>()
+            val captured = mutableListOf<Triple<String, String, String?>>()
             val capturedM3u8s = mutableSetOf<String>()
             var finished = false
             val finishLock = Any()
@@ -518,7 +528,7 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                 if (Looper.myLooper() == mainLooper) runCleanup() else handler.post(runCleanup)
             }
 
-            fun safeFinish(result: List<Pair<String, String>>) {
+            fun safeFinish(result: List<Triple<String, String, String?>>) {
                 synchronized(finishLock) {
                     if (finished) return
                     finished = true
@@ -562,9 +572,10 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
                     if (cleanUrl.endsWith(".m3u8", ignoreCase = true)) {
                         synchronized(captured) {
                             if (capturedM3u8s.add(reqUrl)) {
+                                val chKey = extractChKeyFromM3u8(reqUrl)
                                 val name = extractChannelNameFromM3u8(reqUrl, chByKey, captured.size)
-                                captured.add(name to reqUrl)
-                                Log.d("YacineTV", "strm01 captured: $name -> $reqUrl")
+                                captured.add(Triple(name, reqUrl, chKey))
+                                Log.d("YacineTV", "strm01 captured: $name (ch=$chKey) -> $reqUrl")
                                 if (captured.size >= maxCaptures) {
                                     handler.post { safeFinish(captured.toList()) }
                                 }
@@ -589,13 +600,17 @@ class YacineTVProvider(private val context: Context) : MainAPI() {
         index: Int
     ): String {
         // kora-plus.app m3u8 URL: https://aN.kora-plus.app/live/{chKey}.m3u8?...
-        val match = Regex("""/live/([^./?]+)\.m3u8""").find(url)
-        if (match != null) {
-            val chKey = match.groupValues[1].lowercase()
+        val chKey = extractChKeyFromM3u8(url)
+        if (chKey != null) {
             val channel = chByKey[chKey]
             if (channel != null) return formatChannelName(channel, index)
         }
         return "Live ${index + 1}"
+    }
+
+    private fun extractChKeyFromM3u8(url: String): String? {
+        val match = Regex("""/live/([^./?]+)\.m3u8""").find(url)
+        return match?.groupValues?.get(1)?.lowercase()
     }
 
     private fun getActivity(context: Context): Activity? {
