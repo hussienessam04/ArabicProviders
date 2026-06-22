@@ -146,25 +146,34 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
 
         if (resolvedM3u8 == null) return false
 
-        val m3u8Referer = runCatching {
+        val streamReferer = runCatching {
             java.net.URI(resolvedM3u8).let { "${it.scheme}://${it.host}/" }
-        }.getOrDefault("https://912acsss8af38.liveonlinesports.net/")
+        }.getOrDefault("https://1rxolmirvosixpyfy.foozlive.co/")
+        val isM3u8 = resolvedM3u8.contains(".m3u8")
         val linkHeaders = mapOf(
             "User-Agent" to ua,
-            "Referer" to m3u8Referer
+            "Referer" to streamReferer
         )
 
         var found = false
         for ((serverName, chId) in channelNames) {
             val displayName = "$name - $serverName"
-            M3u8Helper.generateM3u8(
-                source = name,
-                name = displayName,
-                streamUrl = resolvedM3u8,
-                referer = m3u8Referer,
-                headers = linkHeaders
-            ).forEach { link ->
-                callback(link)
+            if (isM3u8) {
+                M3u8Helper.generateM3u8(
+                    source = name,
+                    name = displayName,
+                    streamUrl = resolvedM3u8,
+                    referer = streamReferer,
+                    headers = linkHeaders
+                ).forEach { link ->
+                    callback(link)
+                    found = true
+                }
+            } else {
+                callback(newExtractorLink(name, displayName, resolvedM3u8) {
+                    this.referer = streamReferer
+                    this.headers = linkHeaders
+                })
                 found = true
             }
         }
@@ -286,7 +295,7 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                     request: WebResourceRequest?
                 ): WebResourceResponse? {
                     val reqUrl = request?.url?.toString() ?: ""
-                    if (reqUrl.contains(".m3u8")) {
+                    if (reqUrl.contains(".m3u8") || reqUrl.contains("/kooora/")) {
                         safeFinish(reqUrl)
                     }
                     return super.shouldInterceptRequest(view, request)
