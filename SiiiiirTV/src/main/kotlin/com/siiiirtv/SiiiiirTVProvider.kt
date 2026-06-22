@@ -293,36 +293,38 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     Log.d("SiiiiirTV", "page finished: $url")
-                    // Fallback: try to find the stream URL in the DOM after the page loads
-                    view?.evaluateJavascript("""
-                        (function() {
-                            try {
-                                var scripts = document.querySelectorAll('script');
-                                for (var i = 0; i < scripts.length; i++) {
-                                    var m = scripts[i].textContent.match(/https?:\/\/[^\s"'<>]+\/kooora\/[^\s"'<>]+/);
-                                    if (m) return m[0];
-                                }
-                                var iframes = document.querySelectorAll('iframe');
-                                for (var j = 0; j < iframes.length; j++) {
-                                    try {
-                                        var idoc = iframes[j].contentDocument || iframes[j].contentWindow.document;
-                                        var iscripts = idoc.querySelectorAll('script');
-                                        for (var k = 0; k < iscripts.length; k++) {
-                                            var im = iscripts[k].textContent.match(/https?:\/\/[^\s"'<>]+\/kooora\/[^\s"'<>]+/);
-                                            if (im) return im[0];
-                                        }
-                                    } catch (e) {}
-                                }
-                                return '';
-                            } catch (e) {
-                                return '';
+
+                    if (url?.contains("siiiiiiir.tv/hard/") == true) {
+                        // Step 1: hard player page loaded. Extract the iframe URL and load it directly.
+                        view?.evaluateJavascript("window.__playerSrc") { playerSrc ->
+                            Log.d("SiiiiirTV", "playerSrc: $playerSrc")
+                            val cleanSrc = playerSrc?.trim()?.removeSurrounding("\"") ?: ""
+                            if (cleanSrc.isNotBlank() && cleanSrc != "null") {
+                                Log.d("SiiiiirTV", "loading iframe directly: $cleanSrc")
+                                handler.postDelayed({
+                                    try { webView.loadUrl(cleanSrc, mapOf("Referer" to "https://siiiiiiir.tv/hard/2908c7d4425d87350.html")) } catch (_: Exception) {}
+                                }, 500)
                             }
-                        })()
-                    """.trimIndent()) { value ->
-                        Log.d("SiiiiirTV", "JS eval result: $value")
-                        val cleanUrl = value?.trim()?.removeSurrounding("\"") ?: ""
-                        if (cleanUrl.isNotBlank() && cleanUrl != "null") {
-                            safeFinish(cleanUrl)
+                        }
+                    } else if (url?.contains("playerv5.php") == true || url?.contains("liveonlinesports.net") == true) {
+                        // Step 2: iframe page loaded. Search for foozlive.co URL in the page
+                        view?.evaluateJavascript("""
+                            (function() {
+                                try {
+                                    var scripts = document.querySelectorAll('script');
+                                    for (var i = 0; i < scripts.length; i++) {
+                                        var m = scripts[i].textContent.match(/https?:\/\/[^\s"'<>]+\/kooora\/[^\s"'<>]+/);
+                                        if (m) return m[0];
+                                    }
+                                    return '';
+                                } catch (e) { return ''; }
+                            })()
+                        """.trimIndent()) { value ->
+                            Log.d("SiiiiirTV", "iframe JS eval: $value")
+                            val cleanUrl = value?.trim()?.removeSurrounding("\"") ?: ""
+                            if (cleanUrl.isNotBlank() && cleanUrl != "null") {
+                                safeFinish(cleanUrl)
+                            }
                         }
                     }
                 }
