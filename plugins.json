@@ -849,5 +849,23 @@
     "internalName": "YacineTV",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/YacineTV.cs3",
     "name": "YacineTV"
+  },
+  {
+    "iconUrl": "https://www.google.com/s2/favicons?domain=www.siiiiir.tv&sz=%size%",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/hussienessam04/ArabicProviders",
+    "fileSize": 15736,
+    "status": 1,
+    "language": "ar",
+    "authors": [
+      "hussienessam04"
+    ],
+    "tvTypes": [
+      "Live"
+    ],
+    "version": 1,
+    "internalName": "SiiiiirTV",
+    "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/SiiiiirTV.cs3",
+    "name": "Siiiiir TV"
   }
 ] 
