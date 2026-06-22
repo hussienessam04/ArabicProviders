@@ -115,38 +115,38 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
             val ch = channels.optJSONObject(i) ?: continue
             val serverName = ch.optString("server_name").ifBlank { ch.optString("server_name_en") }
             val channelLink = ch.optString("link")
-            val quality = when (ch.optString("quality")) {
-                "HD" -> Qualities.P1080.value
-                "SD" -> Qualities.P480.value
-                else -> Qualities.Unknown.value
-            }
             if (channelLink.isBlank()) continue
 
-            val sourceName = if (serverName.isNotBlank()) "$name - $serverName" else name
+            val displayName = if (serverName.isNotBlank()) "$name - $serverName" else name
+            val referer = runCatching {
+                java.net.URI(channelLink).let { "${it.scheme}://${it.host}/" }
+            }.getOrDefault(mainUrl)
+            val linkHeaders = headers + ("Referer" to referer)
 
-            if (channelLink.contains(".m3u8")) {
-                val referer = runCatching { java.net.URI(channelLink).let { "${it.scheme}://${it.host}/" } }.getOrDefault(mainUrl)
-                callback(newExtractorLink(sourceName, serverName.ifBlank { name }, channelLink) {
-                    this.referer = referer
-                    this.quality = quality
-                })
-                found = true
-                continue
+            val m3u8 = if (channelLink.contains(".m3u8")) {
+                channelLink
+            } else {
+                runCatching {
+                    val interceptor = WebViewResolver(Regex(".*\\.m3u8.*"))
+                    val res = app.get(
+                        channelLink,
+                        headers = headers + ("Referer" to data.substringBefore("#")),
+                        interceptor = interceptor
+                    )
+                    if (res.url.contains(".m3u8")) res.url else null
+                }.getOrNull() ?: continue
             }
 
-            val interceptorLink = runCatching {
-                val interceptor = WebViewResolver(Regex(".*\\.m3u8.*"))
-                val res = app.get(channelLink, headers = headers + ("Referer" to data.substringBefore("#")), interceptor = interceptor)
-                if (res.url.contains(".m3u8")) res.url else null
-            }.getOrNull()
-
-            val m3u8 = interceptorLink ?: channelLink
-            val referer = runCatching { java.net.URI(channelLink).let { "${it.scheme}://${it.host}/" } }.getOrDefault(mainUrl)
-            callback(newExtractorLink(sourceName, serverName.ifBlank { name }, m3u8) {
-                this.referer = referer
-                this.quality = quality
-            })
-            found = true
+            M3u8Helper.generateM3u8(
+                source = name,
+                name = displayName,
+                streamUrl = m3u8,
+                referer = referer,
+                headers = linkHeaders
+            ).forEach { link ->
+                callback(link)
+                found = true
+            }
         }
         return found
     }
