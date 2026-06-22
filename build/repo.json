@@ -1,0 +1,9 @@
+{
+    "name": "Arabic Providers",
+    "iconUrl": "https://www.google.com/s2/favicons?domain=siiiiir.tv&sz=256",
+    "description": "Arabic live sports providers",
+    "manifestVersion": 1,
+    "pluginLists": [
+      "https://raw.githubusercontent.com/hussienessam04/ArabicProviders/main/build/plugins.json"
+    ]
+}
