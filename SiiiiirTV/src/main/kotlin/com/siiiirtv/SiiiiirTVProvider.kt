@@ -178,9 +178,17 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
 
     // ponytail: extract player URL from JavaScript variable
     private fun extractIframeUrl(html: String): String? {
-        // First try: match window.__playerSrc assignment
-        val playerSrcRegex = """window\.__playerSrc\s*=\s*['"]([^'"]+)['"]""".toRegex()
+        // First try: match window.__playerSrc assignment (capture until single quote after key=)
+        val playerSrcRegex = """window\.__playerSrc\s*=\s*'([^']+)'""".toRegex()
         playerSrcRegex.find(html)?.groupValues?.get(1)?.let { return it }
+        
+        // Try double quotes version
+        val playerSrcRegex2 = """window\.__playerSrc\s*=\s*"([^"]+)"\s*;""".toRegex()
+        playerSrcRegex2.find(html)?.groupValues?.get(1)?.let { return it }
+        
+        // Try semicolon-terminated single quote
+        val playerSrcRegex3 = """window\.__playerSrc\s*=\s*'([^']+)'\s*;""".toRegex()
+        playerSrcRegex3.find(html)?.groupValues?.get(1)?.let { return it }
         
         // Fallback: look for player iframe src in script
         val scriptRegex = """['"](https?://[^'"]*playerv\d+\.php[^'"]*)['"]""".toRegex()
