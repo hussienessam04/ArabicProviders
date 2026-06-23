@@ -176,10 +176,15 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         return true
     }
 
-    // ponytail: iframe src is static pattern, regex extract
+    // ponytail: extract player URL from JavaScript variable
     private fun extractIframeUrl(html: String): String? {
-        val iframeRegex = """<iframe[^>]+src=["']([^"']+playerv5\.php[^"']+)["']""".toRegex()
-        return iframeRegex.find(html)?.groupValues?.get(1)
+        // First try: match window.__playerSrc assignment
+        val playerSrcRegex = """window\.__playerSrc\s*=\s*['"]([^'"]+)['"]""".toRegex()
+        playerSrcRegex.find(html)?.groupValues?.get(1)?.let { return it }
+        
+        // Fallback: look for player iframe src in script
+        val scriptRegex = """['"](https?://[^'"]*playerv\d+\.php[^'"]*)['"]""".toRegex()
+        return scriptRegex.find(html)?.groupValues?.get(1)
     }
 
     private suspend fun fetchStreamUrls(iframeUrl: String): Map<String, String> = withContext(Dispatchers.Main) {
