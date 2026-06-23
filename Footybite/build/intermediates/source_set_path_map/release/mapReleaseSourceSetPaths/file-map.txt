@@ -1,0 +1,7 @@
+com.phisher98.Footybite-pngs-0 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\Footybite\build\generated\res\pngs\release
+com.phisher98.Footybite-resValues-1 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\Footybite\build\generated\res\resValues\release
+com.phisher98.Footybite-mergeReleaseResources-2 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\Footybite\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.phisher98.Footybite-mergeReleaseResources-3 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\Footybite\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.phisher98.Footybite-release-4 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\Footybite\build\intermediates\merged_res\release\mergeReleaseResources
+com.phisher98.Footybite-main-5 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\Footybite\src\main\res
+com.phisher98.Footybite-release-6 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\Footybite\src\release\res

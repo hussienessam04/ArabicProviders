@@ -1,0 +1,144 @@
+<libraries>
+  <library
+      name=":@@:SiiiiirTV::debug"
+      jars="C:\Users\Hussien Essam\.gradle\caches\8.12\transforms\a7623cb7b7fa1a8a1db70bbc8474cce2\transformed\out\jars\classes.jar;C:\Users\Hussien Essam\.gradle\caches\8.12\transforms\a7623cb7b7fa1a8a1db70bbc8474cce2\transformed\out\jars\libs\R.jar"
+      resolved="CloudstreamPlugins:SiiiiirTV:11"
+      folder="C:\Users\Hussien Essam\.gradle\caches\8.12\transforms\a7623cb7b7fa1a8a1db70bbc8474cce2\transformed\out"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-coroutines-core-jvm\1.10.1\fe066928754beda3d59c8282e04289546465a360\kotlinx-coroutines-core-jvm-1.10.1.jar"
+      resolved="org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1"/>
+  <library
+      name="org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-coroutines-android\1.10.1\864006e2e42ed4d76150651c635d038a060c20a2\kotlinx-coroutines-android-1.10.1.jar"
+      resolved="org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1"/>
+  <library
+      name="com.github.Blatzar:NiceHttp:0.4.13@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.github.Blatzar\NiceHttp\0.4.13\8c8324aa0f0d4c0fac0c4ca41c99db1f30cdce3e\NiceHttp-0.4.13.jar"
+      resolved="com.github.Blatzar:NiceHttp:0.4.13"/>
+  <library
+      name="com.squareup.okhttp3:okhttp-dnsoverhttps:5.0.0-alpha.12@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp3\okhttp-dnsoverhttps\5.0.0-alpha.12\7f514f5e7e347c5a8fdc6e599caef3c3d94fe62b\okhttp-dnsoverhttps-5.0.0-alpha.12.jar"
+      resolved="com.squareup.okhttp3:okhttp-dnsoverhttps:5.0.0-alpha.12"/>
+  <library
+      name="com.fasterxml.jackson.core:jackson-databind:2.16.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-databind\2.16.0\3a6b7f8ff7b30d518bbd65678e9c30cd881f19a7\jackson-databind-2.16.0.jar"
+      resolved="com.fasterxml.jackson.core:jackson-databind:2.16.0"/>
+  <library
+      name="com.fasterxml.jackson.core:jackson-annotations:2.16.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-annotations\2.16.0\dc30995f7428c0a405eba9b8c619b20d2b3b9905\jackson-annotations-2.16.0.jar"
+      resolved="com.fasterxml.jackson.core:jackson-annotations:2.16.0"/>
+  <library
+      name="com.fasterxml.jackson.core:jackson-core:2.16.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-core\2.16.0\899e5cf01be55fbf094ad72b2edb0c5df99111ee\jackson-core-2.16.0.jar"
+      resolved="com.fasterxml.jackson.core:jackson-core:2.16.0"/>
+  <library
+      name="com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.module\jackson-module-kotlin\2.16.0\4b46a4ae3628baa90b1527564aef6cd2437fa938\jackson-module-kotlin-2.16.0.jar"
+      resolved="com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0"/>
+  <library
+      name="org.jetbrains.kotlin:kotlin-reflect:1.6.21@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-reflect\1.6.21\5dc3574d9b7bebfcb4ec6b10ada4aaa9e140bd0b\kotlin-reflect-1.6.21.jar"
+      resolved="org.jetbrains.kotlin:kotlin-reflect:1.6.21"/>
+  <library
+      name="org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-serialization-core-jvm\1.8.0\fe5bb37ab4a3771f14c63e0c333c98bdfeb1d7cc\kotlinx-serialization-core-jvm-1.8.0.jar"
+      resolved="org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.0"/>
+  <library
+      name="org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlinx\kotlinx-serialization-json-jvm\1.8.0\8253bf6e8c713a3dace54493a838e0f8fd3e08fa\kotlinx-serialization-json-jvm-1.8.0.jar"
+      resolved="org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0"/>
+  <library
+      name="com.squareup.okhttp3:okhttp-jvm:5.0.0-alpha.12@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp3\okhttp-jvm\5.0.0-alpha.12\b54e5430568c6210032f1d03c99cda3db01da3b5\okhttp-jvm-5.0.0-alpha.12.jar"
+      resolved="com.squareup.okhttp3:okhttp-jvm:5.0.0-alpha.12"/>
+  <library
+      name="com.squareup.okio:okio-jvm:3.7.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio-jvm\3.7.0\276b999b41f7dcde00054848fc53af338d86b349\okio-jvm-3.7.0.jar"
+      resolved="com.squareup.okio:okio-jvm:3.7.0"/>
+  <library
+      name="org.jetbrains.kotlin:kotlin-stdlib:2.1.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-stdlib\2.1.0\85f8b81009cda5890e54ba67d64b5e599c645020\kotlin-stdlib-2.1.0.jar"
+      resolved="org.jetbrains.kotlin:kotlin-stdlib:2.1.0"/>
+  <library
+      name="org.jsoup:jsoup:1.19.1@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jsoup\jsoup\1.19.1\a66ce6265069c29783c30ca7c51ae15b68c36c5\jsoup-1.19.1.jar"
+      resolved="org.jsoup:jsoup:1.19.1"/>
+  <library
+      name="org.mozilla:rhino:1.8.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.mozilla\rhino\1.8.0\889636434674822ce2d14d6e92f7cf96726c6783\rhino-1.8.0.jar"
+      resolved="org.mozilla:rhino:1.8.0"/>
+  <library
+      name="me.xdrop:fuzzywuzzy:1.4.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\me.xdrop\fuzzywuzzy\1.4.0\9ab5d0aa1c87892e7c4c53d74d1e008c1724cf1a\fuzzywuzzy-1.4.0.jar"
+      resolved="me.xdrop:fuzzywuzzy:1.4.0"/>
+  <library
+      name="com.google.code.gson:gson:2.11.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.11.0\527175ca6d81050b53bdd4c457a6d6e017626b0e\gson-2.11.0.jar"
+      resolved="com.google.code.gson:gson:2.11.0"/>
+  <library
+      name="app.cash.quickjs:quickjs-android:0.9.2@aar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\8.12\transforms\b4450f6521471502b95d76baedf77e06\transformed\jetified-quickjs-android-0.9.2\jars\classes.jar"
+      resolved="app.cash.quickjs:quickjs-android:0.9.2"
+      folder="C:\Users\Hussien Essam\.gradle\caches\8.12\transforms\b4450f6521471502b95d76baedf77e06\transformed\jetified-quickjs-android-0.9.2"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="com.github.vidstige:jadb:v1.2.1@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.github.vidstige\jadb\v1.2.1\f87407ad9309d259d8ed0c208f7fe069047b4c09\jadb-v1.2.1.jar"
+      resolved="com.github.vidstige:jadb:v1.2.1"/>
+  <library
+      name="org.jetbrains:annotations:23.0.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains\annotations\23.0.0\8cc20c07506ec18e0834947b84a864bfc094484e\annotations-23.0.0.jar"
+      resolved="org.jetbrains:annotations:23.0.0"/>
+  <library
+      name="com.google.errorprone:error_prone_annotations:2.27.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\com.google.errorprone\error_prone_annotations\2.27.0\91b2c29d8a6148b5e2e4930f070d4840e2e48e34\error_prone_annotations-2.27.0.jar"
+      resolved="com.google.errorprone:error_prone_annotations:2.27.0"/>
+  <library
+      name="androidx.annotation:annotation:1.1.0@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\androidx.annotation\annotation\1.1.0\e3a6fb2f40e3a3842e6b7472628ba4ce416ea4c8\annotation-1.1.0.jar"
+      resolved="androidx.annotation:annotation:1.1.0"/>
+  <library
+      name="org.mockito:mockito-core:2.7.17@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.mockito\mockito-core\2.7.17\48082de1860bcc2cf984321dcb6641b5b3028959\mockito-core-2.7.17.jar"
+      resolved="org.mockito:mockito-core:2.7.17"/>
+  <library
+      name="org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-stdlib-jdk8\1.9.22\dea0c11e2fa503ab891c8a090e3b54754472975d\kotlin-stdlib-jdk8-1.9.22.jar"
+      resolved="org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22"/>
+  <library
+      name="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-stdlib-jdk7\1.9.22\c4b17283ad7939e778989663f8301d871987fa5e\kotlin-stdlib-jdk7-1.9.22.jar"
+      resolved="org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22"/>
+  <library
+      name="org.json:json:20231013@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.json\json\20231013\e22e0c040fe16f04ffdb85d851d77b07fc05ea52\json-20231013.jar"
+      resolved="org.json:json:20231013"/>
+  <library
+      name="net.bytebuddy:byte-buddy:1.6.11@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy\1.6.11\8a8f9409e27f1d62c909c7eef2aa7b3a580b4901\byte-buddy-1.6.11.jar"
+      resolved="net.bytebuddy:byte-buddy:1.6.11"/>
+  <library
+      name="net.bytebuddy:byte-buddy-agent:1.6.11@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.6.11\200d9c012befccd211ff91082a151257b1dc084\byte-buddy-agent-1.6.11.jar"
+      resolved="net.bytebuddy:byte-buddy-agent:1.6.11"/>
+  <library
+      name="org.objenesis:objenesis:2.5@jar"
+      jars="C:\Users\Hussien Essam\.gradle\caches\modules-2\files-2.1\org.objenesis\objenesis\2.5\612ecb799912ccf77cba9b3ed8c813da086076e9\objenesis-2.5.jar"
+      resolved="org.objenesis:objenesis:2.5"/>
+</libraries>

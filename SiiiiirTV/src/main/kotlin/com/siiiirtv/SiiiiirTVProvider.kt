@@ -135,15 +135,16 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         val apiJson = runCatching { app.get(apiUrl, headers = browserHeaders).text }.getOrNull()
             ?: return false
 
-        val matchData = runCatching { JSONObject(apiJson) }.getOrNull() ?: return false
-        val channels = matchData.optJSONArray("channels") ?: return false
+        val matchData = runCatching { JSONObject(apiJson) }.getOrNull()
+        val channels = matchData?.optJSONArray("channels")
 
-        val channelNames = (0 until channels.length()).mapNotNull { i ->
-            val ch = channels.optJSONObject(i) ?: return@mapNotNull null
-            val name = ch.optString("server_name").ifBlank { ch.optString("server_name_en") }
-            if (name.isBlank()) null else name
-        }
-        if (channelNames.isEmpty()) return false
+        val channelNames = if (channels != null) {
+            (0 until channels.length()).mapNotNull { i ->
+                val ch = channels.optJSONObject(i) ?: return@mapNotNull null
+                val name = ch.optString("server_name").ifBlank { ch.optString("server_name_en") }
+                if (name.isBlank()) null else name
+            }
+        } else emptyList()
 
         val burnerUrl = "https://siiiir.hes-goals.mov/?m=$matchId&p=87350"
         Log.d(TAG, "loadLinks: matchId=$matchId, burnerUrl=$burnerUrl")

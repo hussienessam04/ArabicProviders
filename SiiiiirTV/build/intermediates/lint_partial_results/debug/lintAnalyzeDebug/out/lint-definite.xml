@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.7.3" type="incidents">
+
+    <incident
+        id="SetJavaScriptEnabled"
+        severity="warning"
+        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully">
+        <location
+            file="${:SiiiiirTV*debug*MAIN*sourceProvider*0*javaDir*2}/com/siiiirtv/SiiiiirTVProvider.kt"
+            line="246"
+            column="17"
+            startOffset="10292"
+            endLine="246"
+            endColumn="41"
+            endOffset="10316"/>
+    </incident>
+
+</incidents>

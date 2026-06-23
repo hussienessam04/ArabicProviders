@@ -1,0 +1,7 @@
+com.phisher98.StreamBroadcast-pngs-0 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\StreamBroadcast\build\generated\res\pngs\release
+com.phisher98.StreamBroadcast-resValues-1 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\StreamBroadcast\build\generated\res\resValues\release
+com.phisher98.StreamBroadcast-mergeReleaseResources-2 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\StreamBroadcast\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
+com.phisher98.StreamBroadcast-mergeReleaseResources-3 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\StreamBroadcast\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+com.phisher98.StreamBroadcast-release-4 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\StreamBroadcast\build\intermediates\merged_res\release\mergeReleaseResources
+com.phisher98.StreamBroadcast-main-5 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\StreamBroadcast\src\main\res
+com.phisher98.StreamBroadcast-release-6 C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\StreamBroadcast\src\release\res

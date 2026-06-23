@@ -1,0 +1,12 @@
+C:\Users\Hussien Essam\Desktop\WORK FREELANCE\ArabicProviders\SiiiiirTV\src\main\kotlin\com\siiiirtv\SiiiiirTVProvider.kt:246: Warning: Using setJavaScriptEnabled can introduce XSS vulnerabilities into your application, review carefully [SetJavaScriptEnabled]
+                javaScriptEnabled = true
+                ~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SetJavaScriptEnabled":
+   Your code should not invoke setJavaScriptEnabled if you are not sure that
+   your app really requires JavaScript support.
+
+   https://goo.gle/SetJavaScriptEnabled
+   https://developer.android.com/training/articles/security-tips
+
+0 errors, 1 warnings
