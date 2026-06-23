@@ -845,7 +845,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 15,
+    "version": 16,
     "internalName": "YacineTV",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/YacineTV.cs3",
     "name": "YacineTV"
@@ -863,7 +863,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 15,
+    "version": 16,
     "internalName": "SiiiiirTV",
     "url": "https://github.com/hussienessam04/ArabicProviders/raw/refs/heads/main/build/SiiiiirTV.cs3",
     "name": "Siiiiir TV"

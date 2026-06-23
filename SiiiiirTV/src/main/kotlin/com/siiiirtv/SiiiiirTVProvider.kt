@@ -178,13 +178,9 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         return true
     }
 
-    // ponytail: extract player URL - it may be in JS variable or constructed via concatenation
+    // ponytail: extract player URL - it's built via JS concatenation with template literals
     private fun extractIframeUrl(html: String): String? {
-        // First try: direct string in window.__playerSrc
-        val playerSrcRegex = """window\.__playerSrc\s*=\s*['"]([^'"]+)['"]""".toRegex()
-        playerSrcRegex.find(html)?.groupValues?.get(1)?.let { return it }
-        
-        // Second: if URL is built via concatenation, extract base URL + key
+        // Extract base URL pattern (playerv5.php, playerv00.php, etc.)
         val baseUrlMatch = """https?://[^'"\s]*playerv\d+\.php\?match=""".toRegex().find(html)
         val keyMatch = """[&?]key=([a-zA-Z0-9]+)""".toRegex().find(html)
         
@@ -195,9 +191,13 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
             return "$baseUrl{MATCH_ID}&key=$key"
         }
         
-        // Fallback: look for any playerv URL in script
-        val scriptRegex = """['"](https?://[^'"]*playerv\d+\.php[^'"]*)['"]""".toRegex()
-        return scriptRegex.find(html)?.groupValues?.get(1)
+        // Fallback: look for any playerv URL in script (less common but possible)
+        val scriptRegex = """https?://[^'"\s]*playerv\d+\.php""".toRegex()
+        scriptRegex.find(html)?.value?.let {
+            return "${it}?match={MATCH_ID}&key=9f39972b67d6ce22189507d008acwc26"
+        }
+        
+        return null
     }
 
     private suspend fun fetchStreamUrls(iframeUrl: String): Map<String, String> = withContext(Dispatchers.Main) {
