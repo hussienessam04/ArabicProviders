@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-version = 12
+version = 13
 
 cloudstream {
     authors = listOf("hussienessam04", "hes-Goals")
