@@ -143,11 +143,13 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         }.getOrNull() ?: return false
         
         // Extract iframe URL
-        val iframeUrl = extractIframeUrl(playerHtml)
-        if (iframeUrl == null) {
+        val iframeUrlTemplate = extractIframeUrl(playerHtml)
+        if (iframeUrlTemplate == null) {
             Log.w(TAG, "loadLinks: no iframe URL found")
             return false
         }
+        // Replace {MATCH_ID} placeholder with actual matchId
+        val iframeUrl = iframeUrlTemplate.replace("{MATCH_ID}", matchId)
         Log.d(TAG, "loadLinks: iframeUrl=$iframeUrl")
         
         // Fetch stream URLs via WebView
@@ -176,21 +178,24 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         return true
     }
 
-    // ponytail: extract player URL from JavaScript variable
+    // ponytail: extract player URL - it may be in JS variable or constructed via concatenation
     private fun extractIframeUrl(html: String): String? {
-        // First try: match window.__playerSrc assignment (capture until single quote after key=)
-        val playerSrcRegex = """window\.__playerSrc\s*=\s*'([^']+)'""".toRegex()
+        // First try: direct string in window.__playerSrc
+        val playerSrcRegex = """window\.__playerSrc\s*=\s*['"]([^'"]+)['"]""".toRegex()
         playerSrcRegex.find(html)?.groupValues?.get(1)?.let { return it }
         
-        // Try double quotes version
-        val playerSrcRegex2 = """window\.__playerSrc\s*=\s*"([^"]+)"\s*;""".toRegex()
-        playerSrcRegex2.find(html)?.groupValues?.get(1)?.let { return it }
+        // Second: if URL is built via concatenation, extract base URL + key
+        val baseUrlMatch = """https?://[^'"\s]*playerv\d+\.php\?match=""".toRegex().find(html)
+        val keyMatch = """[&?]key=([a-zA-Z0-9]+)""".toRegex().find(html)
         
-        // Try semicolon-terminated single quote
-        val playerSrcRegex3 = """window\.__playerSrc\s*=\s*'([^']+)'\s*;""".toRegex()
-        playerSrcRegex3.find(html)?.groupValues?.get(1)?.let { return it }
+        if (baseUrlMatch != null) {
+            val baseUrl = baseUrlMatch.value
+            val key = keyMatch?.groupValues?.get(1) ?: "9f39972b67d6ce22189507d008acwc26"
+            // Return template - will be filled with matchId by caller
+            return "$baseUrl{MATCH_ID}&key=$key"
+        }
         
-        // Fallback: look for player iframe src in script
+        // Fallback: look for any playerv URL in script
         val scriptRegex = """['"](https?://[^'"]*playerv\d+\.php[^'"]*)['"]""".toRegex()
         return scriptRegex.find(html)?.groupValues?.get(1)
     }
