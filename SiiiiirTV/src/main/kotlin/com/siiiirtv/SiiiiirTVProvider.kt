@@ -131,294 +131,172 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         val matchId = data.substringAfterLast("#").takeIf { it.isNotBlank() && it.all(Char::isDigit) }
             ?: return false
 
-        val apiUrl = "https://ws.kora-api.top/api/matche/$matchId/ar?t=${System.currentTimeMillis()}"
-        val apiJson = runCatching { app.get(apiUrl, headers = browserHeaders).text }.getOrNull()
-            ?: return false
-
-        val matchData = runCatching { JSONObject(apiJson) }.getOrNull()
-        val channels = matchData?.optJSONArray("channels")
-
-        val channelNames = if (channels != null) {
-            (0 until channels.length()).mapNotNull { i ->
-                val ch = channels.optJSONObject(i) ?: return@mapNotNull null
-                val name = ch.optString("server_name").ifBlank { ch.optString("server_name_en") }
-                if (name.isBlank()) null else name
-            }
-        } else emptyList()
-
-        val burnerUrl = "https://siiiir.hes-goals.mov/?m=$matchId&p=87350"
-        Log.d(TAG, "loadLinks: matchId=$matchId, burnerUrl=$burnerUrl")
-        val streamUrl = fetchStreamUrl(burnerUrl)
-        if (streamUrl == null) {
-            Log.w(TAG, "loadLinks: no stream URL found for matchId=$matchId")
+        Log.d(TAG, "loadLinks: matchId=$matchId")
+        
+        // Construct player page URL directly
+        val playerUrl = "https://siiiiiiir.tv/hard/2908c7d4425d87351.html?match=$matchId"
+        Log.d(TAG, "loadLinks: playerUrl=$playerUrl")
+        
+        // Fetch player page HTML
+        val playerHtml = runCatching { 
+            app.get(playerUrl, headers = browserHeaders).text 
+        }.getOrNull() ?: return false
+        
+        // Extract iframe URL
+        val iframeUrl = extractIframeUrl(playerHtml)
+        if (iframeUrl == null) {
+            Log.w(TAG, "loadLinks: no iframe URL found")
             return false
         }
-        Log.d(TAG, "loadLinks: found streamUrl=$streamUrl")
-
-        val streamReferer = runCatching {
-            java.net.URI(streamUrl).let { "${it.scheme}://${it.host}/" }
-        }.getOrDefault("https://foozlive.co/")
-
-        val linkHeaders = mapOf("User-Agent" to ua, "Referer" to streamReferer)
-        val isM3u8 = streamUrl.contains(".m3u8")
-
-        var found = false
-        for (serverName in channelNames) {
-            val displayName = "$name - $serverName"
-            if (isM3u8) {
-                M3u8Helper.generateM3u8(
-                    source = name, name = displayName, streamUrl = streamUrl,
-                    referer = streamReferer, headers = linkHeaders
-                ).forEach { link -> callback(link); found = true }
-            } else {
-                callback(newExtractorLink(name, displayName, streamUrl) {
-                    this.referer = streamReferer
-                    this.headers = linkHeaders
-                })
-                found = true
-            }
+        Log.d(TAG, "loadLinks: iframeUrl=$iframeUrl")
+        
+        // Fetch stream URLs via WebView
+        val streamUrls = fetchStreamUrls(iframeUrl)
+        if (streamUrls.isEmpty()) {
+            Log.w(TAG, "loadLinks: no stream URLs found")
+            return false
         }
-        return found
+        
+        Log.d(TAG, "loadLinks: found ${streamUrls.size} stream URLs")
+        
+        // Return all streams
+        streamUrls.forEach { (serverName, url) ->
+            val referer = "https://912acsss8af38.liveonlinesports.net/"
+            val headers = mapOf("User-Agent" to ua, "Referer" to referer)
+            
+            M3u8Helper.generateM3u8(
+                source = name,
+                name = "$name - $serverName",
+                streamUrl = url,
+                referer = referer,
+                headers = headers
+            ).forEach { link -> callback(link) }
+        }
+        
+        return true
     }
 
-    /**
-     * Fetches stream URL using WebView by:
-     * 1. Loading burner URL (redirects to hard player page)
-     * 2. Hard player page loads iframe with actual player
-     * 3. Intercepting network requests for .m3u8 stream URLs
-     * 4. Returns first captured stream URL or null after 40s timeout
-     */
-    private suspend fun fetchStreamUrl(burnerUrl: String): String? = withContext(Dispatchers.Main) {
+    // ponytail: iframe src is static pattern, regex extract
+    private fun extractIframeUrl(html: String): String? {
+        val iframeRegex = """<iframe[^>]+src=["']([^"']+playerv5\.php[^"']+)["']""".toRegex()
+        return iframeRegex.find(html)?.groupValues?.get(1)
+    }
+
+    private suspend fun fetchStreamUrls(iframeUrl: String): Map<String, String> = withContext(Dispatchers.Main) {
         suspendCancellableCoroutine { cont ->
             val handler = Handler(Looper.getMainLooper())
             val activity = context as? android.app.Activity
             
             if (activity == null) {
-                android.util.Log.e(TAG, "Context is not an Activity, cannot create WebView")
-                cont.resume(null)
+                Log.e(TAG, "Context is not an Activity")
+                cont.resume(emptyMap())
                 return@suspendCancellableCoroutine
             }
             
-            android.util.Log.d(TAG, "WebView: creating for URL: $burnerUrl")
+            Log.d(TAG, "WebView: loading iframe: $iframeUrl")
             
-            // Create WebView
             val webView = WebView(context).apply {
                 layoutParams = ViewGroup.LayoutParams(1920, 1080)
                 visibility = View.INVISIBLE
-                isHorizontalScrollBarEnabled = false
-                isVerticalScrollBarEnabled = false
             }
             
-            // Add to view hierarchy (required for WebView to work)
             val addedToView = try {
-                val decor = activity.window?.decorView as? ViewGroup
-                if (decor != null) {
-                    decor.addView(webView)
-                    android.util.Log.d(TAG, "WebView: added to view hierarchy")
-                    true
-                } else {
-                    android.util.Log.e(TAG, "WebView: could not get decor view")
-                    false
-                }
+                (activity.window?.decorView as? ViewGroup)?.addView(webView)
+                true
             } catch (e: Exception) {
-                android.util.Log.e(TAG, "WebView: failed to add to view", e)
+                Log.e(TAG, "WebView: add failed", e)
                 false
             }
             
             if (!addedToView) {
-                cont.resume(null)
+                cont.resume(emptyMap())
                 return@suspendCancellableCoroutine
             }
             
-            // Measure and layout WebView
-            try {
-                webView.measure(
-                    View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY),
-                    View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
-                )
-                webView.layout(0, 0, 1920, 1080)
-                webView.onResume()
-            } catch (e: Exception) {
-                android.util.Log.e(TAG, "WebView: measure/layout failed", e)
-            }
-            
-            // Configure WebView settings
             webView.settings.apply {
                 javaScriptEnabled = true
                 domStorageEnabled = true
-                databaseEnabled = true
-                allowContentAccess = true
                 mediaPlaybackRequiresUserGesture = false
-                loadWithOverviewMode = true
-                useWideViewPort = true
                 userAgentString = ua
-                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 cacheMode = WebSettings.LOAD_NO_CACHE
-                blockNetworkImage = true // Optimization: don't load images
+                blockNetworkImage = true
             }
-            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
             
-            var capturedUrl: String? = null
+            val capturedUrls = mutableMapOf<String, String>()
             var finished = false
-            val finishLock = Any()
             
-            // Cleanup function
             fun cleanup() {
                 handler.post {
                     try {
                         (webView.parent as? ViewGroup)?.removeView(webView)
-                        webView.stopLoading()
                         webView.destroy()
-                        android.util.Log.d(TAG, "WebView: cleaned up")
-                    } catch (e: Exception) {
-                        android.util.Log.e(TAG, "WebView: cleanup error", e)
-                    }
+                    } catch (_: Exception) {}
                 }
             }
             
-            fun safeFinish(result: String?) {
-                synchronized(finishLock) {
-                    if (finished) return
-                    finished = true
-                }
-                try {
-                    if (cont.isActive) cont.resume(result) {}
-                } catch (_: Exception) { }
+            fun safeFinish() {
+                if (finished) return
+                finished = true
+                cont.resume(capturedUrls.toMap())
                 cleanup()
             }
             
-            // Timeout after 40 seconds
-            val timeoutRunnable = Runnable {
-                android.util.Log.w(TAG, "WebView: TIMEOUT after 40s, captured=${capturedUrl != null}")
-                safeFinish(capturedUrl)
-            }
-            handler.postDelayed(timeoutRunnable, 40000)
+            // Timeout after 40s
+            handler.postDelayed({ safeFinish() }, 40000)
             
-            // Set WebView client to intercept requests
             webView.webViewClient = object : WebViewClient() {
                 override fun shouldInterceptRequest(
                     view: WebView?,
                     request: WebResourceRequest?
                 ): WebResourceResponse? {
-                    val url = request?.url?.toString() ?: ""
+                    val url = request?.url?.toString() ?: return super.shouldInterceptRequest(view, request)
                     
-                    // Look for .m3u8 stream URLs
-                    if (url.contains(".m3u8", ignoreCase = true)) {
-                        android.util.Log.d(TAG, "WebView: captured m3u8: $url")
-                        if (capturedUrl == null) {
-                            capturedUrl = url
-                            handler.postDelayed({
-                                safeFinish(url)
-                            }, 1000) // Small delay to capture potential better quality streams
+                    // Capture foozlive.co m3u8 URLs with quality variants
+                    if (url.contains("foozlive.co") && url.contains(".m3u8")) {
+                        Log.d(TAG, "WebView: captured m3u8: $url")
+                        
+                        // Determine server and quality from URL
+                        val serverName = when {
+                            url.contains("_kc_uhd") -> extractServerName(url, "UHD")
+                            url.contains("_kc_hd") -> extractServerName(url, "HD")
+                            url.contains("_kc") -> extractServerName(url, "SD")
+                            else -> null
                         }
-                    }
-                    
-                    // Also look for other stream patterns
-                    if ((url.contains("/kooora/", ignoreCase = true) || 
-                         url.contains("/live/", ignoreCase = true) ||
-                         url.contains("/stream/", ignoreCase = true)) && 
-                        (url.endsWith(".m3u8") || url.contains(".m3u8?"))) {
-                        android.util.Log.d(TAG, "WebView: captured stream: $url")
-                        if (capturedUrl == null) {
-                            capturedUrl = url
-                            handler.postDelayed({
-                                safeFinish(url)
-                            }, 1000)
+                        
+                        if (serverName != null) {
+                            capturedUrls[serverName] = url
+                            Log.d(TAG, "WebView: captured $serverName -> $url")
+                            
+                            // Finish once we have enough URLs (at least 4 servers × 3 qualities = 12)
+                            if (capturedUrls.size >= 12) {
+                                handler.postDelayed({ safeFinish() }, 2000)
+                            }
                         }
                     }
                     
                     return super.shouldInterceptRequest(view, request)
                 }
-                
-                override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
-                    super.onPageStarted(view, url, favicon)
-                    android.util.Log.d(TAG, "WebView: page started: $url")
-                }
-                
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
-                    android.util.Log.d(TAG, "WebView: page finished: $url")
-                    
-                    // Inject JavaScript to search for stream URLs in page content
-                    view?.evaluateJavascript("""
-                        (function() {
-                            try {
-                                // Look for m3u8 URLs in script tags
-                                var scripts = document.getElementsByTagName('script');
-                                for (var i = 0; i < scripts.length; i++) {
-                                    var content = scripts[i].textContent || scripts[i].innerText || '';
-                                    var m3u8Match = content.match(/https?:\/\/[^\s"'<>]+\.m3u8[^\s"']*/);
-                                    if (m3u8Match) {
-                                        console.log('Found m3u8 in script: ' + m3u8Match[0]);
-                                        return m3u8Match[0];
-                                    }
-                                }
-                                
-                                // Look for video source elements
-                                var videos = document.getElementsByTagName('video');
-                                for (var i = 0; i < videos.length; i++) {
-                                    if (videos[i].src && videos[i].src.includes('.m3u8')) {
-                                        console.log('Found m3u8 in video.src: ' + videos[i].src);
-                                        return videos[i].src;
-                                    }
-                                }
-                                
-                                // Look for iframe src
-                                var iframe = document.querySelector('iframe');
-                                if (iframe && iframe.src) {
-                                    console.log('Found iframe.src: ' + iframe.src);
-                                }
-                                
-                                return null;
-                            } catch(e) {
-                                console.error('Error searching for m3u8:', e);
-                                return null;
-                            }
-                        })();
-                    """.trimIndent()) { result ->
-                        if (result != null && result != "null" && result.isNotBlank()) {
-                            val cleanUrl = result.trim('"')
-                            if (cleanUrl.contains(".m3u8")) {
-                                android.util.Log.d(TAG, "WebView: JS found stream: $cleanUrl")
-                                if (capturedUrl == null) {
-                                    capturedUrl = cleanUrl
-                                    handler.postDelayed({
-                                        safeFinish(cleanUrl)
-                                    }, 500)
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                @Suppress("DEPRECATION")
-                override fun onReceivedError(
-                    view: WebView?,
-                    errorCode: Int,
-                    description: String?,
-                    failingUrl: String?
-                ) {
-                    super.onReceivedError(view, errorCode, description, failingUrl)
-                    android.util.Log.w(TAG, "WebView: error $errorCode at $failingUrl: $description")
-                }
             }
             
-            // Handle coroutine cancellation
-            cont.invokeOnCancellation {
-                android.util.Log.d(TAG, "WebView: coroutine cancelled")
-                handler.removeCallbacks(timeoutRunnable)
-                safeFinish(null)
-            }
+            cont.invokeOnCancellation { cleanup() }
             
-            // Load the burner URL (will redirect to hard player page)
             try {
-                android.util.Log.d(TAG, "WebView: loading URL: $burnerUrl")
-                webView.loadUrl(burnerUrl, mapOf("Referer" to mainUrl))
+                webView.loadUrl(iframeUrl, mapOf("Referer" to "https://siiiiiiir.tv/"))
             } catch (e: Exception) {
-                android.util.Log.e(TAG, "WebView: loadUrl failed", e)
-                handler.removeCallbacks(timeoutRunnable)
-                safeFinish(null)
+                Log.e(TAG, "WebView: loadUrl failed", e)
+                safeFinish()
             }
+        }
+    }
+
+    // ponytail: extract server name from path pattern
+    private fun extractServerName(url: String, quality: String): String? {
+        return when {
+            url.contains("/kc/") && url.contains("d0x1") -> "AR 1 $quality"
+            url.contains("/kc/") && url.contains("d0x2") -> "AR 2 $quality"
+            url.contains("d1xfr") -> "FR $quality"
+            url.contains("d1xen") -> "EN $quality"
+            else -> null
         }
     }
 }
