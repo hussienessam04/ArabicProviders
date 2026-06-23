@@ -128,7 +128,10 @@ class SiiiiirTVProvider(private val context: Context) : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val matchId = data.substringAfterLast("#").takeIf { it.isNotBlank() && it.all(Char::isDigit) }
+        // ponytail: extract match ID from ?m= parameter in URL (not from # fragment which may be wrong)
+        val pageUrl = data.substringBefore("#")
+        val matchId = Regex("[?&]m=(\\d+)").find(pageUrl)?.groupValues?.get(1)
+            ?: data.substringAfterLast("#").takeIf { it.isNotBlank() && it.all(Char::isDigit) }
             ?: return false
 
         Log.d(TAG, "loadLinks: matchId=$matchId")
